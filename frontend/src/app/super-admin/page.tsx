@@ -69,105 +69,109 @@ export default function SuperAdminOverviewPage() {
         </div>
       </div>
 
-      {/* KPI Stats Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* KPI Stats Grid - 2 columns in row form on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Total Halls */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Halls</span>
-            <div className="rounded-xl bg-blue-50 p-2 text-blue-600">
-              <Building2 className="h-5 w-5" />
+        <div className="rounded-2xl border border-gray-200 bg-white p-3.5 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider truncate">Halls</span>
+            <div className="rounded-lg sm:rounded-xl bg-blue-50 p-1.5 sm:p-2 text-blue-600 shrink-0">
+              <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
-          <div className="mt-3">
-            <p className="text-2xl font-bold text-gray-900">{data.totalHalls}</p>
-            <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
-              <span className="text-green-700 font-medium">{data.approvedHalls} Approved</span>
+          <div className="mt-2 sm:mt-3">
+            <p className="text-xl sm:text-2xl font-bold text-gray-900">{data.totalHalls}</p>
+            <div className="mt-1 sm:mt-2 flex flex-wrap items-center gap-1 text-[10px] sm:text-xs text-gray-500">
+              <span className="text-green-700 font-semibold">{data.approvedHalls} Appr.</span>
               <span>•</span>
-              <span className="text-amber-600 font-medium">{data.pendingHalls} Pending</span>
+              <span className="text-amber-600 font-semibold">{data.pendingHalls} Pend.</span>
             </div>
           </div>
         </div>
 
         {/* Hall Owners */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Hall Owners</span>
-            <div className="rounded-xl bg-purple-50 p-2 text-purple-600">
-              <Users className="h-5 w-5" />
+        <div className="rounded-2xl border border-gray-200 bg-white p-3.5 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider truncate">Hall Owners</span>
+            <div className="rounded-lg sm:rounded-xl bg-purple-50 p-1.5 sm:p-2 text-purple-600 shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
-          <div className="mt-3">
-            <p className="text-2xl font-bold text-gray-900">{data.totalOwners}</p>
-            <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
-              <span className="text-green-700 font-medium">{data.approvedOwners} Approved</span>
+          <div className="mt-2 sm:mt-3">
+            <p className="text-xl sm:text-2xl font-bold text-gray-900">{data.totalOwners}</p>
+            <div className="mt-1 sm:mt-2 flex flex-wrap items-center gap-1 text-[10px] sm:text-xs text-gray-500">
+              <span className="text-green-700 font-semibold">{data.approvedOwners} Appr.</span>
               <span>•</span>
-              <span className="text-amber-600 font-medium">{data.pendingOwners} Pending</span>
+              <span className="text-amber-600 font-semibold">{data.pendingOwners} Pend.</span>
             </div>
           </div>
         </div>
 
         {/* Bookings */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Bookings</span>
-            <div className="rounded-xl bg-amber-50 p-2 text-amber-600">
-              <CalendarCheck2 className="h-5 w-5" />
+        <div className="rounded-2xl border border-gray-200 bg-white p-3.5 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider truncate">Total Bookings</span>
+            <div className="rounded-lg sm:rounded-xl bg-amber-50 p-1.5 sm:p-2 text-amber-600 shrink-0">
+              <CalendarCheck2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
-          <div className="mt-3">
-            <p className="text-2xl font-bold text-gray-900">{data.totalBookings}</p>
-            <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
-              <span className="text-green-700 font-medium">{data.confirmedBookings} Confirmed</span>
+          <div className="mt-2 sm:mt-3">
+            <p className="text-xl sm:text-2xl font-bold text-gray-900">{data.totalBookings}</p>
+            <div className="mt-1 sm:mt-2 flex flex-wrap items-center gap-1 text-[10px] sm:text-xs text-gray-500">
+              <span className="text-green-700 font-semibold">{data.confirmedBookings} Conf.</span>
               <span>•</span>
-              <span className="text-amber-600 font-medium">{data.holdBookings} on Hold</span>
+              <span className="text-amber-600 font-semibold">{data.holdBookings} Hold</span>
             </div>
           </div>
         </div>
 
         {/* Global Commission */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Commission</span>
-            <div className="rounded-xl bg-green-50 p-2 text-green-600">
-              <TrendingUp className="h-5 w-5" />
+        <div className="rounded-2xl border border-gray-200 bg-white p-3.5 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider truncate">Commission</span>
+            <div className="rounded-lg sm:rounded-xl bg-green-50 p-1.5 sm:p-2 text-green-600 shrink-0">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
-          <div className="mt-3">
-            <p className="text-2xl font-bold text-gray-900">
+          <div className="mt-2 sm:mt-3">
+            <p className="text-base sm:text-2xl font-bold text-gray-900 truncate">
               PKR {Number(data.totalCommissionEarned || 0).toLocaleString()}
             </p>
-            <p className="mt-2 text-xs text-gray-500">
-              Revenue: PKR {Number(data.totalRevenue || 0).toLocaleString()}
+            <p className="mt-1 text-[10px] sm:text-xs text-gray-500 truncate">
+              Rev: PKR {Number(data.totalRevenue || 0).toLocaleString()}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Financial Health Overview */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Revenue</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">
+      {/* Financial Health Overview - in row form on mobile */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="col-span-2 sm:col-span-1 rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-xs">
+          <p className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Revenue</p>
+          <p className="mt-1.5 text-xl sm:text-2xl font-bold text-gray-900">
             PKR {Number(data.totalRevenue || 0).toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-gray-500">All confirmed bookings across all halls</p>
+          <p className="mt-1 text-[11px] sm:text-xs text-gray-500">All confirmed bookings across all halls</p>
         </div>
 
-        <div className="rounded-2xl border border-green-200 bg-green-50/50 p-5 shadow-sm">
-          <p className="text-xs font-semibold text-green-800 uppercase tracking-wider">Advance Collected</p>
-          <p className="mt-2 text-2xl font-bold text-green-700">
-            PKR {Number(data.totalAdvanceReceived || 0).toLocaleString()}
-          </p>
-          <p className="mt-1 text-xs text-green-600">Paid deposits currently held</p>
+        <div className="col-span-1 rounded-2xl border border-green-200 bg-green-50/50 p-3.5 sm:p-5 shadow-xs flex flex-col justify-between">
+          <p className="text-[10px] sm:text-xs font-semibold text-green-800 uppercase tracking-wider">Advance</p>
+          <div className="mt-1.5">
+            <p className="text-base sm:text-2xl font-bold text-green-700 truncate">
+              PKR {Number(data.totalAdvanceReceived || 0).toLocaleString()}
+            </p>
+            <p className="mt-1 text-[10px] sm:text-xs text-green-600 truncate">Deposits held</p>
+          </div>
         </div>
 
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-5 shadow-sm">
-          <p className="text-xs font-semibold text-amber-800 uppercase tracking-wider">Remaining Balance</p>
-          <p className="mt-2 text-2xl font-bold text-amber-700">
-            PKR {Number(data.totalRemainingAmount || 0).toLocaleString()}
-          </p>
-          <p className="mt-1 text-xs text-amber-600">Receivable before or on event dates</p>
+        <div className="col-span-1 rounded-2xl border border-amber-200 bg-amber-50/50 p-3.5 sm:p-5 shadow-xs flex flex-col justify-between">
+          <p className="text-[10px] sm:text-xs font-semibold text-amber-800 uppercase tracking-wider">Remaining</p>
+          <div className="mt-1.5">
+            <p className="text-base sm:text-2xl font-bold text-amber-700 truncate">
+              PKR {Number(data.totalRemainingAmount || 0).toLocaleString()}
+            </p>
+            <p className="mt-1 text-[10px] sm:text-xs text-amber-600 truncate">Receivable due</p>
+          </div>
         </div>
       </div>
 

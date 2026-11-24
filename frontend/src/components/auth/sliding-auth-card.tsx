@@ -115,7 +115,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full md:h-screen md:max-h-screen flex flex-col md:flex-row bg-[#fbfaf6] overflow-x-hidden overflow-y-auto md:overflow-hidden select-none">
+    <div className="w-full min-h-screen md:h-screen md:max-h-screen flex flex-col md:flex-row bg-[#fbfaf6] overflow-x-hidden overflow-y-auto md:overflow-hidden select-none relative">
       
       {/* ============================================================== */}
       {/* DESKTOP SLIDING BLADE: FULL SCREEN 50% SPLIT (TOP TO BOTTOM)   */}
@@ -219,44 +219,67 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
 
       {/* ============================================================== */}
       {/* MOBILE HERO BANNER (visible only on mobile screens < md)       */}
+      {/* Prominent gathering hall photo showing clearly down to form    */}
       {/* ============================================================== */}
-      <div className="md:hidden relative w-full p-6 text-white text-center border-b border-amber-900/50 overflow-hidden bg-[#180a03]">
+      <div className="md:hidden relative w-full h-56 sm:h-64 overflow-hidden bg-[#180a03] shrink-0">
         <img
-          src="/images/gathering-hall.jpg"
-          alt="Chamkani Gathering Hall"
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          src={isSignUp ? "/images/gathering-hall-2.jpg" : "/images/gathering-hall.jpg"}
+          alt="Chamkani Gathering Hall Banquet"
+          className="absolute inset-0 w-full h-full object-cover object-center transition-all duration-700"
           style={{
             imageRendering: "-webkit-optimize-contrast",
             filter: "contrast(1.05) brightness(0.95)",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1b0c05]/85 via-[#1b0c05]/45 to-[#120703]/85" />
-        
-        <div className="relative z-10">
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-400 drop-shadow">
-            CHAMKANI PORTAL
-          </span>
-          <h2 className="text-2xl font-light mt-0.5 text-white drop-shadow">
-            {isSignUp ? (
-              <>
-                Start the <span className="font-display-serif italic text-amber-200">first page.</span>
-              </>
-            ) : (
-              <>
-                Welcome <span className="font-display-serif italic text-amber-200">back.</span>
-              </>
-            )}
-          </h2>
+        {/* Luxury Brown Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1b0c05]/95 via-[#1b0c05]/45 to-[#120703]/35" />
 
-          {/* Mobile Switcher Pills */}
-          <div className="mt-3 flex rounded-full bg-[#160a04]/85 p-1 border border-amber-500/30 max-w-xs mx-auto backdrop-blur-sm">
+        {/* Banner Content */}
+        <div className="relative z-10 w-full h-full p-5 flex flex-col justify-between text-center">
+          {/* Top Subtitle */}
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-400 drop-shadow">
+              CHAMKANI
+            </span>
+            <span className="h-1 w-1 rounded-full bg-amber-400" />
+            <span className="text-[10px] uppercase tracking-[0.2em] text-amber-200/90 font-semibold drop-shadow">
+              PORTAL
+            </span>
+          </div>
+
+          {/* Headline */}
+          <div className="my-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+            {isSignUp ? (
+              <h2 className="text-2xl sm:text-3xl font-light text-white tracking-tight">
+                Start the{" "}
+                <span className="font-display-serif italic font-normal text-[#fbe7be]">
+                  first page.
+                </span>
+              </h2>
+            ) : (
+              <h2 className="text-2xl sm:text-3xl font-light text-white tracking-tight">
+                Welcome{" "}
+                <span className="font-display-serif italic font-normal text-[#fbe7be]">
+                  back.
+                </span>
+              </h2>
+            )}
+            <p className="mt-1 text-xs text-amber-100/90 max-w-xs mx-auto">
+              {isSignUp
+                ? "Register your banquet hall to join Chamkani network."
+                : "Your halls, reservations, and customer bookings."}
+            </p>
+          </div>
+
+          {/* Switcher Pills on Mobile Banner */}
+          <div className="flex rounded-full bg-[#160a04]/85 p-1 border border-amber-500/30 max-w-[260px] w-full mx-auto backdrop-blur-sm shadow-md">
             <button
               onClick={() => {
                 setIsSignUp(false);
                 setSignInError(null);
               }}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-full transition-all ${
-                !isSignUp ? "bg-[#c4874c] text-white shadow-md" : "text-amber-200/70 hover:text-white"
+              className={`flex-1 py-1 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+                !isSignUp ? "bg-[#c4874c] text-white shadow" : "text-amber-200/70 hover:text-white"
               }`}
             >
               Sign In
@@ -266,8 +289,8 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                 setIsSignUp(true);
                 setSignUpError(null);
               }}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-full transition-all ${
-                isSignUp ? "bg-[#c4874c] text-white shadow-md" : "text-amber-200/70 hover:text-white"
+              className={`flex-1 py-1 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+                isSignUp ? "bg-[#c4874c] text-white shadow" : "text-amber-200/70 hover:text-white"
               }`}
             >
               Create Account
@@ -277,20 +300,20 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
       </div>
 
       {/* ============================================================== */}
-      {/* LEFT PANE: SIGN IN FORM (Full Half Screen on Desktop)          */}
+      {/* LEFT PANE: SIGN IN FORM                                        */}
       {/* ============================================================== */}
       <div
-        className={`w-full md:w-1/2 min-h-screen md:min-h-0 md:h-full flex flex-col justify-center items-center p-6 sm:p-10 md:p-12 lg:p-16 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] ${
+        className={`w-full md:w-1/2 flex-1 md:flex-none md:h-full flex flex-col justify-start md:justify-center items-center px-6 pt-6 pb-10 md:p-12 lg:p-16 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] rounded-t-[24px] md:rounded-none -mt-4 md:mt-0 bg-[#fbfaf6] relative z-10 shadow-lg md:shadow-none ${
           isSignUp
             ? "md:opacity-0 md:pointer-events-none md:-translate-x-8 hidden md:flex"
             : "opacity-100 pointer-events-auto translate-x-0 flex"
         }`}
       >
         <div className="w-full max-w-[360px] sm:max-w-[380px] mx-auto">
-          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-[#1a0c05] mb-1.5">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#1a0c05] mb-1">
             Sign in
           </h1>
-          <p className="text-xs sm:text-sm font-medium text-gray-600 mb-6">
+          <p className="text-xs sm:text-sm font-medium text-gray-600 mb-5">
             Enter your credentials to access the management portal.
           </p>
 
@@ -378,7 +401,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
           </form>
 
           {/* Toggle Link to Sign Up */}
-          <div className="mt-6 text-center pt-3.5 border-t border-gray-200/80">
+          <div className="mt-5 text-center pt-3.5 border-t border-gray-200/80">
             <p className="text-xs sm:text-sm font-medium text-gray-600">
               New to CHAMKANI?{" "}
               <button
@@ -397,10 +420,10 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
       </div>
 
       {/* ============================================================== */}
-      {/* RIGHT PANE: SIGN UP FORM (Full Half Screen on Desktop)         */}
+      {/* RIGHT PANE: SIGN UP FORM                                       */}
       {/* ============================================================== */}
       <div
-        className={`w-full md:w-1/2 min-h-screen md:min-h-0 md:h-full flex flex-col justify-center items-center p-6 sm:p-10 md:p-12 lg:p-16 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] ${
+        className={`w-full md:w-1/2 flex-1 md:flex-none md:h-full flex flex-col justify-start md:justify-center items-center px-6 pt-6 pb-10 md:p-12 lg:p-16 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] rounded-t-[24px] md:rounded-none -mt-4 md:mt-0 bg-[#fbfaf6] relative z-10 shadow-lg md:shadow-none ${
           isSignUp
             ? "opacity-100 pointer-events-auto translate-x-0 flex"
             : "md:opacity-0 md:pointer-events-none md:translate-x-8 hidden md:flex"
@@ -431,7 +454,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
             </div>
           ) : (
             <>
-              <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-[#1a0c05] mb-1.5">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#1a0c05] mb-1">
                 Create account
               </h1>
               <p className="text-xs sm:text-sm font-medium text-gray-600 mb-4">
