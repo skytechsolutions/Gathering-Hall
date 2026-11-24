@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  HALL_OWNER
+}
+
+enum OwnerStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  BLOCKED
+}
+
+enum HallStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum BookingStatus {
+  HOLD
+  CONFIRMED
+  CANCELLED
+  BLOCKED
+  EXPIRED
+}
+
+enum EventType {
+  BARAT
+  WALIMA
+  MEHNDI
+  OTHER
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CARD
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  phone         String?
+  password      String
+  role          Role           @default(HALL_OWNER)
+  status        OwnerStatus    @default(PENDING)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  halls         Hall[]
+  customers     Customer[]
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+model Hall {
+  id           String        @id @default(uuid())
+  ownerId      String
+  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name         String
+  city         String
+  area         String
+  address      String
+  capacity     Int
+  priceWeekday Decimal       @db.Decimal(12, 2)
+  priceWeekend Decimal       @db.Decimal(12, 2)
+  amenities    String[]      @default([])
+  description  String?
+  images       String[]      @default([])
+  status       HallStatus    @default(PENDING)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  bookings     Booking[]
+  blockedDates BlockedDate[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("halls")
+}
+
+model Customer {
+  id             String    @id @default(uuid())
+  ownerId        String
+  owner          User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name           String
+  phone          String
+  email          String?
+  address        String?
+  referenceName  String?
+  referencePhone String?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  bookings       Booking[]
+
+  @@unique([ownerId, phone])
+  @@index([ownerId])
+  @@map("customers")
+}
+
+model Booking {
+  id               String          @id @default(uuid())
+  bookingNumber    String          @unique
+  hallId           String
+  hall             Hall            @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  customerId       String
+  customer         Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customerName     String
+  customerPhone    String
+  eventDate        String          // Stored as calendar date "YYYY-MM-DD"
+  eventType        EventType       @default(BARAT)
+  status           BookingStatus   @default(HOLD)
+  totalAmount      Decimal         @db.Decimal(12, 2)
+  advanceAmount    Decimal         @default(0) @db.Decimal(12, 2)
+  remainingAmount  Decimal         @db.Decimal(12, 2)
+  holdExpiresAt    DateTime?
+  commissionRate   Decimal         @default(0) @db.Decimal(5, 2)
+  commissionAmount Decimal         @default(0) @db.Decimal(12, 2)
+  notes            String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  payments         Payment[]
+  history          BookingHistory[]
+
+  @@index([hallId])
+  @@index([customerId])
+  @@index([eventDate])
+  @@index([status])
+  @@map("bookings")
+}
+
+model Payment {
+  id                   String        @id @default(uuid())
+  bookingId            String
+  booking              Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  amount               Decimal       @db.Decimal(12, 2)
+  method               PaymentMethod @default(CASH)
+  status               PaymentStatus @default(COMPLETED)
+  transactionReference String?
+  paymentDate          DateTime      @default(now())
+  notes                String?
+  createdAt            DateTime      @default(now())
+
+  @@index([bookingId])
+  @@map("payments")
+}
+
+model CommissionSetting {
+  id        String   @id @default(uuid())
+  rate      Decimal  @default(5.0) @db.Decimal(5, 2)
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+
+  @@map("commission_settings")
+}
+
+model BookingHistory {
+  id          String   @id @default(uuid())
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  action      String
+  fromStatus  String?
+  toStatus    String?
+  performedBy String
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([bookingId])
+  @@map("booking_history")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+model BlockedDate {
+  id        String   @id @default(uuid())
+  hallId    String
+  hall      Hall     @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  date      String   // "YYYY-MM-DD"
+  reason    String?
+  blockedBy String
+  createdAt DateTime @default(now())
+
+  @@unique([hallId, date])
+  @@index([hallId])
+  @@map("blocked_dates")
+}
