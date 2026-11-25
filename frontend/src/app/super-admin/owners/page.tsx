@@ -141,11 +141,10 @@ export default function SuperAdminOwnersPage() {
                 setStatusFilter(st);
                 setPage(1);
               }}
-              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                statusFilter === st
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${statusFilter === st
                   ? "bg-blue-600 text-white shadow-sm shadow-blue-500/20"
                   : "bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
-              }`}
+                }`}
             >
               {st}
             </button>
@@ -196,15 +195,14 @@ export default function SuperAdminOwnersPage() {
                     </td>
                     <td className="px-5 py-4">
                       <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                          owner.status === "APPROVED"
+                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${owner.status === "APPROVED"
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
                             : owner.status === "PENDING"
-                            ? "bg-amber-50 text-amber-700 border border-amber-200/60"
-                            : owner.status === "BLOCKED"
-                            ? "bg-rose-50 text-rose-700 border border-rose-200/60"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
+                              ? "bg-amber-50 text-amber-700 border border-amber-200/60"
+                              : owner.status === "BLOCKED"
+                                ? "bg-rose-50 text-rose-700 border border-rose-200/60"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
                       >
                         {owner.status}
                       </span>

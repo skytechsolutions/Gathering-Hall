@@ -115,7 +115,7 @@ export default function AvailabilityCalendarPage() {
   const activeHallId = selectedHallId || (hallsData && hallsData[0]?.id) || "";
 
   // Fetch Availability for Selected Hall
-  const { data: availabilityData } = useQuery({
+  const { data: availabilityData, refetch: refetchAvailability } = useQuery({
     queryKey: ["hall-availability", activeHallId],
     queryFn: async () => {
       if (!activeHallId) return null;
@@ -123,6 +123,9 @@ export default function AvailabilityCalendarPage() {
       return res as unknown as { hall: Hall; events: CalendarAvailabilityEvent[] };
     },
     enabled: !!activeHallId,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   // Map of date string "YYYY-MM-DD" -> { DAY?: event, NIGHT?: event }
@@ -673,39 +676,116 @@ export default function AvailabilityCalendarPage() {
                     {isSelected && selectedDayDetails && (
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        className={`absolute z-50 w-52 sm:w-56 rounded-2xl bg-white p-3.5 sm:p-4 shadow-[0_12px_40px_rgba(0,0,0,0.18)] border border-slate-100 animate-fadeIn ${
+                        className={`absolute z-50 w-56 sm:w-60 rounded-2xl bg-white p-3.5 sm:p-4 shadow-[0_12px_40px_rgba(0,0,0,0.18)] border border-slate-100 animate-fadeIn ${
                           rowIndex >= 3 ? "bottom-2 sm:bottom-4" : "top-9 sm:top-11"
                         } ${colIndex >= 4 ? "right-2 sm:right-4" : "left-3 sm:left-5"}`}
                       >
-                        <h4 className="text-xs font-black text-slate-900 mb-2">
-                          {format(parseISO(selectedDayDetails.dateKey), "dd MMMM yyyy")}
+                        <h4 className="text-xs font-black text-slate-900 mb-2.5 flex items-center justify-between">
+                          <span>{format(parseISO(selectedDayDetails.dateKey), "dd MMMM yyyy")}</span>
                         </h4>
 
-                        <div className="space-y-1 text-xs mb-3">
-                          <div className="flex items-center gap-1.5 font-bold">
-                            <Sun className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
-                            <span className="text-slate-700">Day:</span>
-                            <span className="text-[#059669] font-black">
-                              {selectedDayDetails.dayStatus}
-                            </span>
+                        <div className="space-y-2 text-xs mb-3">
+                          {/* Day Session Info */}
+                          <div className="rounded-xl p-2 bg-slate-50 border border-slate-100 space-y-1">
+                            <div className="flex items-center justify-between font-bold">
+                              <div className="flex items-center gap-1.5">
+                                <Sun className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
+                                <span className="text-slate-700">Day Session:</span>
+                              </div>
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                                  selectedDayDetails.dayEvt?.status === "CONFIRMED"
+                                    ? "bg-red-50 text-red-600 border border-red-200"
+                                    : selectedDayDetails.dayEvt?.status === "HOLD"
+                                    ? "bg-amber-50 text-amber-600 border border-amber-200"
+                                    : selectedDayDetails.dayEvt?.status === "BLOCKED"
+                                    ? "bg-slate-200 text-slate-800"
+                                    : "bg-emerald-50 text-[#059669] border border-emerald-200"
+                                }`}
+                              >
+                                {selectedDayDetails.dayEvt?.status === "CONFIRMED" ? "Booked" : selectedDayDetails.dayStatus}
+                              </span>
+                            </div>
+                            {selectedDayDetails.dayEvt && (
+                              <div className="text-[11px] text-slate-500 pl-5 leading-tight">
+                                <span className="font-bold text-slate-800">{selectedDayDetails.dayEvt.customerName}</span>
+                                {selectedDayDetails.dayEvt.bookingNumber && (
+                                  <span className="text-[10px] text-slate-400 block font-mono">
+                                    {selectedDayDetails.dayEvt.bookingNumber}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
 
-                          <div className="flex items-center gap-1.5 font-bold">
-                            <Moon className="h-3.5 w-3.5 text-indigo-500 fill-indigo-500" />
-                            <span className="text-slate-700">Night:</span>
-                            <span className="text-[#059669] font-black">
-                              {selectedDayDetails.nightStatus}
-                            </span>
+                          {/* Night Session Info */}
+                          <div className="rounded-xl p-2 bg-slate-50 border border-slate-100 space-y-1">
+                            <div className="flex items-center justify-between font-bold">
+                              <div className="flex items-center gap-1.5">
+                                <Moon className="h-3.5 w-3.5 text-indigo-500 fill-indigo-500" />
+                                <span className="text-slate-700">Night Session:</span>
+                              </div>
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                                  selectedDayDetails.nightEvt?.status === "CONFIRMED"
+                                    ? "bg-red-50 text-red-600 border border-red-200"
+                                    : selectedDayDetails.nightEvt?.status === "HOLD"
+                                    ? "bg-amber-50 text-amber-600 border border-amber-200"
+                                    : selectedDayDetails.nightEvt?.status === "BLOCKED"
+                                    ? "bg-slate-200 text-slate-800"
+                                    : "bg-emerald-50 text-[#059669] border border-emerald-200"
+                                }`}
+                              >
+                                {selectedDayDetails.nightEvt?.status === "CONFIRMED" ? "Booked" : selectedDayDetails.nightStatus}
+                              </span>
+                            </div>
+                            {selectedDayDetails.nightEvt && (
+                              <div className="text-[11px] text-slate-500 pl-5 leading-tight">
+                                <span className="font-bold text-slate-800">{selectedDayDetails.nightEvt.customerName}</span>
+                                {selectedDayDetails.nightEvt.bookingNumber && (
+                                  <span className="text-[10px] text-slate-400 block font-mono">
+                                    {selectedDayDetails.nightEvt.bookingNumber}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        <button
-                          onClick={() => openBookingFor(selectedDayDetails.dateKey, activeSession)}
-                          className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white py-1.5 sm:py-2 px-3 text-xs font-bold shadow-md shadow-blue-500/25 transition cursor-pointer"
-                        >
-                          <span>Book Now</span>
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </button>
+                        {/* Action Button: Book available session or indicate reserved */}
+                        {(() => {
+                          const currentEvt = activeSession === "DAY" ? selectedDayDetails.dayEvt : selectedDayDetails.nightEvt;
+                          const otherSession = activeSession === "DAY" ? "NIGHT" : "DAY";
+                          const otherEvt = otherSession === "DAY" ? selectedDayDetails.dayEvt : selectedDayDetails.nightEvt;
+
+                          if (!currentEvt) {
+                            return (
+                              <button
+                                onClick={() => openBookingFor(selectedDayDetails.dateKey, activeSession)}
+                                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white py-1.5 sm:py-2 px-3 text-xs font-bold shadow-md shadow-blue-500/25 transition cursor-pointer"
+                              >
+                                <span>Book {activeSession === "DAY" ? "Day" : "Night"} Session</span>
+                                <ArrowRight className="h-3.5 w-3.5" />
+                              </button>
+                            );
+                          } else if (!otherEvt) {
+                            return (
+                              <button
+                                onClick={() => openBookingFor(selectedDayDetails.dateKey, otherSession)}
+                                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 sm:py-2 px-3 text-xs font-bold shadow-md shadow-indigo-500/25 transition cursor-pointer"
+                              >
+                                <span>Book {otherSession === "DAY" ? "Day" : "Night"} Session</span>
+                                <ArrowRight className="h-3.5 w-3.5" />
+                              </button>
+                            );
+                          } else {
+                            return (
+                              <div className="w-full py-2 text-center rounded-xl bg-slate-100 text-slate-500 text-xs font-bold border border-slate-200">
+                                Fully Reserved
+                              </div>
+                            );
+                          }
+                        })()}
                       </div>
                     )}
                   </div>

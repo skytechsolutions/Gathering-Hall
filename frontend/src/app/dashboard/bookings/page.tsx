@@ -98,6 +98,9 @@ export default function OwnerBookingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["owner-bookings"] });
       queryClient.invalidateQueries({ queryKey: ["owner-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["hall-availability"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-customers"] });
+      queryClient.invalidateQueries({ queryKey: ["customer-ledger"] });
       setCreateModalOpen(false);
       setFormError(null);
     },
@@ -112,6 +115,9 @@ export default function OwnerBookingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["owner-bookings"] });
       queryClient.invalidateQueries({ queryKey: ["owner-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["hall-availability"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-customers"] });
+      queryClient.invalidateQueries({ queryKey: ["customer-ledger"] });
       setSelectedBooking(null);
     },
   });
@@ -122,6 +128,9 @@ export default function OwnerBookingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["owner-bookings"] });
       queryClient.invalidateQueries({ queryKey: ["owner-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["hall-availability"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-customers"] });
+      queryClient.invalidateQueries({ queryKey: ["customer-ledger"] });
       setSelectedBooking(null);
     },
   });
