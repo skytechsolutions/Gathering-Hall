@@ -234,6 +234,27 @@ export class AuthService {
       updatedAt: user.updatedAt,
     };
   }
+
+  async updateProfile(userId: string, data: { name?: string; phone?: string }): Promise<UserDTO> {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(data.name ? { name: data.name.trim() } : {}),
+        ...(data.phone !== undefined ? { phone: data.phone.trim() } : {}),
+      },
+    });
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      status: user.status,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
 }
 
 export const authService = new AuthService();

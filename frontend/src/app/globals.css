@@ -5,18 +5,20 @@
 :root {
   --font-inter: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  /* Brand & accent */
-  --color-primary: #e60023;
-  --color-primary-pressed: #cc001f;
+  /* Brand & accent (Modern SaaS Royal Blue) */
+  --color-primary: #2563eb;
+  --color-primary-pressed: #1d4ed8;
 
   /* Surface */
   --color-canvas: #ffffff;
-  --color-surface-soft: #fbfbf9;
-  --color-surface-card: #f6f6f3;
-  --color-secondary-bg: #e5e5e0;
-  --color-secondary-pressed: #c8c8c1;
-  --color-hairline: #dadad3;
-  --color-hairline-soft: #e5e5e0;
+  --color-surface-soft: #f8fafc;
+  --color-surface-card: #ffffff;
+  --color-sidebar-navy: #0c1427;
+  --color-sidebar-dark: #070d1e;
+  --color-secondary-bg: #f1f5f9;
+  --color-secondary-pressed: #e2e8f0;
+  --color-hairline: #e2e8f0;
+  --color-hairline-soft: #f1f5f9;
 
   /* Text */
   --color-ink: #000000;
@@ -98,6 +100,32 @@ body {
 body {
   background: var(--color-surface-soft);
   color: var(--color-body);
+}
+
+/* Background scroll lock when modals or mobile navigation drawer are active */
+body[data-scroll-locked="true"] {
+  overflow: hidden !important;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+body[data-scroll-locked="true"] main {
+  overflow: hidden !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .tracking-display {

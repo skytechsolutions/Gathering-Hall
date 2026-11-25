@@ -77,6 +77,20 @@ export class AuthController {
       next(err);
     }
   }
+
+  async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        apiError(res, "Authentication required", 401);
+        return;
+      }
+      const { name, phone } = req.body;
+      const user = await authService.updateProfile(req.user.userId, { name, phone });
+      apiSuccess(res, { user }, "Profile updated successfully");
+    } catch (err: unknown) {
+      next(err);
+    }
+  }
 }
 
 export const authController = new AuthController();

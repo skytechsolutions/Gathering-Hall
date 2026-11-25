@@ -19,7 +19,7 @@ export class ReportController {
   async getCommissionReports(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const data = await reportService.getCommissionReports();
-      apiSuccess(res, data);
+      apiSuccess(res, { report: data, ...data });
     } catch (err: unknown) {
       next(err);
     }
@@ -32,7 +32,7 @@ export class ReportController {
         return;
       }
       const data = await reportService.getHallIncomeReport(req.user);
-      apiSuccess(res, { halls: data });
+      apiSuccess(res, { halls: data, reports: data });
     } catch (err: unknown) {
       next(err);
     }

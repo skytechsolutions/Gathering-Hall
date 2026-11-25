@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { paymentApi, Payment } from "@/services/api/payment.api";
 import { bookingApi } from "@/services/api/booking.api";
+import { Modal } from "@/components/ui/modal";
 import {
   CreditCard,
   Plus,
@@ -14,6 +15,8 @@ import {
   AlertCircle,
   X,
   FileCheck,
+  Receipt,
+  Sparkles,
 } from "lucide-react";
 
 export default function OwnerPaymentsPage() {
@@ -95,17 +98,19 @@ export default function OwnerPaymentsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)]">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Payments & Receipts</h1>
-          <p className="text-sm text-gray-500">Record installments, track cash receipts, and manage billing</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">Payments & Receipts</h1>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+            Record customer installments, print official receipts, and manage billing accounts
+          </p>
         </div>
         <button
           onClick={() => {
             setFormError(null);
             setCreateModalOpen(true);
           }}
-          className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 transition"
+          className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition"
         >
           <Plus className="h-4 w-4" />
           Record Payment
@@ -113,10 +118,10 @@ export default function OwnerPaymentsPage() {
       </div>
 
       {/* Payments Table */}
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-3xl border border-gray-100 bg-white shadow-[0_4px_25px_rgba(0,0,0,0.02)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
-            <thead className="bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+            <thead className="bg-gray-50/70 text-xs font-bold uppercase text-gray-400 border-b border-gray-100">
               <tr>
                 <th className="px-5 py-3.5">Receipt #</th>
                 <th className="px-5 py-3.5">Booking #</th>
@@ -127,42 +132,42 @@ export default function OwnerPaymentsPage() {
                 <th className="px-5 py-3.5 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100/80">
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-8 text-center text-sm text-gray-500">
+                  <td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-500">
                     <div className="flex justify-center">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                      <div className="h-7 w-7 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
                     </div>
                   </td>
                 </tr>
               ) : data?.payments && data.payments.length > 0 ? (
                 data.payments.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50/50">
-                    <td className="px-5 py-4 font-mono font-bold text-gray-900">{p.receiptNumber}</td>
-                    <td className="px-5 py-4 font-mono text-xs text-gray-600">
+                  <tr key={p.id} className="hover:bg-blue-50/20 transition">
+                    <td className="px-5 py-4 font-mono font-black text-blue-600">{p.receiptNumber}</td>
+                    <td className="px-5 py-4 font-mono text-xs font-semibold text-gray-600">
                       {p.booking?.bookingNumber || "—"}
                     </td>
                     <td className="px-5 py-4">
-                      <p className="font-semibold text-gray-900">{p.booking?.customerName || "Customer"}</p>
-                      <p className="text-xs text-gray-400">{p.booking?.hall?.name || ""}</p>
+                      <p className="font-bold text-gray-900">{p.booking?.customerName || "Customer"}</p>
+                      <p className="text-xs text-gray-400 font-medium">{p.booking?.hall?.name || ""}</p>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700">
+                      <span className="rounded-xl bg-gray-100/90 border border-gray-200/50 px-2.5 py-1 text-xs font-bold text-gray-700">
                         {p.paymentMethod}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-xs text-gray-500">
+                    <td className="px-5 py-4 text-xs font-medium text-gray-500">
                       {new Date(p.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-5 py-4 text-right font-bold text-green-700">
+                    <td className="px-5 py-4 text-right font-black text-emerald-700">
                       PKR {Number(p.amount).toLocaleString()}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <button
                         onClick={() => setSelectedPayment(p)}
-                        className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100"
-                        title="Print Receipt"
+                        className="rounded-xl p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition"
+                        title="Print Official Receipt"
                       >
                         <Printer className="h-4 w-4" />
                       </button>
@@ -171,7 +176,7 @@ export default function OwnerPaymentsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="px-5 py-8 text-center text-sm text-gray-500">
+                  <td colSpan={7} className="px-5 py-10 text-center text-sm text-gray-400 font-medium">
                     No payment records recorded yet.
                   </td>
                 </tr>
@@ -182,22 +187,22 @@ export default function OwnerPaymentsPage() {
 
         {/* Pagination */}
         {data?.pagination && data.pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3">
-            <span className="text-xs text-gray-500">
+          <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3.5">
+            <span className="text-xs text-gray-500 font-medium">
               Page {data.pagination.page} of {data.pagination.totalPages} ({data.pagination.total} total)
             </span>
             <div className="flex gap-2">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition"
               >
                 Previous
               </button>
               <button
                 disabled={page >= data.pagination.totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition"
               >
                 Next
               </button>
@@ -207,192 +212,209 @@ export default function OwnerPaymentsPage() {
       </div>
 
       {/* Record Payment Modal */}
-      {createModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <div className="flex items-center justify-between border-b pb-3 mb-4">
-              <h3 className="font-bold text-gray-900 text-lg">Record Customer Payment</h3>
-              <button onClick={() => setCreateModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {formError && (
-              <div className="mb-4 flex items-center gap-2 rounded-xl bg-red-50 p-3 text-xs text-red-700 border border-red-200">
-                <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
-                <span>{formError}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleCreateSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700">Select Booking</label>
-                <select
-                  required
-                  value={paymentForm.bookingId}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, bookingId: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-600 focus:outline-none"
-                >
-                  <option value="">-- Select Active Booking --</option>
-                  {bookingsData?.map((b: any) => (
-                    <option key={b.id} value={b.id}>
-                      {b.bookingNumber} - {b.customerName} ({b.eventDate}) [Bal: PKR{" "}
-                      {Number(b.remainingAmount).toLocaleString()}]
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {selectedBookingDetails && (
-                <div className="rounded-xl bg-gray-50 p-3 text-xs space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Total Booking:</span>
-                    <span className="font-bold">
-                      PKR {Number(selectedBookingDetails.totalAmount).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-green-700">
-                    <span>Already Paid:</span>
-                    <span className="font-bold">
-                      PKR {Number(selectedBookingDetails.advanceAmount).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-amber-700 font-bold border-t pt-1">
-                    <span>Remaining Due:</span>
-                    <span>PKR {Number(selectedBookingDetails.remainingAmount).toLocaleString()}</span>
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700">Amount Paid (PKR)</label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  value={paymentForm.amount}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, amount: Number(e.target.value) })}
-                  className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-600 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700">Payment Method</label>
-                <select
-                  value={paymentForm.paymentMethod}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, paymentMethod: e.target.value as any })}
-                  className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-600 focus:outline-none"
-                >
-                  <option value="CASH">Cash</option>
-                  <option value="BANK_TRANSFER">Bank Transfer</option>
-                  <option value="ONLINE">Online / EasyPaisa / JazzCash</option>
-                  <option value="CHEQUE">Bank Cheque</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700">Reference / Cheque # (Optional)</label>
-                <input
-                  type="text"
-                  value={paymentForm.reference}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, reference: e.target.value })}
-                  placeholder="e.g. Bank slip or transaction ID"
-                  className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-600 focus:outline-none"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setCreateModalOpen(false)}
-                  className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={addPaymentMutation.isPending}
-                  className="rounded-xl bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"
-                >
-                  {addPaymentMutation.isPending ? "Recording..." : "Record Payment"}
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        maxWidth="max-w-md"
+      >
+        <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+          <div>
+            <h3 className="font-extrabold text-gray-900 text-lg">Record Customer Payment</h3>
+            <p className="text-xs text-gray-400 font-medium">Add payment towards confirmed booking</p>
           </div>
+          <button
+            onClick={() => setCreateModalOpen(false)}
+            className="text-gray-400 hover:text-gray-600 rounded-lg p-1"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
-      )}
+
+        {formError && (
+          <div className="mb-4 flex items-center gap-2 rounded-2xl bg-rose-50 p-3.5 text-xs text-rose-700 border border-rose-200">
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+            <span>{formError}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleCreateSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-700">Select Booking</label>
+            <select
+              required
+              value={paymentForm.bookingId}
+              onChange={(e) => setPaymentForm({ ...paymentForm, bookingId: e.target.value })}
+              className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+            >
+              <option value="">-- Select Active Booking --</option>
+              {bookingsData?.map((b: any) => (
+                <option key={b.id} value={b.id}>
+                  {b.bookingNumber} - {b.customerName} ({b.eventDate}) [Bal: PKR{" "}
+                  {Number(b.remainingAmount).toLocaleString()}]
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {selectedBookingDetails && (
+            <div className="rounded-2xl bg-gray-50/80 border border-gray-100 p-3.5 text-xs space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-gray-500 font-medium">Total Booking Amount:</span>
+                <span className="font-black text-gray-900">
+                  PKR {Number(selectedBookingDetails.totalAmount).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-emerald-700">
+                <span className="font-medium">Already Paid:</span>
+                <span className="font-black">
+                  PKR {Number(selectedBookingDetails.advanceAmount).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-amber-700 font-bold border-t border-gray-200/70 pt-1.5">
+                <span>Remaining Due:</span>
+                <span className="font-black">PKR {Number(selectedBookingDetails.remainingAmount).toLocaleString()}</span>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-bold text-gray-700">Amount Paid (PKR)</label>
+            <input
+              type="number"
+              required
+              min={1}
+              value={paymentForm.amount}
+              onChange={(e) => setPaymentForm({ ...paymentForm, amount: Number(e.target.value) })}
+              className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-gray-700">Payment Method</label>
+            <select
+              value={paymentForm.paymentMethod}
+              onChange={(e) => setPaymentForm({ ...paymentForm, paymentMethod: e.target.value as any })}
+              className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+            >
+              <option value="CASH">Cash</option>
+              <option value="BANK_TRANSFER">Bank Transfer</option>
+              <option value="ONLINE">Online / EasyPaisa / JazzCash</option>
+              <option value="CHEQUE">Bank Cheque</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-gray-700">Reference / Slip # (Optional)</label>
+            <input
+              type="text"
+              value={paymentForm.reference}
+              onChange={(e) => setPaymentForm({ ...paymentForm, reference: e.target.value })}
+              placeholder="e.g. Bank slip or transaction ID"
+              className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => setCreateModalOpen(false)}
+              className="rounded-2xl border border-gray-200 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={addPaymentMutation.isPending}
+              className="rounded-2xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50 shadow-md shadow-blue-500/20 active:scale-95 transition"
+            >
+              {addPaymentMutation.isPending ? "Recording..." : "Record Payment"}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Receipt Modal */}
-      {selectedPayment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <div className="flex items-center justify-between border-b pb-3 mb-4">
+      <Modal
+        isOpen={!!selectedPayment}
+        onClose={() => setSelectedPayment(null)}
+        maxWidth="max-w-md"
+      >
+        {selectedPayment && (
+          <div>
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
               <div>
-                <span className="text-xs font-semibold text-green-700">Payment Receipt</span>
-                <h3 className="font-bold text-gray-900 text-lg">Receipt #{selectedPayment.receiptNumber}</h3>
+                <span className="text-xs font-bold text-emerald-700">Payment Receipt</span>
+                <h3 className="font-extrabold text-gray-900 text-lg">Receipt #{selectedPayment.receiptNumber}</h3>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={handlePrint} className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100">
+                <button
+                  onClick={handlePrint}
+                  className="rounded-xl p-2 text-gray-500 hover:bg-gray-100 transition"
+                  title="Print Official Slip"
+                >
                   <Printer className="h-5 w-5" />
                 </button>
-                <button onClick={() => setSelectedPayment(null)} className="text-gray-400 hover:text-gray-600">
+                <button
+                  onClick={() => setSelectedPayment(null)}
+                  className="text-gray-400 hover:text-gray-600 rounded-lg p-1"
+                >
                   <X className="h-5 w-5" />
                 </button>
               </div>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="rounded-xl bg-gray-50 p-4 space-y-2">
+              <div className="rounded-2xl bg-gray-50/80 border border-gray-100 p-4 space-y-2.5">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Customer:</span>
+                  <span className="text-gray-400 font-medium">Customer:</span>
                   <span className="font-bold text-gray-900">{selectedPayment.booking?.customerName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Booking Number:</span>
-                  <span className="font-mono font-bold text-gray-900">
+                  <span className="text-gray-400 font-medium">Booking Number:</span>
+                  <span className="font-mono font-bold text-blue-600">
                     {selectedPayment.booking?.bookingNumber}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Hall:</span>
-                  <span className="font-semibold text-gray-800">{selectedPayment.booking?.hall?.name}</span>
+                  <span className="text-gray-400 font-medium">Hall Venue:</span>
+                  <span className="font-bold text-gray-800">{selectedPayment.booking?.hall?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Payment Date:</span>
-                  <span className="font-medium text-gray-800">
+                  <span className="text-gray-400 font-medium">Payment Date:</span>
+                  <span className="font-semibold text-gray-800">
                     {new Date(selectedPayment.createdAt).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Method:</span>
+                  <span className="text-gray-400 font-medium">Method:</span>
                   <span className="font-bold text-gray-800">{selectedPayment.paymentMethod}</span>
                 </div>
                 {selectedPayment.reference && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Reference:</span>
+                    <span className="text-gray-400 font-medium">Reference:</span>
                     <span className="font-mono text-gray-800">{selectedPayment.reference}</span>
                   </div>
                 )}
-                <div className="border-t pt-2 flex justify-between text-sm">
+                <div className="border-t border-gray-200/70 pt-2.5 flex justify-between text-sm">
                   <span className="font-bold text-gray-900">Amount Paid:</span>
-                  <span className="font-extrabold text-green-700">
+                  <span className="font-black text-emerald-700">
                     PKR {Number(selectedPayment.amount).toLocaleString()}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex justify-end border-t border-gray-100 pt-3">
               <button
                 onClick={() => setSelectedPayment(null)}
-                className="rounded-xl bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-200"
+                className="rounded-2xl bg-gray-100 px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-200 transition"
               >
                 Close
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

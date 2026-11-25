@@ -30,4 +30,8 @@ export const authApi = {
   async refresh() {
     return api.post<{ token: string }>("/auth/refresh");
   },
+
+  async updateProfile(data: { name?: string; phone?: string }) {
+    return api.put<{ user: User }>("/auth/profile", data);
+  },
 };

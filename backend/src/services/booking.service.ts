@@ -25,6 +25,7 @@ export class BookingService {
       totalAmount: number;
       advanceAmount?: number;
       holdHours?: number; // 24 or 48
+      session?: "DAY" | "NIGHT";
       notes?: string | null;
     },
     user: AuthPayload
@@ -39,6 +40,12 @@ export class BookingService {
       throw new Error("Advance amount cannot exceed total amount.");
     }
     const remaining = total - advance;
+
+    const bookingSession = data.session === "NIGHT" ? "NIGHT" : "DAY";
+    let enrichedNotes = (data.notes || "").trim();
+    if (!enrichedNotes.includes("[SESSION:")) {
+      enrichedNotes = `[SESSION:${bookingSession}] ${enrichedNotes}`.trim();
+    }
 
     // Verify hall and ownership
     const hall = await prisma.hall.findUnique({
@@ -70,10 +77,10 @@ export class BookingService {
     const commissionRate = commissionSetting ? Number(commissionSetting.rate) : 5.0;
     const commissionAmount = (total * commissionRate) / 100;
 
-    // Run concurrency-safe transaction with Double-Booking Verification
+    // Run concurrency-safe transaction with Double-Booking Verification for this session
     const booking = await prisma.$transaction(async (tx) => {
-      // 1. Check if date is blocked in BlockedDate
-      const isBlocked = await tx.blockedDate.findUnique({
+      // 1. Check if date is blocked in BlockedDate for this session
+      const blockedDate = await tx.blockedDate.findUnique({
         where: {
           hallId_date: {
             hallId: data.hallId,
@@ -81,12 +88,17 @@ export class BookingService {
           },
         },
       });
-      if (isBlocked) {
-        throw new Error("Already Booked");
+      if (blockedDate) {
+        const reason = blockedDate.reason || "";
+        const isDayBlocked = reason.includes("[SESSION:DAY]") || reason.includes("[SESSION:BOTH]") || !reason.includes("[SESSION:");
+        const isNightBlocked = reason.includes("[SESSION:NIGHT]") || reason.includes("[SESSION:BOTH]") || !reason.includes("[SESSION:");
+        if ((bookingSession === "DAY" && isDayBlocked) || (bookingSession === "NIGHT" && isNightBlocked)) {
+          throw new Error(`Already Booked: The ${bookingSession} session is blocked on this date.`);
+        }
       }
 
-      // 2. Check for active bookings: HOLD, CONFIRMED, BLOCKED
-      const activeBooking = await tx.booking.findFirst({
+      // 2. Check for active bookings on this date for the SAME session
+      const activeBookings = await tx.booking.findMany({
         where: {
           hallId: data.hallId,
           eventDate: data.eventDate,
@@ -95,8 +107,15 @@ export class BookingService {
           },
         },
       });
-      if (activeBooking) {
-        throw new Error("Already Booked");
+
+      const sessionConflict = activeBookings.find((b) => {
+        const bNotes = b.notes || "";
+        const bSession = bNotes.includes("[SESSION:NIGHT]") ? "NIGHT" : "DAY";
+        return bSession === bookingSession;
+      });
+
+      if (sessionConflict) {
+        throw new Error(`Already Booked: The ${bookingSession} session is already reserved on this date.`);
       }
 
       // 3. Upsert Customer in the Hall Owner's customer ledger
@@ -150,7 +169,7 @@ export class BookingService {
           holdExpiresAt,
           commissionRate,
           commissionAmount,
-          notes: data.notes || null,
+          notes: enrichedNotes || null,
         },
         include: {
           hall: { select: { id: true, name: true, city: true } },
@@ -436,7 +455,7 @@ export class BookingService {
   }
 
   async blockDate(
-    data: { hallId: string; date: string; reason: string },
+    data: { hallId: string; date: string; reason: string; session?: "DAY" | "NIGHT" | "BOTH" },
     user: AuthPayload
   ) {
     const hall = await prisma.hall.findUnique({ where: { id: data.hallId } });
@@ -448,23 +467,53 @@ export class BookingService {
       throw new Error("Access denied: You cannot block dates for another owner's hall.");
     }
 
-    // Check if an active booking already exists
-    const activeBooking = await prisma.booking.findFirst({
+    const targetSession = data.session || "BOTH";
+
+    // Check if an active booking already exists for this specific session
+    const activeBookings = await prisma.booking.findMany({
       where: {
         hallId: data.hallId,
         eventDate: data.date,
         status: { in: [BookingStatus.HOLD, BookingStatus.CONFIRMED, BookingStatus.BLOCKED] },
       },
     });
-    if (activeBooking) {
-      throw new Error("Cannot block date: A booking already exists on this date.");
+
+    const hasConflict = activeBookings.some((b) => {
+      const bSession = b.notes?.includes("[SESSION:NIGHT]") ? "NIGHT" : "DAY";
+      if (targetSession === "BOTH") return true;
+      return bSession === targetSession;
+    });
+
+    if (hasConflict) {
+      throw new Error(`Cannot block date: A booking already exists for the ${targetSession} session on this date.`);
+    }
+
+    const cleanText = data.reason.replace(/\[SESSION:[^\]]+\]/g, "").trim();
+    const sessionTag = `[SESSION:${targetSession}] ${cleanText}`.trim();
+
+    // Check if a blocked date record already exists for this date
+    const existing = await prisma.blockedDate.findUnique({
+      where: {
+        hallId_date: {
+          hallId: data.hallId,
+          date: data.date,
+        },
+      },
+    });
+
+    if (existing) {
+      const updatedReason = `[SESSION:BOTH] ${cleanText}`.trim();
+      return prisma.blockedDate.update({
+        where: { id: existing.id },
+        data: { reason: updatedReason },
+      });
     }
 
     const blocked = await prisma.blockedDate.create({
       data: {
         hallId: data.hallId,
         date: data.date,
-        reason: data.reason.trim(),
+        reason: sessionTag,
         blockedBy: user.userId,
       },
     });
@@ -473,7 +522,7 @@ export class BookingService {
       data: {
         userId: user.userId,
         action: "DATE_BLOCKED",
-        details: { hallId: data.hallId, date: data.date, reason: data.reason },
+        details: { hallId: data.hallId, date: data.date, reason: sessionTag, session: targetSession },
       },
     });
 
@@ -506,10 +555,11 @@ export class BookingService {
 
   /**
    * Calendar Availability Source of Truth:
-   * Returns calendar event records mapped into:
+   * Returns calendar event records mapped with independent Day & Night session data:
    * - RED: CONFIRMED
    * - YELLOW: HOLD / TOKEN
    * - BLACK: BLOCKED
+   * - GREEN: AVAILABLE
    */
   async getAvailability(hallId: string, year?: number, month?: number, user?: AuthPayload) {
     const hall = await prisma.hall.findUnique({ where: { id: hallId } });
@@ -538,15 +588,17 @@ export class BookingService {
       where: { hallId },
     });
 
-    // Map to calendar events format:
-    // color: RED for CONFIRMED, YELLOW for HOLD, BLACK for BLOCKED
-    const events = [
-      ...activeBookings.map((b) => ({
+    // Map bookings to calendar events with explicit session
+    const bookingEvents = activeBookings.map((b) => {
+      const session: "DAY" | "NIGHT" = b.notes?.includes("[SESSION:NIGHT]") ? "NIGHT" : "DAY";
+      const icon = session === "NIGHT" ? "🌙 Night" : "☀️ Day";
+      return {
         id: b.id,
-        title: `${b.status === "CONFIRMED" ? "CONFIRMED" : "HOLD"}: ${b.customerName} (${b.eventType})`,
+        title: `${b.status === "CONFIRMED" ? "CONFIRMED" : "HOLD"}: ${icon} - ${b.customerName} (${b.eventType})`,
         start: b.eventDate,
         end: b.eventDate,
         status: b.status,
+        session,
         color: b.status === "CONFIRMED" ? "RED" : "YELLOW",
         bookingNumber: b.bookingNumber,
         customerName: b.customerName,
@@ -555,17 +607,46 @@ export class BookingService {
         advanceAmount: Number(b.advanceAmount),
         remainingAmount: Number(b.remainingAmount),
         holdExpiresAt: b.holdExpiresAt,
-      })),
-      ...blockedDates.map((bd) => ({
-        id: bd.id,
-        title: `BLOCKED: ${bd.reason || "Reserved"}`,
-        start: bd.date,
-        end: bd.date,
-        status: "BLOCKED",
-        color: "BLACK",
-        reason: bd.reason,
-      })),
-    ];
+        notes: b.notes,
+      };
+    });
+
+    // Map blocked dates (creates DAY and/or NIGHT event based on session tag)
+    const blockedEvents: any[] = [];
+    for (const bd of blockedDates) {
+      const r = bd.reason || "";
+      const isDay = r.includes("[SESSION:DAY]") || r.includes("[SESSION:BOTH]") || !r.includes("[SESSION:");
+      const isNight = r.includes("[SESSION:NIGHT]") || r.includes("[SESSION:BOTH]") || !r.includes("[SESSION:");
+
+      if (isDay) {
+        blockedEvents.push({
+          id: `${bd.id}-day`,
+          realId: bd.id,
+          title: `BLOCKED: ☀️ Day - ${bd.reason?.replace(/\[SESSION:[^\]]+\]/g, "").trim() || "Maintenance"}`,
+          start: bd.date,
+          end: bd.date,
+          status: "BLOCKED",
+          session: "DAY",
+          color: "BLACK",
+          reason: bd.reason,
+        });
+      }
+      if (isNight) {
+        blockedEvents.push({
+          id: `${bd.id}-night`,
+          realId: bd.id,
+          title: `BLOCKED: 🌙 Night - ${bd.reason?.replace(/\[SESSION:[^\]]+\]/g, "").trim() || "Maintenance"}`,
+          start: bd.date,
+          end: bd.date,
+          status: "BLOCKED",
+          session: "NIGHT",
+          color: "BLACK",
+          reason: bd.reason,
+        });
+      }
+    }
+
+    const events = [...bookingEvents, ...blockedEvents];
 
     return {
       hall: { id: hall.id, name: hall.name, city: hall.city },

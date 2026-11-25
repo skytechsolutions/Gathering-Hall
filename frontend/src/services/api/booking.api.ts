@@ -16,6 +16,7 @@ export interface Booking {
   holdExpiresAt: string | null;
   commissionRate: number;
   commissionAmount: number;
+  session?: "DAY" | "NIGHT";
   notes: string | null;
   createdAt: string;
   hall?: { id: string; name: string; city: string; owner?: { id: string; name: string; phone: string | null } };
@@ -26,10 +27,12 @@ export interface Booking {
 
 export interface CalendarAvailabilityEvent {
   id: string;
+  realId?: string;
   title: string;
   start: string;
   end: string;
   status: "HOLD" | "CONFIRMED" | "BLOCKED" | "AVAILABLE";
+  session?: "DAY" | "NIGHT";
   color: "GREEN" | "RED" | "YELLOW" | "BLACK";
   bookingNumber?: string;
   customerName?: string;
@@ -39,6 +42,7 @@ export interface CalendarAvailabilityEvent {
   remainingAmount?: number;
   holdExpiresAt?: string;
   reason?: string;
+  notes?: string | null;
 }
 
 export const bookingApi = {
@@ -73,6 +77,7 @@ export const bookingApi = {
     totalAmount: number;
     advanceAmount?: number;
     holdHours?: number;
+    session?: "DAY" | "NIGHT";
     notes?: string | null;
   }) {
     return api.post<{ booking: Booking }>("/bookings", data);
@@ -90,7 +95,7 @@ export const bookingApi = {
     return api.patch<{ booking: Booking }>(`/bookings/${id}/hold`, { additionalHours });
   },
 
-  async blockDate(data: { hallId: string; date: string; reason: string }) {
+  async blockDate(data: { hallId: string; date: string; reason: string; session?: "DAY" | "NIGHT" | "BOTH" }) {
     return api.post<{ blocked: any }>("/bookings/block-date", data);
   },
 

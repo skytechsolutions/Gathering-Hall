@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { authApi } from "@/services/api/auth.api";
+import { Modal } from "@/components/ui/modal";
 import {
   User,
   Mail,
@@ -609,47 +610,47 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
       </div>
 
       {/* Forgot Password Modal */}
-      {forgotModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-gray-200 animate-fadeIn">
-            <div className="flex items-center justify-between border-b pb-3 mb-4">
-              <div className="flex items-center gap-2">
-                <HelpCircle className="h-5 w-5 text-amber-800" />
-                <h3 className="font-bold text-gray-900 text-base">Account Recovery</h3>
-              </div>
-              <button
-                onClick={() => setForgotModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 cursor-pointer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-4">
-              For security reasons in the Chamkani Gathering Hall system, password resets are handled directly through system administrators.
-            </p>
-
-            <div className="rounded-xl bg-gray-50 p-4 border border-gray-200 text-xs sm:text-sm space-y-2">
-              <p className="text-gray-700">
-                <strong>Super Admin Contact:</strong> <span className="font-mono text-amber-900 font-semibold">admin@example.com</span>
-              </p>
-              <p className="text-gray-700">
-                <strong>Emergency Helpline:</strong> <span className="font-mono text-amber-900 font-semibold">0300-0000000</span>
-              </p>
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setForgotModalOpen(false)}
-                className="rounded-xl bg-[#2b170e] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-[#3d2114] transition cursor-pointer"
-              >
-                Understood
-              </button>
-            </div>
+      <Modal
+        isOpen={forgotModalOpen}
+        onClose={() => setForgotModalOpen(false)}
+        maxWidth="max-w-md"
+      >
+        <div className="flex items-center justify-between border-b pb-3 mb-4">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="h-5 w-5 text-amber-800" />
+            <h3 className="font-bold text-gray-900 text-base">Account Recovery</h3>
           </div>
+          <button
+            onClick={() => setForgotModalOpen(false)}
+            className="text-gray-400 hover:text-gray-600 cursor-pointer"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
-      )}
+
+        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-4">
+          For security reasons in the Chamkani Gathering Hall system, password resets are handled directly through system administrators.
+        </p>
+
+        <div className="rounded-xl bg-gray-50 p-4 border border-gray-200 text-xs sm:text-sm space-y-2">
+          <p className="text-gray-700">
+            <strong>Super Admin Contact:</strong> <span className="font-mono text-amber-900 font-semibold">admin@example.com</span>
+          </p>
+          <p className="text-gray-700">
+            <strong>Emergency Helpline:</strong> <span className="font-mono text-amber-900 font-semibold">0300-0000000</span>
+          </p>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setForgotModalOpen(false)}
+            className="rounded-xl bg-[#2b170e] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-[#3d2114] transition cursor-pointer"
+          >
+            Understood
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

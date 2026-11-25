@@ -15,6 +15,7 @@ export const createBookingSchema = z.object({
   holdHours: z.coerce.number().int().refine((h) => h === 24 || h === 48, {
     message: "Hold duration must be 24 or 48 hours",
   }).optional().default(24),
+  session: z.enum(["DAY", "NIGHT"]).optional().default("DAY"),
   notes: z.string().optional().nullable(),
 }).refine((data) => data.advanceAmount <= data.totalAmount, {
   message: "Advance amount cannot exceed total amount",
@@ -41,4 +42,5 @@ export const blockDateSchema = z.object({
   hallId: z.string().uuid("Valid Hall ID required"),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
   reason: z.string().min(2, "Reason for blocking date is required"),
+  session: z.enum(["DAY", "NIGHT", "BOTH"]).optional().default("BOTH"),
 });

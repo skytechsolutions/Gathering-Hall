@@ -228,19 +228,58 @@ export class ReportService {
     });
 
     let totalCommission = 0;
-    const hallCommissionMap: Record<string, { hallName: string; totalCommission: number; bookingsCount: number }> = {};
-    const ownerCommissionMap: Record<string, { ownerName: string; email: string; totalCommission: number; bookingsCount: number }> = {};
+    let thisMonthCommission = 0;
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const hallCommissionMap: Record<
+      string,
+      {
+        hallId: string;
+        hallName: string;
+        ownerName: string;
+        confirmedBookings: number;
+        totalRevenue: number;
+        commissionEarned: number;
+        totalCommission: number;
+        bookingsCount: number;
+      }
+    > = {};
+
+    const ownerCommissionMap: Record<
+      string,
+      { ownerName: string; email: string; totalCommission: number; bookingsCount: number }
+    > = {};
 
     for (const b of confirmedBookings) {
       const comm = Number(b.commissionAmount);
+      const rev = Number(b.totalAmount);
       totalCommission += comm;
+
+      const bDate = new Date(b.createdAt);
+      if (bDate.getFullYear() === currentYear && bDate.getMonth() === currentMonth) {
+        thisMonthCommission += comm;
+      }
 
       // By Hall
       const hallId = b.hall.id;
       if (!hallCommissionMap[hallId]) {
-        hallCommissionMap[hallId] = { hallName: b.hall.name, totalCommission: 0, bookingsCount: 0 };
+        hallCommissionMap[hallId] = {
+          hallId,
+          hallName: b.hall.name,
+          ownerName: b.hall.owner.name,
+          confirmedBookings: 0,
+          totalRevenue: 0,
+          commissionEarned: 0,
+          totalCommission: 0,
+          bookingsCount: 0,
+        };
       }
+      hallCommissionMap[hallId].commissionEarned += comm;
       hallCommissionMap[hallId].totalCommission += comm;
+      hallCommissionMap[hallId].totalRevenue += rev;
+      hallCommissionMap[hallId].confirmedBookings += 1;
       hallCommissionMap[hallId].bookingsCount += 1;
 
       // By Owner
@@ -258,7 +297,9 @@ export class ReportService {
     }
 
     return {
+      totalCommissionAllTime: totalCommission,
       totalCommissionEarned: totalCommission,
+      thisMonthCommission,
       byHall: Object.values(hallCommissionMap),
       byOwner: Object.values(ownerCommissionMap),
     };

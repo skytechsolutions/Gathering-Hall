@@ -17,5 +17,8 @@ router.post("/login", validate(loginSchema), (req, res, next) =>
 router.post("/refresh", (req, res, next) => authController.refresh(req, res, next));
 router.post("/logout", (req, res, next) => authController.logout(req, res, next));
 router.get("/me", authenticate, (req, res, next) => authController.getMe(req, res, next));
+router.put("/profile", authenticate, (req, res, next) =>
+  authController.updateProfile(req, res, next)
+);
 
 export default router;

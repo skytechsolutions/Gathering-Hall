@@ -10,6 +10,8 @@ import {
   TrendingUp,
   Building2,
   Calendar,
+  Sparkles,
+  ArrowUpRight,
 } from "lucide-react";
 
 export default function OwnerReportsPage() {
@@ -27,7 +29,8 @@ export default function OwnerReportsPage() {
     queryKey: ["owner-hall-income-breakdown"],
     queryFn: async () => {
       const res = await reportApi.getHallIncome();
-      return (res as any)?.reports as HallIncomeReport[];
+      const list = (res as any)?.reports ?? (res as any)?.halls ?? (Array.isArray(res) ? res : []);
+      return (list || []) as HallIncomeReport[];
     },
   });
 
@@ -55,22 +58,24 @@ export default function OwnerReportsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)]">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Income & Financial Reports</h1>
-          <p className="text-sm text-gray-500">Hall revenue breakdown, collection ledger, and pending balances</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">Income & Financial Reports</h1>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+            Hall revenue breakdown, collection ledger, and pending balances across all venues
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 shadow-sm transition"
+            className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
           >
             <Printer className="h-4 w-4" />
             Print Report
           </button>
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 shadow-sm transition"
+            className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition"
           >
             <Download className="h-4 w-4" />
             Export CSV
@@ -80,50 +85,60 @@ export default function OwnerReportsPage() {
 
       {/* Aggregate Financial Metrics */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Agreed Rent</span>
-          <p className="mt-2 text-3xl font-extrabold text-gray-900">
+        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Agreed Rent</span>
+          <p className="mt-2 text-3xl font-black text-gray-900">
             PKR {Number(overviewData?.totalRevenue || 0).toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-gray-500">Total volume of all confirmed bookings</p>
+          <p className="mt-1 text-xs text-gray-500 font-medium">Total volume across all confirmed bookings</p>
         </div>
 
-        <div className="rounded-2xl border border-green-200 bg-green-50/50 p-6 shadow-sm">
-          <span className="text-xs font-semibold text-green-700 uppercase tracking-wider">Cash Collected (Advance)</span>
-          <p className="mt-2 text-3xl font-extrabold text-green-800">
+        <div className="rounded-3xl border border-emerald-100 bg-emerald-50/40 p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+          <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Cash Collected (Advance)</span>
+          <p className="mt-2 text-3xl font-black text-emerald-900">
             PKR {Number(overviewData?.advanceReceived || 0).toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-green-600">Deposits received in cash / bank</p>
+          <p className="mt-1 text-xs text-emerald-700 font-medium">Deposits received in cash / bank</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6 shadow-sm">
-          <span className="text-xs font-semibold text-amber-700 uppercase tracking-wider">Pending Balance</span>
-          <p className="mt-2 text-3xl font-extrabold text-amber-800">
+        <div className="rounded-3xl border border-amber-100 bg-amber-50/40 p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+          <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">Pending Balance</span>
+          <p className="mt-2 text-3xl font-black text-amber-900">
             PKR {Number(overviewData?.remainingPayments || 0).toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-amber-600">Remaining receivable on event day</p>
+          <p className="mt-1 text-xs text-amber-700 font-medium">Remaining receivable on event day</p>
         </div>
       </div>
 
       {/* Monthly Chart */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h3 className="font-bold text-gray-900 mb-6">Past 6 Months Income Trend</h3>
+      <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="font-extrabold text-lg text-gray-900">Past 6 Months Income Trend</h3>
+            <p className="text-xs text-gray-400 font-medium">Monthly revenue generated from completed events</p>
+          </div>
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+            Revenue Performance
+          </span>
+        </div>
+
         <div className="space-y-4">
           {overviewData?.monthlyChart && overviewData.monthlyChart.length > 0 ? (
             overviewData.monthlyChart.map((m, idx) => {
               const maxRev = Math.max(...overviewData.monthlyChart.map((x) => x.revenue || 1));
-              const pct = Math.max(5, Math.round(((m.revenue || 0) / maxRev) * 100));
+              const pct = Math.max(8, Math.round(((m.revenue || 0) / maxRev) * 100));
               return (
                 <div key={idx} className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-medium">
+                  <div className="flex justify-between text-xs font-semibold">
                     <span className="text-gray-700">{m.month}</span>
                     <span className="text-gray-900 font-bold">
-                      PKR {Number(m.revenue || 0).toLocaleString()} ({m.bookings} events)
+                      PKR {Number(m.revenue || 0).toLocaleString()}{" "}
+                      <span className="text-gray-400 font-normal">({m.bookings} events)</span>
                     </span>
                   </div>
                   <div className="h-3 w-full rounded-full bg-gray-100 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-red-600 transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500 shadow-sm"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -131,20 +146,21 @@ export default function OwnerReportsPage() {
               );
             })
           ) : (
-            <p className="text-sm text-gray-500 py-6 text-center">No monthly history recorded yet.</p>
+            <p className="text-sm text-gray-400 py-10 text-center font-medium">No monthly history recorded yet.</p>
           )}
         </div>
       </div>
 
       {/* Hall Revenue Breakdown Table */}
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-        <div className="border-b border-gray-200 p-5">
-          <h3 className="font-bold text-gray-900">Hall-by-Hall Financial Breakdown</h3>
+      <div className="rounded-3xl border border-gray-100 bg-white shadow-[0_4px_25px_rgba(0,0,0,0.02)] overflow-hidden">
+        <div className="border-b border-gray-100 p-5">
+          <h3 className="font-extrabold text-lg text-gray-900">Hall-by-Hall Financial Breakdown</h3>
+          <p className="text-xs text-gray-400 font-medium">Revenue, collections, and pending dues per venue</p>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
-            <thead className="bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+            <thead className="bg-gray-50/70 text-xs font-bold uppercase text-gray-400 border-b border-gray-100">
               <tr>
                 <th className="px-5 py-3.5">Hall Name</th>
                 <th className="px-5 py-3.5">City</th>
@@ -154,33 +170,39 @@ export default function OwnerReportsPage() {
                 <th className="px-5 py-3.5 text-right">Balance Due (PKR)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100/80">
               {hallsLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center text-gray-400">
-                    Loading performance data...
+                  <td colSpan={6} className="px-5 py-12 text-center text-gray-400">
+                    <div className="flex justify-center">
+                      <div className="h-7 w-7 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
+                    </div>
                   </td>
                 </tr>
               ) : hallsData && hallsData.length > 0 ? (
                 hallsData.map((r) => (
-                  <tr key={r.hallId} className="hover:bg-gray-50/50">
+                  <tr key={r.hallId} className="hover:bg-blue-50/20 transition">
                     <td className="px-5 py-4 font-bold text-gray-900">{r.hallName}</td>
-                    <td className="px-5 py-4 text-xs text-gray-500">{r.city}</td>
-                    <td className="px-5 py-4 text-center font-semibold text-gray-800">{r.totalBookings}</td>
-                    <td className="px-5 py-4 text-right font-bold text-gray-900">
+                    <td className="px-5 py-4 text-xs font-semibold text-gray-500">{r.city}</td>
+                    <td className="px-5 py-4 text-center">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/50">
+                        {r.totalBookings}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-right font-black text-gray-900">
                       PKR {Number(r.totalRevenue).toLocaleString()}
                     </td>
-                    <td className="px-5 py-4 text-right font-semibold text-green-700">
+                    <td className="px-5 py-4 text-right font-bold text-emerald-700">
                       PKR {Number(r.totalCollected).toLocaleString()}
                     </td>
-                    <td className="px-5 py-4 text-right font-semibold text-amber-700">
+                    <td className="px-5 py-4 text-right font-bold text-amber-700">
                       PKR {Number(r.pendingBalance).toLocaleString()}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center text-gray-400">
+                  <td colSpan={6} className="px-5 py-10 text-center text-gray-400 font-medium">
                     No financial records available yet.
                   </td>
                 </tr>
