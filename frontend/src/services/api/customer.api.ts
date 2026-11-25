@@ -5,9 +5,16 @@ export interface Customer {
   name: string;
   phone: string;
   email: string | null;
-  cnic: string | null;
+  cnic?: string | null;
   address: string | null;
+  referenceName?: string | null;
+  referencePhone?: string | null;
+  notes?: string | null;
   createdAt: string;
+  totalBookingsCount?: number;
+  totalBookingsAmount?: number;
+  totalAdvancePaid?: number;
+  totalRemaining?: number;
   _count?: { bookings: number };
   bookings?: any[];
 }
@@ -17,7 +24,14 @@ export interface CustomerLedger {
   totalBilled: number;
   totalPaid: number;
   remainingBalance: number;
+  bookingsCount?: number;
   bookings: any[];
+  ledger?: {
+    totalBilled: number;
+    totalPaid: number;
+    totalRemaining: number;
+    bookingsCount: number;
+  };
 }
 
 export const customerApi = {

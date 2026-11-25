@@ -135,3 +135,39 @@ body[data-scroll-locked="true"] main {
 .font-display-serif {
   font-family: 'Cormorant Garamond', Georgia, Cambria, 'Times New Roman', Times, serif;
 }
+
+/* Print Styles for Official Customer Reports and Ledger Statements */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  aside,
+  header,
+  nav,
+  button,
+  .no-print {
+    display: none !important;
+  }
+  /* Isolate printable customer ledger for perfect A4 output */
+  body * {
+    visibility: hidden;
+  }
+  #printable-customer-ledger,
+  #printable-customer-ledger * {
+    visibility: visible;
+  }
+  #printable-customer-ledger {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+}

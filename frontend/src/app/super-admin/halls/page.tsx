@@ -30,7 +30,18 @@ export default function SuperAdminHallsPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const [createForm, setCreateForm] = useState({
+  const [createForm, setCreateForm] = useState<{
+    ownerId: string;
+    name: string;
+    city: string;
+    area: string;
+    address: string;
+    capacity: number | "";
+    priceWeekday: number | "";
+    priceWeekend: number | "";
+    amenities: string;
+    description: string;
+  }>({
     ownerId: "",
     name: "",
     city: "Peshawar",
@@ -112,6 +123,9 @@ export default function SuperAdminHallsPage() {
 
     createMutation.mutate({
       ...createForm,
+      capacity: Number(createForm.capacity) || 0,
+      priceWeekday: Number(createForm.priceWeekday) || 0,
+      priceWeekend: Number(createForm.priceWeekend) || 0,
       amenities: createForm.amenities.split(",").map((a) => a.trim()).filter(Boolean),
     });
   };
@@ -388,8 +402,9 @@ export default function SuperAdminHallsPage() {
               <input
                 type="number"
                 required
-                value={createForm.capacity}
-                onChange={(e) => setCreateForm({ ...createForm, capacity: Number(e.target.value) })}
+                placeholder="0"
+                value={createForm.capacity === 0 || createForm.capacity === "" ? "" : createForm.capacity}
+                onChange={(e) => setCreateForm({ ...createForm, capacity: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>
@@ -398,8 +413,9 @@ export default function SuperAdminHallsPage() {
               <input
                 type="number"
                 required
-                value={createForm.priceWeekday}
-                onChange={(e) => setCreateForm({ ...createForm, priceWeekday: Number(e.target.value) })}
+                placeholder="0"
+                value={createForm.priceWeekday === 0 || createForm.priceWeekday === "" ? "" : createForm.priceWeekday}
+                onChange={(e) => setCreateForm({ ...createForm, priceWeekday: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>
@@ -408,8 +424,9 @@ export default function SuperAdminHallsPage() {
               <input
                 type="number"
                 required
-                value={createForm.priceWeekend}
-                onChange={(e) => setCreateForm({ ...createForm, priceWeekend: Number(e.target.value) })}
+                placeholder="0"
+                value={createForm.priceWeekend === 0 || createForm.priceWeekend === "" ? "" : createForm.priceWeekend}
+                onChange={(e) => setCreateForm({ ...createForm, priceWeekend: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>

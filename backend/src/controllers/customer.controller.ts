@@ -56,7 +56,15 @@ export class CustomerController {
       }
       const id = req.params.id as string;
       const result = await customerService.getCustomerById(id, req.user);
-      apiSuccess(res, { ledger: result.ledger, customer: result.customer });
+      apiSuccess(res, {
+        customer: result.customer,
+        totalBilled: result.ledger.totalBilled,
+        totalPaid: result.ledger.totalPaid,
+        remainingBalance: result.ledger.totalRemaining,
+        bookingsCount: result.ledger.bookingsCount,
+        bookings: result.bookings,
+        ledger: result.ledger,
+      });
     } catch (err: unknown) {
       next(err);
     }

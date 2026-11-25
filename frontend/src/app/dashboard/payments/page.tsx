@@ -26,7 +26,13 @@ export default function OwnerPaymentsPage() {
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const [paymentForm, setPaymentForm] = useState({
+  const [paymentForm, setPaymentForm] = useState<{
+    bookingId: string;
+    amount: number | "";
+    paymentMethod: "CASH" | "BANK_TRANSFER" | "ONLINE" | "CHEQUE";
+    reference: string;
+    notes: string;
+  }>({
     bookingId: "",
     amount: 10000,
     paymentMethod: "CASH" as "CASH" | "BANK_TRANSFER" | "ONLINE" | "CHEQUE",
@@ -75,7 +81,12 @@ export default function OwnerPaymentsPage() {
       setFormError("Please select a booking.");
       return;
     }
-    if (selectedBookingDetails && paymentForm.amount > Number(selectedBookingDetails.remainingAmount)) {
+    const payAmt = Number(paymentForm.amount) || 0;
+    if (payAmt <= 0) {
+      setFormError("Please enter a valid payment amount.");
+      return;
+    }
+    if (selectedBookingDetails && payAmt > Number(selectedBookingDetails.remainingAmount)) {
       setFormError(
         `Overpayment error: Amount cannot exceed remaining balance of PKR ${Number(
           selectedBookingDetails.remainingAmount
@@ -87,7 +98,7 @@ export default function OwnerPaymentsPage() {
     setFormError(null);
     addPaymentMutation.mutate({
       ...paymentForm,
-      amount: Number(paymentForm.amount),
+      amount: payAmt,
     });
   };
 
@@ -283,8 +294,9 @@ export default function OwnerPaymentsPage() {
               type="number"
               required
               min={1}
-              value={paymentForm.amount}
-              onChange={(e) => setPaymentForm({ ...paymentForm, amount: Number(e.target.value) })}
+              placeholder="0"
+              value={paymentForm.amount === 0 || paymentForm.amount === "" ? "" : paymentForm.amount}
+              onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value === "" ? "" : Number(e.target.value) })}
               className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
             />
           </div>

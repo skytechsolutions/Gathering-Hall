@@ -8,7 +8,7 @@ import { Percent, CheckCircle2, TrendingUp, AlertCircle, Building2, Sparkles, Sh
 
 export default function SuperAdminSettingsPage() {
   const queryClient = useQueryClient();
-  const [newPercentage, setNewPercentage] = useState<number>(5);
+  const [newPercentage, setNewPercentage] = useState<number | "">(5);
   const [notes, setNotes] = useState("");
   const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -55,11 +55,12 @@ export default function SuperAdminSettingsPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMsg(null);
-    if (newPercentage < 0 || newPercentage > 100) {
+    const pct = Number(newPercentage) || 0;
+    if (pct < 0 || pct > 100) {
       setStatusMsg({ type: "error", text: "Percentage must be between 0% and 100%." });
       return;
     }
-    updateMutation.mutate({ percentage: Number(newPercentage), notes });
+    updateMutation.mutate({ percentage: pct, notes });
   };
 
   return (
@@ -115,8 +116,12 @@ export default function SuperAdminSettingsPage() {
                   min="0"
                   max="100"
                   required
-                  value={newPercentage}
-                  onChange={(e) => setNewPercentage(parseFloat(e.target.value))}
+                  placeholder="0"
+                  value={newPercentage === 0 || newPercentage === "" ? "" : newPercentage}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setNewPercentage(val === "" ? "" : parseFloat(val));
+                  }}
                   className="w-full rounded-2xl border border-gray-200 py-3 px-4 text-xl font-black text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
                 />
                 <span className="absolute right-4 top-3.5 text-sm font-black text-gray-400">%</span>

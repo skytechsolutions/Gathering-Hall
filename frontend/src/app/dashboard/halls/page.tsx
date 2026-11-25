@@ -24,7 +24,17 @@ export default function OwnerHallsPage() {
   const [editingHall, setEditingHall] = useState<Hall | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    name: string;
+    city: string;
+    area: string;
+    address: string;
+    capacity: number | "";
+    priceWeekday: number | "";
+    priceWeekend: number | "";
+    amenities: string;
+    description: string;
+  }>({
     name: "",
     city: "Peshawar",
     area: "Chamkani",
@@ -74,6 +84,9 @@ export default function OwnerHallsPage() {
     setFormError(null);
     createMutation.mutate({
       ...form,
+      capacity: Number(form.capacity) || 0,
+      priceWeekday: Number(form.priceWeekday) || 0,
+      priceWeekend: Number(form.priceWeekend) || 0,
       amenities: form.amenities.split(",").map((a) => a.trim()).filter(Boolean),
     });
   };
@@ -89,9 +102,9 @@ export default function OwnerHallsPage() {
         city: form.city,
         area: form.area,
         address: form.address,
-        capacity: form.capacity,
-        priceWeekday: form.priceWeekday,
-        priceWeekend: form.priceWeekend,
+        capacity: Number(form.capacity) || 0,
+        priceWeekday: Number(form.priceWeekday) || 0,
+        priceWeekend: Number(form.priceWeekend) || 0,
         amenities: form.amenities.split(",").map((a) => a.trim()).filter(Boolean),
         description: form.description,
       },
@@ -333,8 +346,9 @@ export default function OwnerHallsPage() {
               <input
                 type="number"
                 required
-                value={form.capacity}
-                onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
+                placeholder="0"
+                value={form.capacity === 0 || form.capacity === "" ? "" : form.capacity}
+                onChange={(e) => setForm({ ...form, capacity: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>
@@ -343,8 +357,9 @@ export default function OwnerHallsPage() {
               <input
                 type="number"
                 required
-                value={form.priceWeekday}
-                onChange={(e) => setForm({ ...form, priceWeekday: Number(e.target.value) })}
+                placeholder="0"
+                value={form.priceWeekday === 0 || form.priceWeekday === "" ? "" : form.priceWeekday}
+                onChange={(e) => setForm({ ...form, priceWeekday: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>
@@ -353,8 +368,9 @@ export default function OwnerHallsPage() {
               <input
                 type="number"
                 required
-                value={form.priceWeekend}
-                onChange={(e) => setForm({ ...form, priceWeekend: Number(e.target.value) })}
+                placeholder="0"
+                value={form.priceWeekend === 0 || form.priceWeekend === "" ? "" : form.priceWeekend}
+                onChange={(e) => setForm({ ...form, priceWeekend: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>

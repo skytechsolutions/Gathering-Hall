@@ -34,7 +34,21 @@ export default function OwnerBookingsPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const [bookingForm, setBookingForm] = useState({
+  const [bookingForm, setBookingForm] = useState<{
+    hallId: string;
+    customerName: string;
+    customerPhone: string;
+    customerEmail: string;
+    customerAddress: string;
+    eventDate: string;
+    session: "DAY" | "NIGHT";
+    eventType: string;
+    status: "HOLD" | "CONFIRMED";
+    totalAmount: number | "";
+    advanceAmount: number | "";
+    holdHours: number;
+    notes: string;
+  }>({
     hallId: "",
     customerName: "",
     customerPhone: "",
@@ -121,8 +135,8 @@ export default function OwnerBookingsPage() {
     setFormError(null);
     createMutation.mutate({
       ...bookingForm,
-      totalAmount: Number(bookingForm.totalAmount),
-      advanceAmount: Number(bookingForm.advanceAmount),
+      totalAmount: Number(bookingForm.totalAmount) || 0,
+      advanceAmount: Number(bookingForm.advanceAmount) || 0,
       holdHours: Number(bookingForm.holdHours),
     });
   };
@@ -651,8 +665,9 @@ export default function OwnerBookingsPage() {
               <input
                 type="number"
                 required
-                value={bookingForm.totalAmount}
-                onChange={(e) => setBookingForm({ ...bookingForm, totalAmount: Number(e.target.value) })}
+                placeholder="0"
+                value={bookingForm.totalAmount === 0 || bookingForm.totalAmount === "" ? "" : bookingForm.totalAmount}
+                onChange={(e) => setBookingForm({ ...bookingForm, totalAmount: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>
@@ -660,8 +675,9 @@ export default function OwnerBookingsPage() {
               <label className="block text-xs font-bold text-gray-700">Advance Paid (PKR)</label>
               <input
                 type="number"
-                value={bookingForm.advanceAmount}
-                onChange={(e) => setBookingForm({ ...bookingForm, advanceAmount: Number(e.target.value) })}
+                placeholder="0"
+                value={bookingForm.advanceAmount === 0 || bookingForm.advanceAmount === "" ? "" : bookingForm.advanceAmount}
+                onChange={(e) => setBookingForm({ ...bookingForm, advanceAmount: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>

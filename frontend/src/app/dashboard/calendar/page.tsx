@@ -61,7 +61,20 @@ export default function AvailabilityCalendarPage() {
 
   // New Booking Modal State
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
-  const [bookingForm, setBookingForm] = useState({
+  const [bookingForm, setBookingForm] = useState<{
+    customerName: string;
+    customerPhone: string;
+    customerEmail: string;
+    customerAddress: string;
+    eventDate: string;
+    session: SessionType;
+    eventType: string;
+    status: "HOLD" | "CONFIRMED";
+    totalAmount: number | "";
+    advanceAmount: number | "";
+    holdHours: number;
+    notes: string;
+  }>({
     customerName: "",
     customerPhone: "",
     customerEmail: "",
@@ -160,14 +173,7 @@ export default function AvailabilityCalendarPage() {
       const sessionEvt = dayData?.[activeSession];
 
       if (!sessionEvt) {
-        // Fallback demo values for Nov 2026 matching screenshot if DB is blank
-        if (dateKey === "2026-11-03" || dateKey === "2026-11-12") {
-          bookedCount++;
-        } else if (dateKey === "2026-11-04" || dateKey === "2026-11-19") {
-          holdCount++;
-        } else {
-          availableCount++;
-        }
+        availableCount++;
       } else if (sessionEvt.status === "CONFIRMED") {
         bookedCount++;
       } else if (sessionEvt.status === "HOLD") {
@@ -179,16 +185,11 @@ export default function AvailabilityCalendarPage() {
       }
     }
 
-    if (blockedCount === 0 && format(currentDate, "yyyy-MM") === "2026-11") {
-      blockedCount = 1;
-      if (availableCount > 0) availableCount--;
-    }
-
     return {
       availableCount,
-      bookedCount: bookedCount || (format(currentDate, "yyyy-MM") === "2026-11" ? 5 : 0),
-      holdCount: holdCount || (format(currentDate, "yyyy-MM") === "2026-11" ? 2 : 0),
-      blockedCount: blockedCount || (format(currentDate, "yyyy-MM") === "2026-11" ? 1 : 0),
+      bookedCount,
+      holdCount,
+      blockedCount,
       totalDays: daysInMonth.length,
     };
   }, [currentDate, activeSession, availabilityMap]);
@@ -291,6 +292,8 @@ export default function AvailabilityCalendarPage() {
     }
     createBookingMutation.mutate({
       ...bookingForm,
+      totalAmount: Number(bookingForm.totalAmount) || 0,
+      advanceAmount: Number(bookingForm.advanceAmount) || 0,
       hallId: activeHallId,
     });
   };
@@ -617,21 +620,6 @@ export default function AvailabilityCalendarPage() {
                   pillText = "text-slate-800";
                   dotColor = "bg-[#0f172a]";
                   label = "Blocked";
-                }
-
-                // Visual parity fallback for November 2026 demo mock
-                if (format(currentDate, "yyyy-MM") === "2026-11" && !currentSessionEvent) {
-                  if (dateKey === "2026-11-03" || dateKey === "2026-11-12") {
-                    pillBg = "bg-[#fef2f2]";
-                    pillText = "text-[#dc2626]";
-                    dotColor = "bg-[#ef4444]";
-                    label = "Booked";
-                  } else if (dateKey === "2026-11-04" || dateKey === "2026-11-19") {
-                    pillBg = "bg-[#fffbeb]";
-                    pillText = "text-[#d97706]";
-                    dotColor = "bg-[#f59e0b]";
-                    label = "Hold";
-                  }
                 }
 
                 return (
@@ -1021,8 +1009,9 @@ export default function AvailabilityCalendarPage() {
               <input
                 type="number"
                 required
-                value={bookingForm.totalAmount}
-                onChange={(e) => setBookingForm({ ...bookingForm, totalAmount: Number(e.target.value) })}
+                placeholder="0"
+                value={bookingForm.totalAmount === 0 || bookingForm.totalAmount === "" ? "" : bookingForm.totalAmount}
+                onChange={(e) => setBookingForm({ ...bookingForm, totalAmount: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>
@@ -1030,8 +1019,9 @@ export default function AvailabilityCalendarPage() {
               <label className="block text-xs font-bold text-slate-700">Advance Paid (PKR)</label>
               <input
                 type="number"
-                value={bookingForm.advanceAmount}
-                onChange={(e) => setBookingForm({ ...bookingForm, advanceAmount: Number(e.target.value) })}
+                placeholder="0"
+                value={bookingForm.advanceAmount === 0 || bookingForm.advanceAmount === "" ? "" : bookingForm.advanceAmount}
+                onChange={(e) => setBookingForm({ ...bookingForm, advanceAmount: e.target.value === "" ? "" : Number(e.target.value) })}
                 className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
               />
             </div>
