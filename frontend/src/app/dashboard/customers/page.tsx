@@ -90,17 +90,17 @@ export default function OwnerCustomersPage() {
       {/* ============================================================== */}
       {/* 1. TOP HEADER & TITLE (Matches Dashboard Style)               */}
       {/* ============================================================== */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-[#faf7f2] rounded-2xl p-5 sm:p-6 border border-[#e5ded4]">
         <div>
           <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-slate-100 border border-slate-200/60 flex items-center justify-center text-[#3b3c44]">
+            <div className="h-9 w-9 rounded-xl bg-[#ebe3d7] border border-[#d6cec3] flex items-center justify-center text-[#1e382b]">
               <Users className="h-5 w-5" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#1f2421]">
               Customers & Ledger Statements
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+          <p className="text-xs sm:text-sm text-[#6c726d] font-medium mt-1">
             Complete customer client directory, live account balances, booking history, and printable audit statements
           </p>
         </div>
@@ -112,9 +112,9 @@ export default function OwnerCustomersPage() {
                 setPrintModalCustomerId(data.customers[0].id);
               }
             }}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#d6cec3] bg-white hover:bg-[#ebe3d7] text-[#1f2421] text-xs font-bold transition cursor-pointer"
           >
-            <Printer className="h-4 w-4 text-slate-600" />
+            <Printer className="h-4 w-4 text-[#6c726d]" />
             <span>Print Report</span>
           </button>
         </div>
@@ -125,64 +125,64 @@ export default function OwnerCustomersPage() {
       {/* ============================================================== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1: Total Customers */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 relative overflow-hidden">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500">Total Clients</span>
-            <div className="h-8 w-8 rounded-xl bg-slate-100 text-[#3b3c44] flex items-center justify-center">
+            <span className="text-xs font-bold text-[#6c726d]">Total Clients</span>
+            <div className="h-8 w-8 rounded-xl bg-[#ebe3d7] text-[#1e382b] flex items-center justify-center">
               <Users className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{totalCustomers}</div>
-            <p className="text-[11px] font-semibold text-slate-400 mt-0.5">Registered accounts</p>
+            <div className="text-2xl sm:text-3xl font-black text-[#1f2421]">{totalCustomers}</div>
+            <p className="text-[11px] font-semibold text-[#6c726d] mt-0.5">Registered accounts</p>
           </div>
         </div>
 
         {/* Card 2: Total Billed */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 relative overflow-hidden">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500">Total Invoiced</span>
-            <div className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <span className="text-xs font-bold text-[#6c726d]">Total Invoiced</span>
+            <div className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
               <FileText className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-xl sm:text-2xl font-black text-slate-900 truncate">
+            <div className="text-xl sm:text-2xl font-black text-[#1f2421] truncate">
               PKR {totalBilledAgg.toLocaleString()}
             </div>
-            <p className="text-[11px] font-semibold text-indigo-600 mt-0.5">Active reservations</p>
+            <p className="text-[11px] font-semibold text-indigo-700 mt-0.5">Active reservations</p>
           </div>
         </div>
 
         {/* Card 3: Total Paid / Advance */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 relative overflow-hidden">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500">Collected Advance</span>
-            <div className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <span className="text-xs font-bold text-[#6c726d]">Collected Advance</span>
+            <div className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-xl sm:text-2xl font-black text-emerald-600 truncate">
+            <div className="text-xl sm:text-2xl font-black text-emerald-700 truncate">
               PKR {totalPaidAgg.toLocaleString()}
             </div>
-            <p className="text-[11px] font-semibold text-emerald-700 mt-0.5">Verified receipts</p>
+            <p className="text-[11px] font-semibold text-emerald-800 mt-0.5">Verified receipts</p>
           </div>
         </div>
 
         {/* Card 4: Remaining Receivable */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 relative overflow-hidden">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500">Receivable Balance</span>
-            <div className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <span className="text-xs font-bold text-[#6c726d]">Receivable Balance</span>
+            <div className="h-8 w-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <Clock className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-xl sm:text-2xl font-black text-amber-600 truncate">
+            <div className="text-xl sm:text-2xl font-black text-amber-700 truncate">
               PKR {totalRemainingAgg.toLocaleString()}
             </div>
-            <p className="text-[11px] font-semibold text-amber-700 mt-0.5">Pending collection</p>
+            <p className="text-[11px] font-semibold text-amber-800 mt-0.5">Pending collection</p>
           </div>
         </div>
       </div>
@@ -190,11 +190,11 @@ export default function OwnerCustomersPage() {
       {/* ============================================================== */}
       {/* 3. SEARCH BAR & CLIENT DIRECTORY TABLE                         */}
       {/* ============================================================== */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden">
+      <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] overflow-hidden">
         {/* Search Input Filter */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 border-b border-[#e5ded4] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7a7368]" />
             <input
               type="text"
               value={search}
@@ -203,20 +203,20 @@ export default function OwnerCustomersPage() {
                 setPage(1);
               }}
               placeholder="Search by customer name, phone number, or CNIC..."
-              className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none transition"
+              className="w-full rounded-xl border border-[#d6cec3] bg-white py-2.5 pl-10 pr-4 text-xs sm:text-sm text-[#1f2421] placeholder-[#7a7368] focus:border-[#1e382b] focus:ring-2 focus:ring-[#1e382b]/20 focus:outline-none transition"
             />
           </div>
 
-          <div className="text-xs font-bold text-slate-500">
+          <div className="text-xs font-bold text-[#6c726d]">
             Showing {data?.customers?.length || 0} customer records
           </div>
         </div>
 
         {/* Mobile Customer Cards (Visible on < md) */}
-        <div className="md:hidden divide-y divide-slate-100">
+        <div className="md:hidden divide-y divide-[#e5ded4]">
           {isLoading ? (
             <div className="py-12 flex justify-center">
-              <div className="h-7 w-7 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent" />
+              <div className="h-7 w-7 animate-spin rounded-full border-3 border-[#1e382b] border-t-transparent" />
             </div>
           ) : data?.customers && data.customers.length > 0 ? (
             data.customers.map((c) => {
@@ -229,35 +229,35 @@ export default function OwnerCustomersPage() {
                 <div key={c.id} className="p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="h-9 w-9 shrink-0 rounded-xl bg-gradient-to-tr from-[#3b3c44] to-[#25262c] text-white font-black text-xs flex items-center justify-center">
+                      <div className="h-9 w-9 shrink-0 rounded-xl bg-gradient-to-tr from-[#1e382b] to-[#2d4a3b] text-white font-black text-xs flex items-center justify-center">
                         {c.name ? c.name.charAt(0).toUpperCase() : "C"}
                       </div>
                       <div className="min-w-0">
-                        <h4 className="font-bold text-sm text-slate-900 truncate">{c.name}</h4>
-                        <p className="text-xs text-slate-500 font-mono">{c.phone}</p>
+                        <h4 className="font-bold text-sm text-[#1f2421] truncate">{c.name}</h4>
+                        <p className="text-xs text-[#6c726d] font-mono">{c.phone}</p>
                       </div>
                     </div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-[#3b3c44] shrink-0">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-[#ebe3d7] text-[#1e382b] shrink-0">
                       {bookingsCount} {bookingsCount === 1 ? "Event" : "Events"}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-slate-50 p-2 text-center text-xs border border-slate-100">
+                  <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-[#ebe3d7]/40 p-2 text-center text-xs border border-[#e5ded4]">
                     <div>
-                      <span className="text-[10px] text-slate-400 font-medium">Invoiced</span>
-                      <p className="font-bold text-slate-900 text-[11px] mt-0.5">
+                      <span className="text-[10px] text-[#6c726d] font-medium">Invoiced</span>
+                      <p className="font-bold text-[#1f2421] text-[11px] mt-0.5">
                         PKR {billed.toLocaleString()}
                       </p>
                     </div>
                     <div>
-                      <span className="text-[10px] text-emerald-600 font-medium">Paid</span>
-                      <p className="font-bold text-emerald-600 text-[11px] mt-0.5">
+                      <span className="text-[10px] text-emerald-700 font-medium">Paid</span>
+                      <p className="font-bold text-emerald-800 text-[11px] mt-0.5">
                         PKR {paid.toLocaleString()}
                       </p>
                     </div>
                     <div>
-                      <span className="text-[10px] text-amber-600 font-medium">Balance</span>
-                      <p className="font-bold text-amber-700 text-[11px] mt-0.5">
+                      <span className="text-[10px] text-amber-700 font-medium">Balance</span>
+                      <p className="font-bold text-amber-800 text-[11px] mt-0.5">
                         PKR {remaining.toLocaleString()}
                       </p>
                     </div>
@@ -266,16 +266,16 @@ export default function OwnerCustomersPage() {
                   <div className="flex items-center justify-end gap-2 pt-1">
                     <button
                       onClick={() => setSelectedCustomerId(c.id)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 transition"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl border border-[#d6cec3] bg-white hover:bg-[#ebe3d7] text-xs font-bold text-[#1f2421] transition cursor-pointer"
                     >
-                      <FileText className="h-3.5 w-3.5 text-[#3b3c44]" />
+                      <FileText className="h-3.5 w-3.5 text-[#1e382b]" />
                       <span>Ledger</span>
                     </button>
                     <button
                       onClick={() => setPrintModalCustomerId(c.id)}
-                      className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl border border-slate-200 bg-slate-100/70 hover:bg-slate-200/70 text-xs font-bold text-[#3b3c44] transition"
+                      className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl border border-[#d6cec3] bg-[#ebe3d7]/60 hover:bg-[#ebe3d7] text-xs font-bold text-[#1f2421] transition cursor-pointer"
                     >
-                      <Printer className="h-3.5 w-3.5" />
+                      <Printer className="h-3.5 w-3.5 text-[#6c726d]" />
                       <span>Print</span>
                     </button>
                   </div>
@@ -283,7 +283,7 @@ export default function OwnerCustomersPage() {
               );
             })
           ) : (
-            <div className="py-10 text-center text-sm text-slate-400 font-medium">
+            <div className="py-10 text-center text-sm text-[#6c726d] font-medium">
               No customer accounts found matching your query.
             </div>
           )}
@@ -291,8 +291,8 @@ export default function OwnerCustomersPage() {
 
         {/* Table of Customers (Desktop view) */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm text-slate-600">
-            <thead className="bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 select-none">
+          <table className="w-full text-left text-xs sm:text-sm text-[#1f2421]">
+            <thead className="bg-[#ebe3d7]/50 text-[11px] font-bold uppercase tracking-wider text-[#6c726d] border-b border-[#e5ded4] select-none">
               <tr>
                 <th className="px-5 py-3.5">Customer & Contact</th>
                 <th className="px-5 py-3.5 text-center">Bookings</th>
@@ -302,13 +302,13 @@ export default function OwnerCustomersPage() {
                 <th className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[#e5ded4]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-14 text-center text-sm text-slate-500">
+                  <td colSpan={6} className="px-5 py-14 text-center text-sm text-[#6c726d]">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent" />
-                      <span className="text-xs font-semibold text-slate-400">Loading ledger data...</span>
+                      <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#1e382b] border-t-transparent" />
+                      <span className="text-xs font-semibold text-[#6c726d]">Loading ledger data...</span>
                     </div>
                   </td>
                 </tr>
@@ -320,28 +320,28 @@ export default function OwnerCustomersPage() {
                   const bookingsCount = c.totalBookingsCount ?? c._count?.bookings ?? 0;
 
                   return (
-                    <tr key={c.id} className="hover:bg-slate-100/50 transition-colors">
+                    <tr key={c.id} className="hover:bg-[#ebe3d7]/30 transition-colors">
                       {/* Name & Phone */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-tr from-[#3b3c44] to-[#25262c] text-white font-black text-sm flex items-center justify-center">
+                          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-tr from-[#1e382b] to-[#2d4a3b] text-white font-black text-sm flex items-center justify-center">
                             {c.name ? c.name.charAt(0).toUpperCase() : "C"}
                           </div>
                           <div>
-                            <div className="font-extrabold text-slate-900 text-sm leading-tight">
+                            <div className="font-extrabold text-[#1f2421] text-sm leading-tight">
                               {c.name}
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                            <div className="flex items-center gap-2 text-xs text-[#6c726d] mt-0.5">
                               <span className="font-mono font-medium">{c.phone}</span>
                               {c.cnic && (
                                 <>
-                                  <span className="text-slate-300">•</span>
-                                  <span className="font-mono text-[11px] text-slate-400">{c.cnic}</span>
+                                  <span className="text-[#d6cec3]">•</span>
+                                  <span className="font-mono text-[11px] text-[#7a7368]">{c.cnic}</span>
                                 </>
                               )}
                             </div>
                             {c.address && (
-                              <p className="text-[11px] text-slate-400 truncate max-w-xs mt-0.5">
+                              <p className="text-[11px] text-[#7a7368] truncate max-w-xs mt-0.5">
                                 {c.address}
                               </p>
                             )}
@@ -351,13 +351,13 @@ export default function OwnerCustomersPage() {
 
                       {/* Bookings Count */}
                       <td className="px-5 py-4 text-center">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-slate-100 text-[#3b3c44] border border-slate-200/60">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-[#ebe3d7] text-[#1e382b] border border-[#d6cec3]">
                           {bookingsCount} {bookingsCount === 1 ? "Event" : "Events"}
                         </span>
                       </td>
 
                       {/* Total Invoiced */}
-                      <td className="px-5 py-4 text-right font-black text-slate-900">
+                      <td className="px-5 py-4 text-right font-black text-[#1f2421]">
                         PKR {billed.toLocaleString()}
                       </td>
 

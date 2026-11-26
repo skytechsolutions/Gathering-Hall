@@ -5,40 +5,39 @@
 :root {
   --font-inter: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  /* Brand & accent (Owner & Super Admin - Dark Slate Theme) */
-  --color-primary: #3b3c44;
-  --color-primary-pressed: #2b2c33;
+  /* Brand & accent (Editorial Racing Green & Charcoal) */
+  --color-primary: #1e382b;
+  --color-primary-pressed: #162a20;
 
-  /* Surface */
-  --color-canvas: #ffffff;
-  --color-surface-soft: #f8fafc;
-  --color-surface-card: #ffffff;
+  /* Cream Editorial Surfaces */
+  --color-canvas: #f5f0e8;
+  --color-surface-soft: #f5f0e8;
+  --color-surface-card: #faf7f2;
   --color-sidebar-navy: #0c1427;
   --color-sidebar-dark: #070d1e;
-  --color-secondary-bg: #f1f5f9;
-  --color-secondary-pressed: #e2e8f0;
-  --color-hairline: #e2e8f0;
-  --color-hairline-soft: #f1f5f9;
+  --color-secondary-bg: #ebe3d7;
+  --color-secondary-pressed: #dfd6c8;
+  --color-hairline: #e5ded4;
+  --color-hairline-soft: #ede6dc;
 
   /* Text */
-  --color-ink: #000000;
-  --color-ink-soft: #211922;
-  --color-body: #33332e;
-  --color-charcoal: #262622;
-  --color-mute: #62625b;
-  --color-ash: #91918c;
-  --color-stone: #c8c8c1;
+  --color-ink: #1f2421;
+  --color-ink-soft: #2d3330;
+  --color-body: #1f2421;
+  --color-charcoal: #1f2421;
+  --color-mute: #6c726d;
+  --color-ash: #8c938d;
+  --color-stone: #d6cec3;
 
   /* Semantic */
   --color-error: #9e0a0a;
   --color-error-deep: #cc001f;
   --color-success-deep: #103c25;
   --color-success-pale: #c7f0da;
-  --color-focus-outer: #3b3c44;
+  --color-focus-outer: #1e382b;
 
-  /* Editorial accent (used sparingly, e.g. status badges) — design.md's
-     "Accent Pressed Blue", the system's one blue informational tone. */
-  --color-accent-blue: #3b3c44;
+  /* Editorial accent */
+  --color-accent-blue: #1e382b;
 
   /* Event-type tags on the calendar — one muted hue per event category,
      kept low-saturation to stay inside the system's restrained palette. */

@@ -84,10 +84,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (isLoading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f0e8]">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#3b3c44] border-t-transparent" />
-          <p className="text-sm font-semibold text-slate-500">Loading Chamkani Portal...</p>
+          <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#1e382b] border-t-transparent" />
+          <p className="text-sm font-semibold text-[#6c726d]">Loading Chamkani Portal...</p>
         </div>
       </div>
     );
@@ -95,19 +95,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (user.status === "PENDING") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-        <div className="max-w-md rounded-2xl border border-amber-200 bg-white p-7 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f0e8] p-4">
+        <div className="max-w-md rounded-2xl border border-amber-200 bg-[#faf7f2] p-7 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
             <AlertCircle className="h-7 w-7" />
           </div>
-          <h2 className="mt-4 text-xl font-bold text-slate-900">Account Pending Approval</h2>
-          <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+          <h2 className="mt-4 text-xl font-bold text-[#1f2421]">Account Pending Approval</h2>
+          <p className="mt-2 text-sm text-[#6c726d] leading-relaxed">
             Welcome, <strong>{user.name}</strong>. Your Hall Owner account is currently pending verification by the Super Admin. You will receive full access once approved.
           </p>
           <div className="mt-6">
             <button
               onClick={() => logout()}
-              className="w-full rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 transition"
+              className="w-full rounded-xl bg-[#ebe3d7] py-3 text-sm font-bold text-[#1f2421] hover:bg-[#dfd6c8] transition"
             >
               Sign Out
             </button>
@@ -119,19 +119,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (user.status === "BLOCKED" || user.status === "REJECTED") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-        <div className="max-w-md rounded-2xl border border-red-200 bg-white p-7 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f0e8] p-4">
+        <div className="max-w-md rounded-2xl border border-red-200 bg-[#faf7f2] p-7 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-red-100 text-red-600">
             <AlertCircle className="h-7 w-7" />
           </div>
-          <h2 className="mt-4 text-xl font-bold text-slate-900">Account {user.status}</h2>
-          <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+          <h2 className="mt-4 text-xl font-bold text-[#1f2421]">Account {user.status}</h2>
+          <p className="mt-2 text-sm text-[#6c726d] leading-relaxed">
             Your Hall Owner account has been {user.status.toLowerCase()}. Please contact system administration for assistance.
           </p>
           <div className="mt-6">
             <button
               onClick={() => logout()}
-              className="w-full rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 transition"
+              className="w-full rounded-xl bg-[#ebe3d7] py-3 text-sm font-bold text-[#1f2421] hover:bg-[#dfd6c8] transition"
             >
               Sign Out
             </button>
@@ -149,7 +149,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:max-h-screen bg-[#f8fafc] flex overflow-hidden">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen bg-[#f5f0e8] flex overflow-hidden">
       {/* ============================================================== */}
       {/* DESKTOP SIDEBAR NAVIGATION (100% Glassy Liquid Design)         */}
       {/* ============================================================== */}
@@ -192,32 +192,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        {/* "+ New Booking" Capsule Button matching "+ New project" in screenshot */}
-        {!sidebarCollapsed ? (
-          <div className="px-3 pt-3.5 pb-1 shrink-0">
-            <button
-              onClick={() => router.push("/dashboard/calendar")}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.14] text-white font-semibold text-xs backdrop-blur-md transition active:scale-[0.98] cursor-pointer"
-            >
-              <Plus className="h-4 w-4 stroke-[2.5]" />
-              <span>New Booking</span>
-            </button>
-          </div>
-        ) : (
-          <div className="pt-3 pb-1 flex justify-center relative group shrink-0">
-            <button
-              onClick={() => router.push("/dashboard/calendar")}
-              className="h-11 w-11 flex items-center justify-center rounded-2xl bg-white/[0.08] hover:bg-white/[0.18] hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] border border-white/[0.14] text-white backdrop-blur-md transition active:scale-95 cursor-pointer"
-            >
-              <Plus className="h-5 w-5 stroke-[2.5] group-hover:scale-110 transition-transform duration-200" />
-            </button>
-            {/* Popover Light Tooltip */}
-            <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-xl bg-white text-slate-900 font-black text-xs border border-slate-100 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 origin-left z-50 whitespace-nowrap flex items-center">
-              <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rotate-45 border-l border-b border-slate-200" />
-              <span>New Booking</span>
-            </div>
-          </div>
-        )}
 
         {/* Navigation Items with matching Frosted Glass Sheen */}
         {!sidebarCollapsed ? (
@@ -326,9 +300,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* ============================================================== */}
       {/* MAIN CONTENT AREA WITH TOP NAV BAR                             */}
       {/* ============================================================== */}
-      <div className="flex flex-1 flex-col overflow-hidden h-full min-h-0">
+      <div className="flex flex-1 flex-col overflow-hidden h-full min-h-0 bg-[#f5f0e8]">
         {/* Professional Top Navigation Bar */}
-        <header className="h-14 lg:h-16 border-b border-slate-200/80 bg-white px-3 sm:px-6 flex items-center justify-between shrink-0 z-30">
+        <header className="h-14 lg:h-16 border-b border-[#e5ded4] bg-[#faf7f2] px-3 sm:px-6 flex items-center justify-between shrink-0 z-30 transition-colors">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl min-w-0 mr-2 sm:mr-4">
             {/* Hamburger Toggle Button: Collapses Desktop Sidebar, Opens Mobile Drawer */}
             <button
@@ -339,7 +313,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   setSidebarCollapsed((prev) => !prev);
                 }
               }}
-              className="rounded-xl p-1.5 sm:p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer shrink-0"
+              className="rounded-xl p-1.5 sm:p-2 text-[#6c726d] hover:text-[#1f2421] hover:bg-[#ebe3d7] transition cursor-pointer shrink-0"
               aria-label="Toggle navigation"
               title={sidebarCollapsed ? "Expand sidebar" : "Collapse to icons"}
             >
@@ -348,13 +322,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Global Search Bar */}
             <form onSubmit={handleGlobalSearch} className="relative flex-1 min-w-0 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#7a7368]" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs bg-slate-100/80 border border-slate-200/80 rounded-full focus:bg-white focus:border-[#3b3c44] focus:outline-none focus:ring-2 focus:ring-[#3b3c44]/25 transition-all text-slate-800 placeholder:text-slate-400"
+                className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs bg-[#ebe3d7]/60 border border-[#d6cec3] rounded-full focus:bg-white focus:border-[#1e382b] focus:outline-none focus:ring-2 focus:ring-[#1e382b]/20 transition-all text-[#1f2421] placeholder:text-[#7a7368]"
               />
             </form>
           </div>
@@ -365,13 +339,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <NotificationBell role="HALL_OWNER" />
 
             {/* User Profile Avatar */}
-            <div className="flex items-center gap-2 pl-2 border-l border-slate-200 shrink-0">
-              <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-gradient-to-tr from-[#3b3c44] to-[#25262c] text-white font-extrabold text-xs ring-2 ring-[#3b3c44]/20 shrink-0">
+            <div className="flex items-center gap-2 pl-2 border-l border-[#e5ded4] shrink-0">
+              <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-gradient-to-tr from-[#1e382b] to-[#2d4a3b] text-white font-extrabold text-xs ring-2 ring-[#1e382b]/20 shrink-0">
                 {user.name ? user.name.charAt(0).toUpperCase() : "O"}
               </div>
               <div className="hidden md:block">
-                <p className="text-xs font-bold text-slate-900 leading-tight">{user.name}</p>
-                <p className="text-[10px] text-slate-400 font-medium leading-tight">Hall Owner</p>
+                <p className="text-xs font-bold text-[#1f2421] leading-tight">{user.name}</p>
+                <p className="text-[10px] text-[#6c726d] font-medium leading-tight">Hall Owner</p>
               </div>
             </div>
           </div>
@@ -467,9 +441,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Main Content Viewport */}
         <main
-          className={`flex-1 min-h-0 ${
+          className={`flex-1 min-h-0 bg-[#f5f0e8] ${
             pathname === "/dashboard/calendar"
-              ? "overflow-y-auto lg:overflow-hidden p-2.5 sm:p-4 lg:px-6 lg:py-3 flex flex-col pb-24 lg:pb-3"
+              ? "overflow-y-auto p-0 flex flex-col pb-24 lg:pb-0"
               : "overflow-y-auto p-3 sm:p-6 lg:p-8 pb-24 lg:pb-8"
           }`}
         >
@@ -477,7 +451,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </main>
 
         {/* Mobile Bottom Navigation Dock */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-2 py-1.5 flex items-center justify-around">
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#faf7f2]/95 backdrop-blur-md border-t border-[#e5ded4] shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-2 py-1.5 flex items-center justify-around">
           {MOBILE_BOTTOM_NAV.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -487,14 +461,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 href={item.href}
                 className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all ${
                   isActive
-                    ? "text-[#3b3c44] font-bold"
-                    : "text-slate-500 hover:text-slate-900 font-medium"
+                    ? "text-[#1e382b] font-bold"
+                    : "text-[#6c726d] hover:text-[#1f2421] font-medium"
                 }`}
               >
-                <div className={`relative p-1 rounded-lg transition-colors ${isActive ? "bg-slate-100" : ""}`}>
-                  <Icon className={`h-5 w-5 ${isActive ? "text-[#3b3c44]" : "text-slate-500"}`} />
+                <div className={`relative p-1 rounded-lg transition-colors ${isActive ? "bg-[#ebe3d7]" : ""}`}>
+                  <Icon className={`h-5 w-5 ${isActive ? "text-[#1e382b]" : "text-[#6c726d]"}`} />
                   {isActive && (
-                    <span className="absolute -top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-[#3b3c44] shadow-[0_0_6px_#3b3c44]" />
+                    <span className="absolute -top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-[#1e382b] shadow-[0_0_6px_#1e382b]" />
                   )}
                 </div>
                 <span className="text-[10px] mt-0.5 tracking-tight truncate max-w-[64px]">

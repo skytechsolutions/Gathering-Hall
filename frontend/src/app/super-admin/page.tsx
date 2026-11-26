@@ -116,33 +116,33 @@ export default function SuperAdminOverviewPage() {
   return (
     <div className="space-y-6">
       {/* Top Welcome Banner */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-slate-200/80">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-[#faf7f2] rounded-2xl p-6 border border-[#e5ded4]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-[#3b3c44] border border-slate-200">
-              <ShieldCheck className="h-3.5 w-3.5 text-[#3b3c44]" /> Super Administrator Portal
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#ebe3d7] text-[#1e382b] border border-[#d6cec3]">
+              <ShieldCheck className="h-3.5 w-3.5 text-[#1e382b]" /> Super Administrator Portal
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 mt-2">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#1f2421] mt-2">
             Hall Owner & System Administration
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+          <p className="text-xs sm:text-sm text-[#6c726d] font-medium mt-1">
             Manage owner accounts, login credentials, password resets, account activation, and platform configurations
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
           <Link
             href="/super-admin/owners?action=new"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#1e382b] hover:bg-[#162a20] px-4 py-2.5 text-xs sm:text-sm font-bold text-white active:scale-95 transition cursor-pointer"
           >
             <UserPlus className="h-4 w-4" />
             Create Owner Account
           </Link>
           <Link
             href="/super-admin/settings"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#d6cec3] bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-[#1f2421] hover:bg-[#ebe3d7] transition"
           >
-            <Settings className="h-4 w-4 text-[#3b3c44]" />
+            <Settings className="h-4 w-4 text-[#1e382b]" />
             System Settings
           </Link>
         </div>
@@ -151,25 +151,25 @@ export default function SuperAdminOverviewPage() {
       {/* Primary KPI Stats Grid - Hall Owners & Account Status */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Total Registered Owners */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between hover:border-slate-300 transition">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between hover:border-[#d6cec3] transition">
           <div className="flex items-center justify-between gap-1">
-            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider truncate">
+            <span className="text-[11px] sm:text-xs font-bold text-[#6c726d] uppercase tracking-wider truncate">
               Registered Owners
             </span>
-            <div className="rounded-xl bg-slate-100 p-2 text-[#3b3c44] shrink-0">
+            <div className="rounded-xl bg-[#ebe3d7] p-2 text-[#1e382b] shrink-0">
               <Users className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
           <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-black text-gray-900">{totalOwners}</p>
-            <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-semibold truncate">
+            <p className="text-2xl sm:text-3xl font-black text-[#1f2421]">{totalOwners}</p>
+            <p className="mt-1 text-[11px] sm:text-xs text-[#6c726d] font-semibold truncate">
               Total partner accounts
             </p>
           </div>
         </div>
 
         {/* Active / Approved Accounts */}
-        <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/40 p-4 sm:p-5 flex flex-col justify-between hover:border-emerald-300 transition">
+        <div className="rounded-2xl border border-emerald-200/70 bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between hover:border-emerald-300 transition">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[11px] sm:text-xs font-bold text-emerald-800 uppercase tracking-wider truncate">
               Active Accounts
@@ -187,7 +187,7 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Pending or Under Review */}
-        <div className="rounded-2xl border border-amber-200/70 bg-amber-50/40 p-4 sm:p-5 flex flex-col justify-between hover:border-amber-300 transition">
+        <div className="rounded-2xl border border-amber-200/70 bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between hover:border-amber-300 transition">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[11px] sm:text-xs font-bold text-amber-800 uppercase tracking-wider truncate">
               Pending Verification
@@ -205,21 +205,21 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* System & Security Operational Status */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between gap-1">
-            <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">
+            <span className="text-[11px] sm:text-xs font-bold text-[#6c726d] uppercase tracking-wider truncate">
               System Health
             </span>
-            <div className="rounded-xl bg-slate-100 p-2 text-emerald-600 shrink-0">
+            <div className="rounded-xl bg-[#ebe3d7] p-2 text-emerald-600 shrink-0">
               <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
           <div className="mt-3">
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-base sm:text-xl font-black text-slate-900">100% Operational</p>
+              <p className="text-base sm:text-xl font-black text-[#1f2421]">100% Operational</p>
             </div>
-            <p className="mt-1 text-[11px] sm:text-xs text-slate-500 font-semibold truncate">
+            <p className="mt-1 text-[11px] sm:text-xs text-[#6c726d] font-semibold truncate">
               PostgreSQL & Auth Active
             </p>
           </div>
@@ -229,22 +229,22 @@ export default function SuperAdminOverviewPage() {
       {/* Super Admin Quick Responsibilities Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Card 1: Owner Accounts & Credentials */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 flex flex-col justify-between">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="p-2 rounded-xl bg-slate-100 text-[#3b3c44]">
+              <div className="p-2 rounded-xl bg-[#ebe3d7] text-[#1e382b]">
                 <Users className="h-4 w-4" />
               </div>
-              <h3 className="font-bold text-sm text-slate-900">Owner Account Management</h3>
+              <h3 className="font-bold text-sm text-[#1f2421]">Owner Account Management</h3>
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <p className="text-xs text-[#6c726d] leading-relaxed">
               Create new owner portals, modify credentials, update contact information, and toggle login permissions.
             </p>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-[#e5ded4] flex items-center justify-between">
             <Link
               href="/super-admin/owners"
-              className="text-xs font-bold text-[#3b3c44] hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-[#1e382b] hover:underline flex items-center gap-1"
             >
               <span>Manage Owners Directory</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -253,19 +253,19 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Card 2: Password Reset & Access Support */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 flex flex-col justify-between">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 rounded-xl bg-amber-50 text-amber-700">
                 <KeyRound className="h-4 w-4" />
               </div>
-              <h3 className="font-bold text-sm text-slate-900">Password Reset & Security</h3>
+              <h3 className="font-bold text-sm text-[#1f2421]">Password Reset & Security</h3>
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <p className="text-xs text-[#6c726d] leading-relaxed">
               Instantly generate temporary passwords, reset credentials upon owner request, and revoke compromised tokens.
             </p>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-[#e5ded4] flex items-center justify-between">
             <Link
               href="/super-admin/owners"
               className="text-xs font-bold text-amber-800 hover:underline flex items-center gap-1"
@@ -277,22 +277,22 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         {/* Card 3: System-Level Settings */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 flex flex-col justify-between">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="p-2 rounded-xl bg-slate-100 text-slate-700">
+              <div className="p-2 rounded-xl bg-[#ebe3d7] text-[#1e382b]">
                 <Settings className="h-4 w-4" />
               </div>
-              <h3 className="font-bold text-sm text-slate-900">System Configuration</h3>
+              <h3 className="font-bold text-sm text-[#1f2421]">System Configuration</h3>
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <p className="text-xs text-[#6c726d] leading-relaxed">
               Configure system-level parameters, platform support hotline, maintenance mode, and security policies.
             </p>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-[#e5ded4] flex items-center justify-between">
             <Link
               href="/super-admin/settings"
-              className="text-xs font-bold text-[#3b3c44] hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-[#1e382b] hover:underline flex items-center gap-1"
             >
               <span>System Settings</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -302,17 +302,17 @@ export default function SuperAdminOverviewPage() {
       </div>
 
       {/* Registered Hall Owners Section with Direct Management */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
+      <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
           <div>
-            <h2 className="text-lg font-black text-gray-900">Registered Hall Owners</h2>
-            <p className="text-xs text-gray-500 font-medium">
+            <h2 className="text-lg font-black text-[#1f2421]">Registered Hall Owners</h2>
+            <p className="text-xs text-[#6c726d] font-medium">
               Activate/deactivate accounts, reset passwords, and provide owner assistance
             </p>
           </div>
           <Link
             href="/super-admin/owners"
-            className="text-xs font-bold text-[#3b3c44] hover:underline flex items-center gap-1 self-start sm:self-auto"
+            className="text-xs font-bold text-[#1e382b] hover:underline flex items-center gap-1 self-start sm:self-auto"
           >
             <span>View All Registered Owners ({totalOwners})</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -320,8 +320,8 @@ export default function SuperAdminOverviewPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600">
-            <thead className="bg-gray-50/70 text-xs font-bold uppercase text-gray-400 border-b border-gray-100">
+          <table className="w-full text-left text-sm text-[#1f2421]">
+            <thead className="bg-[#ebe3d7]/50 text-xs font-bold uppercase text-[#6c726d] border-b border-[#e5ded4]">
               <tr>
                 <th className="px-4 py-3">Owner Details</th>
                 <th className="px-4 py-3">Phone / Contact</th>
@@ -330,11 +330,11 @@ export default function SuperAdminOverviewPage() {
                 <th className="px-4 py-3 text-right">Quick Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100/80">
+            <tbody className="divide-y divide-[#e5ded4]">
               {ownersLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-400">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3b3c44] border-t-transparent mx-auto" />
+                  <td colSpan={5} className="px-4 py-8 text-center text-sm text-[#6c726d]">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#1e382b] border-t-transparent mx-auto" />
                   </td>
                 </tr>
               ) : ownersData?.owners && ownersData.owners.length > 0 ? (
@@ -343,10 +343,10 @@ export default function SuperAdminOverviewPage() {
                   const isBlocked = owner.status === "BLOCKED";
 
                   return (
-                    <tr key={owner.id} className="hover:bg-slate-50/60 transition">
+                    <tr key={owner.id} className="hover:bg-[#ebe3d7]/30 transition">
                       <td className="px-4 py-3.5">
-                        <div className="font-bold text-gray-900">{owner.name}</div>
-                        <div className="text-xs text-gray-400 font-mono">{owner.email}</div>
+                        <div className="font-bold text-[#1f2421]">{owner.name}</div>
+                        <div className="text-xs text-[#6c726d] font-mono">{owner.email}</div>
                       </td>
                       <td className="px-4 py-3.5 font-mono text-xs font-semibold text-gray-700">
                         {owner.phone ? (

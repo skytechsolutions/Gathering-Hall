@@ -53,15 +53,15 @@ export function Modal({
     >
       <div
         ref={cardRef}
-        className={`w-full ${maxWidth} max-h-[92vh] overflow-y-auto rounded-2xl bg-white p-4 sm:p-6 border border-slate-300 my-auto animate-fadeIn ${className}`}
+        className={`w-full ${maxWidth} max-h-[92vh] overflow-y-auto rounded-2xl bg-[#faf7f2] p-4 sm:p-6 border border-[#e5ded4] shadow-2xl my-auto animate-fadeIn ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-            <h3 className="font-extrabold text-slate-900 text-lg">{title}</h3>
+          <div className="flex items-center justify-between border-b border-[#e5ded4] pb-3 mb-4">
+            <h3 className="font-extrabold text-[#1f2421] text-lg">{title}</h3>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 rounded-lg p-1 transition cursor-pointer"
+              className="text-[#7a7368] hover:text-[#1f2421] rounded-lg p-1 transition cursor-pointer"
             >
               ✕
             </button>

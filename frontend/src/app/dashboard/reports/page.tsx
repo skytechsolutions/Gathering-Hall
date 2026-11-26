@@ -58,24 +58,24 @@ export default function OwnerReportsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-4 sm:p-6 border border-gray-100">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-[#faf7f2] rounded-2xl p-4 sm:p-6 border border-[#e5ded4]">
         <div>
-          <h1 className="text-xl sm:text-3xl font-black tracking-tight text-gray-900">Income & Financial Reports</h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5 sm:mt-1">
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight text-[#1f2421]">Income & Financial Reports</h1>
+          <p className="text-xs sm:text-sm text-[#6c726d] font-medium mt-0.5 sm:mt-1">
             Hall revenue breakdown, collection ledger, and pending balances across all venues
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() => window.print()}
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition cursor-pointer"
+            className="flex items-center justify-center gap-2 rounded-xl border border-[#d6cec3] bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-[#1f2421] hover:bg-[#ebe3d7] transition cursor-pointer"
           >
             <Printer className="h-4 w-4" />
             Print Report
           </button>
           <button
             onClick={handleExportCSV}
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition cursor-pointer"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#1e382b] hover:bg-[#162a20] px-4 py-2.5 text-xs sm:text-sm font-bold text-white active:scale-95 transition cursor-pointer"
           >
             <Download className="h-4 w-4" />
             Export CSV
@@ -85,25 +85,25 @@ export default function OwnerReportsPage() {
 
       {/* Aggregate Financial Metrics */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Agreed Rent</span>
-          <p className="mt-2 text-3xl font-black text-gray-900">
+        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6">
+          <span className="text-xs font-bold text-[#6c726d] uppercase tracking-wider">Total Agreed Rent</span>
+          <p className="mt-2 text-3xl font-black text-[#1f2421]">
             PKR {Number(overviewData?.totalRevenue || 0).toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-gray-500 font-medium">Total volume across all confirmed bookings</p>
+          <p className="mt-1 text-xs text-[#6c726d] font-medium">Total volume across all confirmed bookings</p>
         </div>
 
-        <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/40 p-6">
+        <div className="rounded-2xl border border-emerald-200/60 bg-[#faf7f2] p-6">
           <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Cash Collected (Advance)</span>
-          <p className="mt-2 text-3xl font-black text-emerald-900">
+          <p className="mt-2 text-3xl font-black text-emerald-800">
             PKR {Number(overviewData?.advanceReceived || 0).toLocaleString()}
           </p>
           <p className="mt-1 text-xs text-emerald-700 font-medium">Deposits received in cash / bank</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-200/60 bg-amber-50/40 p-6">
+        <div className="rounded-2xl border border-amber-200/60 bg-[#faf7f2] p-6">
           <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">Pending Balance</span>
-          <p className="mt-2 text-3xl font-black text-amber-900">
+          <p className="mt-2 text-3xl font-black text-amber-800">
             PKR {Number(overviewData?.remainingPayments || 0).toLocaleString()}
           </p>
           <p className="mt-1 text-xs text-amber-700 font-medium">Remaining receivable on event day</p>
@@ -111,13 +111,13 @@ export default function OwnerReportsPage() {
       </div>
 
       {/* Monthly Chart */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
+      <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="font-extrabold text-lg text-gray-900">Past 6 Months Income Trend</h3>
-            <p className="text-xs text-gray-400 font-medium">Monthly revenue generated from completed events</p>
+            <h3 className="font-extrabold text-lg text-[#1f2421]">Past 6 Months Income Trend</h3>
+            <p className="text-xs text-[#6c726d] font-medium">Monthly revenue generated from completed events</p>
           </div>
-          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-[#3b3c44] border border-slate-200">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#ebe3d7] text-[#1e382b] border border-[#d6cec3]">
             Revenue Performance
           </span>
         </div>
@@ -130,15 +130,15 @@ export default function OwnerReportsPage() {
               return (
                 <div key={idx} className="space-y-1.5">
                   <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-gray-700">{m.month}</span>
-                    <span className="text-gray-900 font-bold">
+                    <span className="text-[#1f2421]">{m.month}</span>
+                    <span className="text-[#1f2421] font-bold">
                       PKR {Number(m.revenue || 0).toLocaleString()}{" "}
-                      <span className="text-gray-400 font-normal">({m.bookings} events)</span>
+                      <span className="text-[#6c726d] font-normal">({m.bookings} events)</span>
                     </span>
                   </div>
-                  <div className="h-3 w-full rounded-xl bg-gray-100 overflow-hidden">
+                  <div className="h-3 w-full rounded-xl bg-[#ebe3d7] overflow-hidden">
                     <div
-                      className="h-full rounded-xl bg-gradient-to-r from-[#3b3c44] to-[#25262c] transition-all duration-500"
+                      className="h-full rounded-xl bg-gradient-to-r from-[#1e382b] to-[#2d4a3b] transition-all duration-500"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -146,16 +146,16 @@ export default function OwnerReportsPage() {
               );
             })
           ) : (
-            <p className="text-sm text-gray-400 py-10 text-center font-medium">No monthly history recorded yet.</p>
+            <p className="text-sm text-[#6c726d] py-10 text-center font-medium">No monthly history recorded yet.</p>
           )}
         </div>
       </div>
 
       {/* Hall Revenue Breakdown Table */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden">
-        <div className="border-b border-gray-100 p-5">
-          <h3 className="font-extrabold text-lg text-gray-900">Hall-by-Hall Financial Breakdown</h3>
-          <p className="text-xs text-gray-400 font-medium">Revenue, collections, and pending dues per venue</p>
+      <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] overflow-hidden">
+        <div className="border-b border-[#e5ded4] p-5">
+          <h3 className="font-extrabold text-lg text-[#1f2421]">Hall-by-Hall Financial Breakdown</h3>
+          <p className="text-xs text-[#6c726d] font-medium">Revenue, collections, and pending dues per venue</p>
         </div>
 
         <div className="overflow-x-auto">

@@ -254,7 +254,7 @@ export function NotificationBell({ role }: NotificationBellProps) {
           setView("active");
         }}
         title={unreadCount > 0 ? `${unreadCount} unread notifications` : "Notifications"}
-        className="relative p-2 rounded-full bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition cursor-pointer"
+        className="relative p-2 rounded-full bg-[#ebe3d7]/60 hover:bg-[#ebe3d7] text-[#1f2421] transition cursor-pointer"
         aria-expanded={isOpen}
       >
         <Bell className="h-4 w-4" />
@@ -267,12 +267,12 @@ export function NotificationBell({ role }: NotificationBellProps) {
 
       {/* Floating Notification Popover Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white border border-slate-200/90 shadow-2xl z-50 overflow-hidden animate-fadeIn text-slate-800">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-[#faf7f2] border border-[#e5ded4] shadow-2xl z-50 overflow-hidden animate-fadeIn text-[#1f2421]">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 p-3.5 sm:p-4 bg-slate-50/50">
+          <div className="flex items-center justify-between border-b border-[#e5ded4] p-3.5 sm:p-4 bg-[#ebe3d7]/40">
             {view === "active" ? (
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-sm text-slate-900">Notifications</span>
+                <span className="font-extrabold text-sm text-[#1f2421]">Notifications</span>
                 {unreadCount > 0 && (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 border border-red-200">
                     {unreadCount} New
@@ -283,14 +283,14 @@ export function NotificationBell({ role }: NotificationBellProps) {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setView("active")}
-                  className="flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900 transition p-1 hover:bg-slate-100 rounded-lg cursor-pointer"
+                  className="flex items-center gap-1 text-xs font-bold text-[#6c726d] hover:text-[#1f2421] transition p-1 hover:bg-[#ebe3d7] rounded-lg cursor-pointer"
                   title="Back to notifications"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
                   <span>Back</span>
                 </button>
-                <span className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
-                  <Trash2 className="h-3.5 w-3.5 text-slate-500" />
+                <span className="font-extrabold text-sm text-[#1f2421] flex items-center gap-1.5">
+                  <Trash2 className="h-3.5 w-3.5 text-[#6c726d]" />
                   Recycle Bin
                 </span>
               </div>
@@ -303,7 +303,7 @@ export function NotificationBell({ role }: NotificationBellProps) {
                   {unreadCount > 0 && (
                     <button
                       onClick={markAllAsRead}
-                      className="text-[11px] font-bold text-[#3b3c44] hover:underline flex items-center gap-1 px-1.5 py-1 rounded-md hover:bg-slate-100 transition cursor-pointer"
+                      className="text-[11px] font-bold text-[#1e382b] hover:underline flex items-center gap-1 px-1.5 py-1 rounded-md hover:bg-[#ebe3d7] transition cursor-pointer"
                       title="Mark all as read"
                     >
                       <Check className="h-3 w-3" />
@@ -315,7 +315,7 @@ export function NotificationBell({ role }: NotificationBellProps) {
                   <button
                     onClick={() => setView("trash")}
                     title={`Recycle Bin (${trashedNotifications.length} deleted items)`}
-                    className="relative flex items-center gap-1 px-2 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 text-xs font-semibold transition cursor-pointer"
+                    className="relative flex items-center gap-1 px-2 py-1 rounded-lg border border-[#d6cec3] bg-white hover:bg-[#ebe3d7] text-[#1f2421] text-xs font-semibold transition cursor-pointer"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     <span className="text-[11px] font-mono font-bold">
@@ -327,7 +327,7 @@ export function NotificationBell({ role }: NotificationBellProps) {
                 trashedNotifications.length > 0 && (
                   <button
                     onClick={restoreAllFromTrash}
-                    className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1"
+                    className="text-[11px] font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1"
                     title="Restore all deleted notifications"
                   >
                     <RotateCcw className="h-3 w-3" />
@@ -339,7 +339,7 @@ export function NotificationBell({ role }: NotificationBellProps) {
           </div>
 
           {/* Body Content */}
-          <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 p-1">
+          <div className="max-h-80 overflow-y-auto divide-y divide-[#e5ded4] p-1">
             {view === "active" ? (
               // ACTIVE NOTIFICATIONS LIST
               activeNotifications.length > 0 ? (
@@ -353,8 +353,8 @@ export function NotificationBell({ role }: NotificationBellProps) {
                       onClick={() => handleNotificationClick(item)}
                       className={`group relative flex items-start gap-3 p-3 rounded-xl transition cursor-pointer ${
                         isUnread
-                          ? "bg-slate-50/90 hover:bg-slate-100"
-                          : "hover:bg-slate-50/50 opacity-80 hover:opacity-100"
+                          ? "bg-white hover:bg-[#ebe3d7]/50"
+                          : "hover:bg-[#ebe3d7]/30 opacity-80 hover:opacity-100"
                       }`}
                     >
                       {/* Left Category Icon */}
@@ -478,8 +478,8 @@ export function NotificationBell({ role }: NotificationBellProps) {
           </div>
 
           {/* Footer View All / Dismiss */}
-          <div className="border-t border-slate-100 p-2.5 px-3 bg-slate-50/50 flex items-center justify-between text-xs">
-            <span className="text-[11px] text-slate-500 font-medium">
+          <div className="border-t border-[#e5ded4] p-2.5 px-3 bg-[#ebe3d7]/30 flex items-center justify-between text-xs">
+            <span className="text-[11px] text-[#6c726d] font-medium">
               {view === "active"
                 ? `${activeNotifications.length} active notification${activeNotifications.length === 1 ? "" : "s"}`
                 : `${trashedNotifications.length} item${trashedNotifications.length === 1 ? "" : "s"} in recycle bin`}
@@ -489,7 +489,7 @@ export function NotificationBell({ role }: NotificationBellProps) {
                 setIsOpen(false);
                 setView("active");
               }}
-              className="text-[11px] font-bold text-slate-600 hover:text-slate-900 cursor-pointer"
+              className="text-[11px] font-bold text-[#1f2421] hover:underline cursor-pointer"
             >
               Close
             </button>

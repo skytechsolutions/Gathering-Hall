@@ -130,14 +130,14 @@ export default function OwnerSettingsPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3.5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-[#3b3c44] border border-slate-200">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#ebe3d7] text-[#1e382b] border border-[#d6cec3]">
             <Settings className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-[#1f2421] tracking-tight leading-tight">
               Settings & Account Management
             </h1>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-[#6c726d] font-medium">
               Manage your hall owner profile, Day & Night session rules, and portal preferences
             </p>
           </div>
@@ -152,13 +152,13 @@ export default function OwnerSettingsPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-200/80 pb-3">
+      <div className="flex flex-wrap gap-2 border-b border-[#e5ded4] pb-3">
         <button
           onClick={() => setActiveTab("profile")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "profile"
-              ? "bg-[#3b3c44] text-white"
-              : "text-slate-600 hover:bg-slate-100"
+              ? "bg-[#1e382b] text-white shadow-2xs"
+              : "text-[#6c726d] hover:bg-[#ebe3d7]"
           }`}
         >
           <Building2 className="h-4 w-4" />
@@ -168,8 +168,8 @@ export default function OwnerSettingsPage() {
           onClick={() => setActiveTab("sessions")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "sessions"
-              ? "bg-[#3b3c44] text-white"
-              : "text-slate-600 hover:bg-slate-100"
+              ? "bg-[#1e382b] text-white shadow-2xs"
+              : "text-[#6c726d] hover:bg-[#ebe3d7]"
           }`}
         >
           <Clock className="h-4 w-4" />
@@ -179,8 +179,8 @@ export default function OwnerSettingsPage() {
           onClick={() => setActiveTab("notifications")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "notifications"
-              ? "bg-[#3b3c44] text-white"
-              : "text-slate-600 hover:bg-slate-100"
+              ? "bg-[#1e382b] text-white shadow-2xs"
+              : "text-[#6c726d] hover:bg-[#ebe3d7]"
           }`}
         >
           <Bell className="h-4 w-4" />
@@ -190,8 +190,8 @@ export default function OwnerSettingsPage() {
           onClick={() => setActiveTab("security")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "security"
-              ? "bg-[#3b3c44] text-white"
-              : "text-slate-600 hover:bg-slate-100"
+              ? "bg-[#1e382b] text-white shadow-2xs"
+              : "text-[#6c726d] hover:bg-[#ebe3d7]"
           }`}
         >
           <Shield className="h-4 w-4" />
@@ -203,16 +203,16 @@ export default function OwnerSettingsPage() {
       {activeTab === "profile" && (
         <form onSubmit={handleSaveProfile} className="space-y-6">
           {/* Section 1: Hall Brand & Logo Identity */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 sm:p-7 space-y-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-[#e5ded4]">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 leading-tight">
+                <h3 className="text-base font-extrabold text-[#1f2421] leading-tight">
                   Hall Brand Identity & Logo
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#6c726d]">
                   Update your hall name and custom brand logo. Changes appear instantly across your dark glass sidebar, receipts, and client portal.
                 </p>
               </div>
@@ -353,16 +353,16 @@ export default function OwnerSettingsPage() {
           </div>
 
           {/* Section 2: Owner Personal & Contact Details */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 space-y-5">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-[#3b3c44] border border-slate-200/60">
+          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 sm:p-7 space-y-5">
+            <div className="flex items-center gap-3 pb-4 border-b border-[#e5ded4]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ebe3d7] text-[#1e382b] border border-[#d6cec3]">
                 <User className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 leading-tight">
+                <h3 className="text-base font-extrabold text-[#1f2421] leading-tight">
                   Owner Personal Account Details
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#6c726d]">
                   Manage your personal name, contact phone, and primary account credentials
                 </p>
               </div>
@@ -370,55 +370,55 @@ export default function OwnerSettingsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700">Full Name</label>
+                <label className="block text-xs font-bold text-[#1f2421]">Full Name</label>
                 <div className="relative mt-1">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7a7368]" />
                   <input
                     type="text"
                     value={ownerName}
                     onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="Enter owner full name"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:border-[#3b3c44] focus:outline-none"
+                    className="w-full rounded-xl border border-[#d6cec3] bg-white pl-10 pr-3.5 py-2.5 text-xs text-[#1f2421] focus:border-[#1e382b] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700">Email Address (Login)</label>
+                <label className="block text-xs font-bold text-[#1f2421]">Email Address (Login)</label>
                 <div className="relative mt-1">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7a7368]" />
                   <input
                     type="email"
                     disabled
                     value={user?.email || ""}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-100 pl-10 pr-3.5 py-2.5 text-xs text-slate-500 cursor-not-allowed"
+                    className="w-full rounded-xl border border-[#d6cec3] bg-[#ebe3d7]/50 pl-10 pr-3.5 py-2.5 text-xs text-[#6c726d] cursor-not-allowed"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700">Contact Phone</label>
+                <label className="block text-xs font-bold text-[#1f2421]">Contact Phone</label>
                 <div className="relative mt-1">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7a7368]" />
                   <input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="e.g. 0300-1234567"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:border-[#3b3c44] focus:outline-none"
+                    className="w-full rounded-xl border border-[#d6cec3] bg-white pl-10 pr-3.5 py-2.5 text-xs text-[#1f2421] focus:border-[#1e382b] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700">Account Role</label>
+                <label className="block text-xs font-bold text-[#1f2421]">Account Role</label>
                 <div className="relative mt-1">
-                  <Shield className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#3b3c44]" />
+                  <Shield className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#1e382b]" />
                   <input
                     type="text"
                     disabled
                     value="HALL_OWNER (Verified Full Portal Access)"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-100/50 pl-10 pr-3.5 py-2.5 text-xs font-bold text-[#3b3c44] cursor-not-allowed"
+                    className="w-full rounded-xl border border-[#d6cec3] bg-[#ebe3d7]/50 pl-10 pr-3.5 py-2.5 text-xs font-bold text-[#1e382b] cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function OwnerSettingsPage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="rounded-xl bg-[#3b3c44] hover:bg-[#2b2c33] text-white font-bold text-xs px-7 py-3 transition cursor-pointer flex items-center gap-2 active:scale-95"
+                className="rounded-xl bg-[#1e382b] hover:bg-[#162a20] text-white font-bold text-xs px-7 py-3 transition cursor-pointer flex items-center gap-2 active:scale-95"
               >
                 <Sparkles className="h-4 w-4" />
                 <span>{isSaving ? "Saving..." : "Save Brand & Profile Changes"}</span>
@@ -440,9 +440,9 @@ export default function OwnerSettingsPage() {
 
       {/* Tab: Day & Night Sessions */}
       {activeTab === "sessions" && (
-        <form onSubmit={handleSaveSessions} className="rounded-2xl border border-slate-200/80 bg-white p-6 space-y-6">
+        <form onSubmit={handleSaveSessions} className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 space-y-6">
           <div>
-            <h3 className="text-sm font-black text-slate-900">Day & Night Session Schedule Configuration</h3>
+            <h3 className="text-sm font-black text-[#1f2421]">Day & Night Session Schedule Configuration</h3>
             <p className="text-xs text-slate-500 mt-0.5">
               Customize standard booking hours and default policies for Day and Night reservations
             </p>

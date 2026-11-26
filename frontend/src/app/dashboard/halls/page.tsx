@@ -166,10 +166,10 @@ export default function OwnerHallsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-gray-100">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-[#faf7f2] rounded-2xl p-6 border border-[#e5ded4]">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">My Wedding Halls</h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#1f2421]">My Wedding Halls</h1>
+          <p className="text-xs sm:text-sm text-[#6c726d] font-medium mt-1">
             Manage your registered hall profiles, capacities, pricing rules, and operational status
           </p>
         </div>
@@ -189,7 +189,7 @@ export default function OwnerHallsPage() {
             });
             setCreateModalOpen(true);
           }}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#1e382b] hover:bg-[#162a20] px-4 py-2.5 text-xs sm:text-sm font-bold text-white active:scale-95 transition cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           Add New Hall
@@ -200,20 +200,20 @@ export default function OwnerHallsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {isLoading ? (
           <div className="col-span-full py-16 text-center">
-            <div className="inline-block h-9 w-9 animate-spin rounded-full border-4 border-[#3b3c44] border-t-transparent" />
+            <div className="inline-block h-9 w-9 animate-spin rounded-full border-4 border-[#1e382b] border-t-transparent" />
           </div>
         ) : data?.halls && data.halls.length > 0 ? (
           data.halls.map((hall) => (
             <div
               key={hall.id}
-              className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between hover:border-slate-300 transition"
+              className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between hover:border-[#d6cec3] transition shadow-2xs"
             >
               <div>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="font-extrabold text-base text-gray-900 truncate">{hall.name}</h3>
-                    <p className="flex items-center gap-1 text-[11px] text-gray-500 font-medium mt-0.5 truncate">
-                      <MapPin className="h-3 w-3 text-gray-400 shrink-0" />
+                    <h3 className="font-extrabold text-base text-[#1f2421] truncate">{hall.name}</h3>
+                    <p className="flex items-center gap-1 text-[11px] text-[#6c726d] font-medium mt-0.5 truncate">
+                      <MapPin className="h-3 w-3 text-[#7a7368] shrink-0" />
                       <span className="truncate">{hall.address}, {hall.area}, {hall.city}</span>
                     </p>
                   </div>
@@ -221,25 +221,25 @@ export default function OwnerHallsPage() {
                     className={`shrink-0 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
                       hall.status === "APPROVED" || hall.status === "PENDING"
                         ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
-                        : "bg-slate-100 text-slate-600 border border-slate-300"
+                        : "bg-[#ebe3d7] text-[#6c726d] border border-[#d6cec3]"
                     }`}
                   >
                     {hall.status === "APPROVED" || hall.status === "PENDING" ? "ACTIVE" : "DISABLED"}
                   </span>
                 </div>
 
-                <div className="mt-3 grid grid-cols-3 gap-1.5 rounded-xl bg-gray-50/80 border border-gray-100 p-2.5 text-center text-xs">
+                <div className="mt-3 grid grid-cols-3 gap-1.5 rounded-xl bg-[#ebe3d7]/40 border border-[#e5ded4] p-2.5 text-center text-xs">
                   <div>
-                    <span className="text-[10px] text-gray-400 font-medium">Capacity</span>
-                    <p className="font-bold text-gray-800 text-[11px] mt-0.5">{hall.capacity} Guests</p>
+                    <span className="text-[10px] text-[#6c726d] font-medium">Capacity</span>
+                    <p className="font-bold text-[#1f2421] text-[11px] mt-0.5">{hall.capacity} Guests</p>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 font-medium">Weekday</span>
-                    <p className="font-bold text-gray-800 text-[11px] mt-0.5">PKR {Number(hall.priceWeekday).toLocaleString()}</p>
+                    <span className="text-[10px] text-[#6c726d] font-medium">Weekday</span>
+                    <p className="font-bold text-[#1f2421] text-[11px] mt-0.5">PKR {Number(hall.priceWeekday).toLocaleString()}</p>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 font-medium">Weekend</span>
-                    <p className="font-bold text-gray-800 text-[11px] mt-0.5">PKR {Number(hall.priceWeekend).toLocaleString()}</p>
+                    <span className="text-[10px] text-[#6c726d] font-medium">Weekend</span>
+                    <p className="font-bold text-[#1f2421] text-[11px] mt-0.5">PKR {Number(hall.priceWeekend).toLocaleString()}</p>
                   </div>
                 </div>
 
@@ -249,16 +249,16 @@ export default function OwnerHallsPage() {
                       hall.amenities.slice(0, 4).map((am, idx) => (
                         <span
                           key={idx}
-                          className="rounded-lg bg-slate-100/70 border border-slate-200/60 px-2 py-0.5 text-[10px] font-semibold text-slate-700"
+                          className="rounded-lg bg-[#ebe3d7]/60 border border-[#d6cec3]/60 px-2 py-0.5 text-[10px] font-semibold text-[#1f2421]"
                         >
                           {am}
                         </span>
                       ))
                     ) : (
-                      <span className="text-[11px] text-gray-400 font-medium">No amenities listed</span>
+                      <span className="text-[11px] text-[#6c726d] font-medium">No amenities listed</span>
                     )}
                     {Array.isArray(hall.amenities) && hall.amenities.length > 4 && (
-                      <span className="rounded-lg bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-500">
+                      <span className="rounded-lg bg-[#ebe3d7] px-1.5 py-0.5 text-[10px] font-bold text-[#6c726d]">
                         +{hall.amenities.length - 4}
                       </span>
                     )}
@@ -267,10 +267,10 @@ export default function OwnerHallsPage() {
               </div>
 
               {/* Action Buttons: Calendar link, then 3 buttons in exactly ONE row */}
-              <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+              <div className="mt-4 pt-3 border-t border-[#e5ded4] space-y-2">
                 <Link
                   href={`/dashboard/calendar?hallId=${hall.id}`}
-                  className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/70 text-xs font-bold text-[#3b3c44] transition"
+                  className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-[#ebe3d7]/40 hover:bg-[#ebe3d7] border border-[#d6cec3] text-xs font-bold text-[#1e382b] transition"
                 >
                   <CalendarDays className="h-3.5 w-3.5" />
                   <span>Open Availability Calendar &rarr;</span>
@@ -280,9 +280,9 @@ export default function OwnerHallsPage() {
                   {/* Edit Button */}
                   <button
                     onClick={() => openEditModal(hall)}
-                    className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition cursor-pointer"
+                    className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-[#d6cec3] bg-white hover:bg-[#ebe3d7] text-[#1f2421] font-bold text-xs transition cursor-pointer"
                   >
-                    <Edit2 className="h-3.5 w-3.5 text-slate-400" />
+                    <Edit2 className="h-3.5 w-3.5 text-[#6c726d]" />
                     <span>Edit</span>
                   </button>
 

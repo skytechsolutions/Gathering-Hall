@@ -206,17 +206,17 @@ export default function SuperAdminOwnersPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-slate-200/80">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-[#faf7f2] rounded-2xl p-6 border border-[#e5ded4]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-[#3b3c44] border border-slate-200">
-              <Users className="h-3.5 w-3.5 text-[#3b3c44]" /> Partner Directory
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#ebe3d7] text-[#1e382b] border border-[#d6cec3]">
+              <Users className="h-3.5 w-3.5 text-[#1e382b]" /> Partner Directory
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 mt-2">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#1f2421] mt-2">
             Hall Owner Account Management
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+          <p className="text-xs sm:text-sm text-[#6c726d] font-medium mt-1">
             Create accounts, activate/deactivate access, manage login credentials, and reset passwords
           </p>
         </div>
@@ -225,7 +225,7 @@ export default function SuperAdminOwnersPage() {
             setFormError(null);
             setCreateModalOpen(true);
           }}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition cursor-pointer"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#1e382b] hover:bg-[#162a20] px-4 py-2.5 text-xs sm:text-sm font-bold text-white active:scale-95 transition cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           Create Hall Owner
@@ -233,9 +233,9 @@ export default function SuperAdminOwnersPage() {
       </div>
 
       {/* Filters & Search */}
-      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#7a7368]" />
           <input
             type="text"
             value={search}
@@ -244,7 +244,7 @@ export default function SuperAdminOwnersPage() {
               setPage(1);
             }}
             placeholder="Search by owner name, email, or phone..."
-            className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
+            className="w-full rounded-xl border border-[#d6cec3] bg-white py-2.5 pl-10 pr-4 text-sm text-[#1f2421] placeholder-[#7a7368] focus:border-[#1e382b] focus:ring-2 focus:ring-[#1e382b]/20 focus:outline-none"
           />
         </div>
 
@@ -263,8 +263,8 @@ export default function SuperAdminOwnersPage() {
               }}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
                 statusFilter === st.value
-                  ? "bg-[#3b3c44] text-white"
-                  : "bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+                  ? "bg-[#1e382b] text-white shadow-2xs"
+                  : "bg-[#ebe3d7]/60 text-[#1f2421] hover:bg-[#ebe3d7]"
               }`}
             >
               {st.label}
@@ -274,10 +274,10 @@ export default function SuperAdminOwnersPage() {
       </div>
 
       {/* Owners Table */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden">
+      <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600">
-            <thead className="bg-gray-50/70 text-xs font-bold uppercase text-gray-400 border-b border-gray-100">
+          <table className="w-full text-left text-sm text-[#1f2421]">
+            <thead className="bg-[#ebe3d7]/50 text-xs font-bold uppercase text-[#6c726d] border-b border-[#e5ded4]">
               <tr>
                 <th className="px-5 py-3.5">Owner Credentials</th>
                 <th className="px-5 py-3.5">Phone / Contact</th>
@@ -287,12 +287,12 @@ export default function SuperAdminOwnersPage() {
                 <th className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100/80">
+            <tbody className="divide-y divide-[#e5ded4]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-sm text-gray-500">
+                  <td colSpan={6} className="px-5 py-12 text-center text-sm text-[#6c726d]">
                     <div className="flex justify-center">
-                      <div className="h-7 w-7 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent" />
+                      <div className="h-7 w-7 animate-spin rounded-full border-3 border-[#1e382b] border-t-transparent" />
                     </div>
                   </td>
                 </tr>
@@ -303,24 +303,24 @@ export default function SuperAdminOwnersPage() {
                   const isPending = owner.status === "PENDING";
 
                   return (
-                    <tr key={owner.id} className="hover:bg-slate-50/70 transition">
+                    <tr key={owner.id} className="hover:bg-[#ebe3d7]/30 transition">
                       {/* Owner Credentials */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-gray-900">{owner.name}</span>
+                          <span className="font-bold text-[#1f2421]">{owner.name}</span>
                           <button
                             onClick={() => openEditModal(owner)}
                             title="Edit Credentials"
-                            className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+                            className="p-1 rounded text-[#7a7368] hover:text-[#1f2421] hover:bg-[#ebe3d7] cursor-pointer"
                           >
                             <Edit2 className="h-3 w-3" />
                           </button>
                         </div>
-                        <div className="text-xs text-gray-400 font-mono mt-0.5">{owner.email}</div>
+                        <div className="text-xs text-[#6c726d] font-mono mt-0.5">{owner.email}</div>
                       </td>
 
                       {/* Phone Number */}
-                      <td className="px-5 py-4 font-mono font-medium text-gray-700 text-xs">
+                      <td className="px-5 py-4 font-mono font-medium text-[#1f2421] text-xs">
                         {owner.phone ? (
                           <div className="flex items-center gap-1.5">
                             <span>{owner.phone}</span>
@@ -329,7 +329,7 @@ export default function SuperAdminOwnersPage() {
                               target="_blank"
                               rel="noreferrer"
                               title="Chat via WhatsApp"
-                              className="text-emerald-600 hover:text-emerald-700"
+                              className="text-emerald-700 hover:text-emerald-800"
                             >
                               <ExternalLink className="h-3 w-3" />
                             </a>
@@ -341,7 +341,7 @@ export default function SuperAdminOwnersPage() {
 
                       {/* Registered Halls Count */}
                       <td className="px-5 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-[#3b3c44] border border-slate-200">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#ebe3d7] text-[#1e382b] border border-[#d6cec3]">
                           {owner.hallsCount || owner._count?.halls || 0} Hall(s)
                         </span>
                       </td>
