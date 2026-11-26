@@ -53,7 +53,7 @@ export default function AvailabilityCalendarPage() {
   const [activeSession, setActiveSession] = useState<SessionType>("DAY");
 
   // Selected date key for the active day popover card (e.g., Day 02 in screenshot)
-  const [selectedDateKey, setSelectedDateKey] = useState<string>("2026-11-02");
+  const [selectedDateKey, setSelectedDateKey] = useState<string | null>("2026-11-02");
 
   // Quick date jump popover
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
@@ -342,11 +342,11 @@ export default function AvailabilityCalendarPage() {
   }, [selectedDateKey, availabilityMap]);
 
   return (
-    <div className="h-full flex-1 min-h-0 flex flex-col justify-between space-y-1.5 lg:space-y-2 max-w-[1600px] w-full mx-auto select-none overflow-hidden">
+    <div className="lg:h-full flex-1 min-h-0 flex flex-col justify-between space-y-2.5 lg:space-y-2 max-w-[1600px] w-full mx-auto select-none overflow-visible lg:overflow-hidden pb-6 lg:pb-0">
       {/* ============================================================== */}
       {/* 1. HEADER SECTION (Top Row)                                   */}
       {/* ============================================================== */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
         {/* Title & Icon */}
         <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-slate-100 text-[#3b3c44] shrink-0">
@@ -363,54 +363,57 @@ export default function AvailabilityCalendarPage() {
         </div>
 
         {/* Action Controls */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
           {/* Hall Selector Pill Dropdown */}
-          <div className="relative">
-            <div className="flex items-center gap-2 rounded-full border border-slate-200/90 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 hover:border-slate-300">
-              <Building2 className="h-3.5 w-3.5 text-slate-700 shrink-0" />
-              <select
-                value={activeHallId}
-                onChange={(e) => setSelectedHallId(e.target.value)}
-                className="bg-transparent pr-1 font-bold text-slate-800 outline-none cursor-pointer text-xs"
-              >
-                {hallsData && hallsData.length > 0 ? (
-                  hallsData.map((hall) => (
-                    <option key={hall.id} value={hall.id}>
-                      {hall.name} ({hall.city})
-                    </option>
-                  ))
-                ) : (
-                  <option value="">No Active Halls Available</option>
-                )}
-              </select>
+          <div className="relative w-full sm:w-auto">
+            <div className="flex items-center justify-between sm:justify-start gap-2 rounded-full border border-slate-200/90 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 hover:border-slate-300">
+              <div className="flex items-center gap-2 min-w-0">
+                <Building2 className="h-3.5 w-3.5 text-slate-700 shrink-0" />
+                <select
+                  value={activeHallId}
+                  onChange={(e) => setSelectedHallId(e.target.value)}
+                  className="bg-transparent font-bold text-slate-800 outline-none cursor-pointer text-xs truncate max-w-[210px] sm:max-w-none"
+                >
+                  {hallsData && hallsData.length > 0 ? (
+                    hallsData.map((hall) => (
+                      <option key={hall.id} value={hall.id}>
+                        {hall.name} ({hall.city})
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">No Active Halls Available</option>
+                  )}
+                </select>
+              </div>
               <ChevronDown className="h-3 w-3 text-slate-500 shrink-0" />
             </div>
           </div>
 
-          {/* Block Date Pill Button */}
-          <button
-            onClick={() => openBlockFor(selectedDateKey, activeSession)}
-            className="flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-800 hover:bg-slate-50 transition cursor-pointer"
-          >
-            <Lock className="h-3.5 w-3.5 text-slate-700" />
-            <span>Block Date</span>
-          </button>
+          {/* Block Date & Book Date in 2-col on mobile, flex on sm */}
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+            <button
+              onClick={() => openBlockFor(selectedDateKey || format(currentDate, "yyyy-MM-dd"), activeSession)}
+              className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200/90 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-800 hover:bg-slate-50 transition cursor-pointer"
+            >
+              <Lock className="h-3.5 w-3.5 text-slate-700" />
+              <span>Block Date</span>
+            </button>
 
-          {/* Book Date Solid Blue Pill Button */}
-          <button
-            onClick={() => openBookingFor(selectedDateKey, activeSession)}
-            className="flex items-center gap-1.5 rounded-full bg-[#3b3c44] hover:bg-[#2b2c33] text-white px-4 py-1.5 text-xs font-bold transition cursor-pointer"
-          >
-            <CalendarIcon className="h-3.5 w-3.5" />
-            <span>Book Date</span>
-          </button>
+            <button
+              onClick={() => openBookingFor(selectedDateKey || format(currentDate, "yyyy-MM-dd"), activeSession)}
+              className="flex items-center justify-center gap-1.5 rounded-full bg-[#3b3c44] hover:bg-[#2b2c33] text-white px-4 py-1.5 text-xs font-bold transition cursor-pointer"
+            >
+              <CalendarIcon className="h-3.5 w-3.5" />
+              <span>Book Date</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* ============================================================== */}
       {/* 2. LEGEND BAR                                                  */}
       {/* ============================================================== */}
-      <div className="rounded-xl bg-white border border-slate-200/80 px-4 py-1.5 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-[11px] sm:text-xs font-bold text-slate-700 shrink-0">
+      <div className="rounded-xl bg-white border border-slate-200/80 px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between sm:justify-center gap-2 sm:gap-8 text-[10px] sm:text-xs font-bold text-slate-700 shrink-0">
         <div className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-[#10b981]" />
           <span>Available</span>
@@ -433,40 +436,64 @@ export default function AvailabilityCalendarPage() {
       {/* 3. CALENDAR CONTROLS & DAY / NIGHT SEGMENTED SELECTOR          */}
       {/* ============================================================== */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
-        {/* Left: View Mode Pills (Month, Week, Agenda) */}
-        <div className="flex items-center gap-1 bg-white p-0.5 rounded-full border border-slate-200/80 self-start">
-          <button
-            onClick={() => setViewMode("month")}
-            className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
-              viewMode === "month"
-                ? "bg-[#3b3c44] text-white"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <CalendarIcon className="h-3 w-3" />
-            <span>Month</span>
-          </button>
-          <button
-            onClick={() => setViewMode("week")}
-            className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
-              viewMode === "week"
-                ? "bg-[#3b3c44] text-white"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <CalendarDays className="h-3 w-3" />
-            <span>Week</span>
-          </button>
-          <button
-            onClick={() => setViewMode("agenda")}
-            className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
-              viewMode === "agenda"
-                ? "bg-[#3b3c44] text-white"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <span>≡ Agenda</span>
-          </button>
+        {/* Left: View Mode Pills (Month, Week, Agenda) & Mobile Day/Night */}
+        <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-1 bg-white p-0.5 rounded-full border border-slate-200/80">
+            <button
+              onClick={() => setViewMode("month")}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
+                viewMode === "month"
+                  ? "bg-[#3b3c44] text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <CalendarIcon className="h-3 w-3" />
+              <span>Month</span>
+            </button>
+            <button
+              onClick={() => setViewMode("week")}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
+                viewMode === "week"
+                  ? "bg-[#3b3c44] text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <CalendarDays className="h-3 w-3" />
+              <span>Week</span>
+            </button>
+            <button
+              onClick={() => setViewMode("agenda")}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
+                viewMode === "agenda"
+                  ? "bg-[#3b3c44] text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <span>Agenda</span>
+            </button>
+          </div>
+
+          {/* Mobile-only Day/Night Toggle placed next to view mode */}
+          <div className="flex sm:hidden items-center gap-0.5 bg-white p-0.5 rounded-full border border-slate-200/80">
+            <button
+              onClick={() => setActiveSession("DAY")}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                activeSession === "DAY" ? "bg-[#3b3c44] text-white" : "text-slate-600"
+              }`}
+            >
+              <Sun className={`h-3 w-3 ${activeSession === "DAY" ? "text-amber-300 fill-amber-300" : "text-amber-500"}`} />
+              <span>Day</span>
+            </button>
+            <button
+              onClick={() => setActiveSession("NIGHT")}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                activeSession === "NIGHT" ? "bg-[#3b3c44] text-white" : "text-slate-600"
+              }`}
+            >
+              <Moon className={`h-3 w-3 ${activeSession === "NIGHT" ? "text-indigo-200 fill-indigo-200" : "text-indigo-500"}`} />
+              <span>Night</span>
+            </button>
+          </div>
         </div>
 
         {/* Center: Month Navigation (< [icon] Month Year >) */}
@@ -543,8 +570,8 @@ export default function AvailabilityCalendarPage() {
           )}
         </div>
 
-        {/* Right: DAY / NIGHT SEGMENTED SELECTOR */}
-        <div className="flex items-center gap-1 bg-white p-0.5 rounded-full border border-slate-200/80 self-start sm:self-auto">
+        {/* Desktop-only Right: DAY / NIGHT SEGMENTED SELECTOR */}
+        <div className="hidden sm:flex items-center gap-1 bg-white p-0.5 rounded-full border border-slate-200/80">
           <button
             onClick={() => setActiveSession("DAY")}
             className={`flex items-center gap-1 px-3.5 sm:px-4 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
@@ -573,9 +600,9 @@ export default function AvailabilityCalendarPage() {
       {/* ============================================================== */}
       {/* 4. MAIN CALENDAR GRID + RIGHT COLUMN (Fitted in Screen)         */}
       {/* ============================================================== */}
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-2.5 lg:gap-3 items-stretch">
+      <div className="flex-1 min-h-0 flex flex-col lg:grid lg:grid-cols-4 gap-3 lg:gap-3 items-stretch">
         {/* Calendar Grid Container (3 Columns on Desktop) */}
-        <div className="lg:col-span-3 rounded-2xl border border-slate-200/80 bg-white flex flex-col relative h-full min-h-0">
+        <div className="lg:col-span-3 rounded-2xl border border-slate-200/80 bg-white flex flex-col relative h-full min-h-0 overflow-hidden">
           {/* Day of Week Headers */}
           <div className="grid grid-cols-7 border-b border-slate-200/80 bg-slate-50/70 text-center text-[11px] sm:text-xs font-bold text-slate-800 py-1.5 shrink-0 select-none">
             <div>Mon</div>
@@ -640,7 +667,7 @@ export default function AvailabilityCalendarPage() {
                     onClick={() => {
                       if (isCurrentMonth) setSelectedDateKey(dateKey);
                     }}
-                    className={`relative p-1 sm:p-1.5 min-h-0 h-full flex flex-col justify-between transition-all select-none ${
+                    className={`relative p-1 sm:p-1.5 min-h-[50px] sm:min-h-[64px] lg:min-h-0 h-full flex flex-col justify-between transition-all select-none ${
                       !isCurrentMonth
                         ? "bg-slate-50/20 text-slate-300 pointer-events-none"
                         : "bg-white text-slate-800 cursor-pointer"
@@ -674,24 +701,43 @@ export default function AvailabilityCalendarPage() {
                           className={`inline-flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${pillBg} ${pillText} leading-tight truncate max-w-full`}
                         >
                           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotColor}`} />
-                          <span className="truncate">{label}</span>
+                          <span className="truncate">
+                            {label === "Available" ? (
+                              <>
+                                <span className="sm:hidden">Avail</span>
+                                <span className="hidden sm:inline">Available</span>
+                              </>
+                            ) : (
+                              label
+                            )}
+                          </span>
                         </div>
                       </div>
                     ) : (
                       <div className="h-4" />
                     )}
 
-                    {/* Popover Card (Matches Screenshot 1 Floating Over Selected Day with Smart Positioning) */}
+                    {/* Popover Card (Enhanced with Close Button and Mobile Floating Sheet Positioning) */}
                     {isSelected && selectedDayDetails && (
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        className={`absolute z-50 w-56 sm:w-60 rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200 animate-fadeIn ${
-                          rowIndex >= 3 ? "bottom-2 sm:bottom-4" : "top-9 sm:top-11"
-                        } ${colIndex >= 4 ? "right-2 sm:right-4" : "left-3 sm:left-5"}`}
+                        className={`z-50 rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/90 shadow-2xl animate-fadeIn max-md:fixed max-md:left-4 max-md:right-4 max-md:bottom-20 max-md:w-auto md:absolute md:w-60 ${
+                          rowIndex >= 3 ? "md:bottom-2 lg:bottom-4" : "md:top-9 lg:top-11"
+                        } ${colIndex >= 4 ? "md:right-2 lg:right-4" : "md:left-3 lg:left-5"}`}
                       >
-                        <h4 className="text-xs font-black text-slate-900 mb-2.5 flex items-center justify-between">
-                          <span>{format(parseISO(selectedDayDetails.dateKey), "dd MMMM yyyy")}</span>
-                        </h4>
+                        <div className="flex items-center justify-between mb-2.5">
+                          <h4 className="text-xs font-black text-slate-900">
+                            {format(parseISO(selectedDayDetails.dateKey), "dd MMMM yyyy")}
+                          </h4>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDateKey(null)}
+                            className="h-6 w-6 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer"
+                            title="Close"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
 
                         <div className="space-y-2 text-xs mb-3">
                           {/* Day Session Info */}

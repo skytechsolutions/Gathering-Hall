@@ -328,8 +328,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* ============================================================== */}
       <div className="flex flex-1 flex-col overflow-hidden h-full min-h-0">
         {/* Professional Top Navigation Bar */}
-        <header className="h-14 lg:h-16 border-b border-slate-200/80 bg-white px-4 sm:px-6 flex items-center justify-between shrink-0 z-30">
-          <div className="flex items-center gap-3 flex-1 max-w-xl">
+        <header className="h-14 lg:h-16 border-b border-slate-200/80 bg-white px-3 sm:px-6 flex items-center justify-between shrink-0 z-30">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl min-w-0 mr-2 sm:mr-4">
             {/* Hamburger Toggle Button: Collapses Desktop Sidebar, Opens Mobile Drawer */}
             <button
               onClick={() => {
@@ -339,7 +339,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   setSidebarCollapsed((prev) => !prev);
                 }
               }}
-              className="rounded-xl p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer shrink-0"
+              className="rounded-xl p-1.5 sm:p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer shrink-0"
               aria-label="Toggle navigation"
               title={sidebarCollapsed ? "Expand sidebar" : "Collapse to icons"}
             >
@@ -347,26 +347,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
 
             {/* Global Search Bar */}
-            <form onSubmit={handleGlobalSearch} className="relative flex-1 max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <form onSubmit={handleGlobalSearch} className="relative flex-1 min-w-0 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search bookings, customers..."
-                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-100/80 border border-slate-200/80 rounded-full focus:bg-white focus:border-[#3b3c44] focus:outline-none focus:ring-2 focus:ring-[#3b3c44]/25 transition-all text-slate-800 placeholder:text-slate-400"
+                placeholder="Search..."
+                className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs bg-slate-100/80 border border-slate-200/80 rounded-full focus:bg-white focus:border-[#3b3c44] focus:outline-none focus:ring-2 focus:ring-[#3b3c44]/25 transition-all text-slate-800 placeholder:text-slate-400"
               />
             </form>
           </div>
 
           {/* Right Header Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Functional Real-Time Notification Bell Dropdown */}
             <NotificationBell role="HALL_OWNER" />
 
             {/* User Profile Avatar */}
-            <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-[#3b3c44] to-[#25262c] text-white font-extrabold text-xs ring-2 ring-[#3b3c44]/20">
+            <div className="flex items-center gap-2 pl-2 border-l border-slate-200 shrink-0">
+              <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-gradient-to-tr from-[#3b3c44] to-[#25262c] text-white font-extrabold text-xs ring-2 ring-[#3b3c44]/20 shrink-0">
                 {user.name ? user.name.charAt(0).toUpperCase() : "O"}
               </div>
               <div className="hidden md:block">
@@ -469,8 +469,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main
           className={`flex-1 min-h-0 ${
             pathname === "/dashboard/calendar"
-              ? "overflow-hidden p-2 sm:p-3 lg:px-5 lg:py-2 flex flex-col"
-              : "overflow-y-auto p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8"
+              ? "overflow-y-auto lg:overflow-hidden p-2.5 sm:p-4 lg:px-6 lg:py-3 flex flex-col pb-24 lg:pb-3"
+              : "overflow-y-auto p-3 sm:p-6 lg:p-8 pb-24 lg:pb-8"
           }`}
         >
           {children}

@@ -58,24 +58,24 @@ export default function OwnerReportsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-gray-100">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-4 sm:p-6 border border-gray-100">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">Income & Financial Reports</h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight text-gray-900">Income & Financial Reports</h1>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5 sm:mt-1">
             Hall revenue breakdown, collection ledger, and pending balances across all venues
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition cursor-pointer"
           >
             <Printer className="h-4 w-4" />
             Print Report
           </button>
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition cursor-pointer"
           >
             <Download className="h-4 w-4" />
             Export CSV

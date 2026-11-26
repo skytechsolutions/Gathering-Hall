@@ -109,10 +109,10 @@ export default function OwnerPaymentsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-gray-100">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-4 sm:p-6 border border-gray-100">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">Payments & Receipts</h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+          <h1 className="text-xl sm:text-3xl font-black tracking-tight text-gray-900">Payments & Receipts</h1>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5 sm:mt-1">
             Record customer installments, print official receipts, and manage billing accounts
           </p>
         </div>
@@ -121,16 +121,63 @@ export default function OwnerPaymentsPage() {
             setFormError(null);
             setCreateModalOpen(true);
           }}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
         >
           <Plus className="h-4 w-4" />
           Record Payment
         </button>
       </div>
 
-      {/* Payments Table */}
+      {/* Payments Container */}
       <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Payments List (< md) */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {isLoading ? (
+            <div className="py-12 flex justify-center">
+              <div className="h-7 w-7 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent" />
+            </div>
+          ) : data?.payments && data.payments.length > 0 ? (
+            data.payments.map((p) => (
+              <div key={p.id} className="p-4 space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono font-black text-xs text-[#3b3c44]">{p.receiptNumber}</span>
+                  <span className="rounded-xl bg-gray-100 border border-gray-200/60 px-2.5 py-0.5 text-[10px] font-bold text-gray-700">
+                    {p.paymentMethod}
+                  </span>
+                </div>
+
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="font-bold text-sm text-gray-900">{p.booking?.customerName || "Customer"}</h4>
+                    <p className="text-xs text-gray-400 font-medium">{p.booking?.hall?.name || ""}</p>
+                    <p className="font-mono text-xs text-gray-500 mt-0.5">Booking: {p.booking?.bookingNumber || "—"}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-black text-sm text-emerald-700">PKR {Number(p.amount).toLocaleString()}</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">{new Date(p.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                <div className="pt-1 flex justify-end">
+                  <button
+                    onClick={() => setSelectedPayment(p)}
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 transition"
+                  >
+                    <Printer className="h-3.5 w-3.5" />
+                    <span>Print Receipt</span>
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="py-10 text-center text-sm text-gray-400 font-medium">
+              No payment records recorded yet.
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Payments Table (Hidden on mobile) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50/70 text-xs font-bold uppercase text-gray-400 border-b border-gray-100">
               <tr>

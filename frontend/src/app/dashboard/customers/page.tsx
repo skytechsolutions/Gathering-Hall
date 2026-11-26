@@ -212,8 +212,85 @@ export default function OwnerCustomersPage() {
           </div>
         </div>
 
-        {/* Table of Customers */}
-        <div className="overflow-x-auto">
+        {/* Mobile Customer Cards (Visible on < md) */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {isLoading ? (
+            <div className="py-12 flex justify-center">
+              <div className="h-7 w-7 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent" />
+            </div>
+          ) : data?.customers && data.customers.length > 0 ? (
+            data.customers.map((c) => {
+              const billed = c.totalBookingsAmount || 0;
+              const paid = c.totalAdvancePaid || 0;
+              const remaining = c.totalRemaining || 0;
+              const bookingsCount = c.totalBookingsCount ?? c._count?.bookings ?? 0;
+
+              return (
+                <div key={c.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="h-9 w-9 shrink-0 rounded-xl bg-gradient-to-tr from-[#3b3c44] to-[#25262c] text-white font-black text-xs flex items-center justify-center">
+                        {c.name ? c.name.charAt(0).toUpperCase() : "C"}
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-sm text-slate-900 truncate">{c.name}</h4>
+                        <p className="text-xs text-slate-500 font-mono">{c.phone}</p>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-[#3b3c44] shrink-0">
+                      {bookingsCount} {bookingsCount === 1 ? "Event" : "Events"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-slate-50 p-2 text-center text-xs border border-slate-100">
+                    <div>
+                      <span className="text-[10px] text-slate-400 font-medium">Invoiced</span>
+                      <p className="font-bold text-slate-900 text-[11px] mt-0.5">
+                        PKR {billed.toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-emerald-600 font-medium">Paid</span>
+                      <p className="font-bold text-emerald-600 text-[11px] mt-0.5">
+                        PKR {paid.toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-amber-600 font-medium">Balance</span>
+                      <p className="font-bold text-amber-700 text-[11px] mt-0.5">
+                        PKR {remaining.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-1">
+                    <button
+                      onClick={() => setSelectedCustomerId(c.id)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 transition"
+                    >
+                      <FileText className="h-3.5 w-3.5 text-[#3b3c44]" />
+                      <span>Ledger</span>
+                    </button>
+                    <button
+                      onClick={() => setPrintModalCustomerId(c.id)}
+                      className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl border border-slate-200 bg-slate-100/70 hover:bg-slate-200/70 text-xs font-bold text-[#3b3c44] transition"
+                    >
+                      <Printer className="h-3.5 w-3.5" />
+                      <span>Print</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="py-10 text-center text-sm text-slate-400 font-medium">
+              No customer accounts found matching your query.
+            </div>
+          )}
+        </div>
+
+        {/* Table of Customers (Desktop view) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs sm:text-sm text-slate-600">
             <thead className="bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 select-none">
               <tr>

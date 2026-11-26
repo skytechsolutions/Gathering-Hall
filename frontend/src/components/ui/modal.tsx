@@ -53,7 +53,7 @@ export function Modal({
     >
       <div
         ref={cardRef}
-        className={`w-full ${maxWidth} rounded-2xl bg-white p-6 border border-slate-300 my-auto animate-fadeIn ${className}`}
+        className={`w-full ${maxWidth} max-h-[92vh] overflow-y-auto rounded-2xl bg-white p-4 sm:p-6 border border-slate-300 my-auto animate-fadeIn ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (

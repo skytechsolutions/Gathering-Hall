@@ -65,20 +65,20 @@ export default function OwnerOverviewPage() {
             Real-time reservations, Day/Night booking sessions, and revenue ledger
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3 w-full sm:w-auto">
           <Link
             href="/dashboard/bookings"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
           >
             <PlusCircle className="h-4 w-4" />
             New Booking
           </Link>
           <Link
             href="/dashboard/calendar"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition text-center"
           >
             <CalendarDays className="h-4 w-4 text-[#3b3c44]" />
-            Availability Calendar
+            Calendar
           </Link>
         </div>
       </div>
@@ -276,7 +276,65 @@ export default function OwnerOverviewPage() {
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile View for Recent Bookings (< md) */}
+        <div className="md:hidden divide-y divide-gray-100">
+          {data.recentBookings && data.recentBookings.length > 0 ? (
+            data.recentBookings.map((b) => {
+              const isNight = b.notes?.includes("[SESSION:NIGHT]");
+              return (
+                <div key={b.id} className="py-3.5 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono font-bold text-xs text-[#3b3c44]">{b.bookingNumber}</span>
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                        b.status === "CONFIRMED"
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                          : b.status === "HOLD"
+                          ? "bg-amber-50 text-amber-700 border border-amber-200/60"
+                          : b.status === "BLOCKED"
+                          ? "bg-gray-900 text-white"
+                          : "bg-rose-50 text-rose-700 border border-rose-200/60"
+                      }`}
+                    >
+                      {b.status}
+                    </span>
+                  </div>
+
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-sm text-gray-900">{b.customerName}</p>
+                      <p className="text-xs text-gray-500">{b.hall?.name || "—"}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-black text-sm text-gray-900">
+                        PKR {Number(b.totalAmount || 0).toLocaleString()}
+                      </p>
+                      <div className="mt-1 flex items-center justify-end gap-1.5">
+                        <span className="text-[11px] text-gray-500 font-medium">{b.eventDate}</span>
+                        {isNight ? (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700">
+                            <Moon className="h-2.5 w-2.5" /> Night
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700">
+                            <SunMedium className="h-2.5 w-2.5" /> Day
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="py-8 text-center text-xs text-gray-400 font-medium">
+              No bookings recorded yet.
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table View (Hidden on mobile) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50/70 text-xs font-bold uppercase text-gray-400 border-b border-gray-100">
               <tr>
