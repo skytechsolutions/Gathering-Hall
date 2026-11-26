@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma.js";
-import { BookingStatus, EventType, Role, PaymentMethod, PaymentStatus, Prisma } from "@prisma/client";
+import { BookingStatus, EventType, Role, PaymentMethod, PaymentStatus, Prisma, HallStatus } from "@prisma/client";
 import { AuthPayload } from "../types/user.types.js";
 
 export class BookingService {
@@ -54,6 +54,14 @@ export class BookingService {
     });
     if (!hall) {
       throw new Error("Hall not found.");
+    }
+
+    if (hall.status === HallStatus.SUSPENDED) {
+      throw new Error("This wedding hall is currently disabled. Reservations cannot be created for a disabled hall.");
+    }
+
+    if (hall.status !== HallStatus.APPROVED) {
+      throw new Error("This wedding hall is not active. Reservations can only be created for approved halls.");
     }
 
     if (user.role === Role.HALL_OWNER && hall.ownerId !== user.userId) {
@@ -461,6 +469,14 @@ export class BookingService {
     const hall = await prisma.hall.findUnique({ where: { id: data.hallId } });
     if (!hall) {
       throw new Error("Hall not found.");
+    }
+
+    if (hall.status === HallStatus.SUSPENDED) {
+      throw new Error("This wedding hall is currently disabled. Dates cannot be blocked for a disabled hall.");
+    }
+
+    if (hall.status !== HallStatus.APPROVED) {
+      throw new Error("This wedding hall is not active. Dates can only be blocked for approved halls.");
     }
 
     if (user.role === Role.HALL_OWNER && hall.ownerId !== user.userId) {

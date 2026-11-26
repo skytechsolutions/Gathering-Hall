@@ -37,8 +37,8 @@ export class HallService {
       targetOwnerId = user.userId;
     }
 
-    const initialStatus =
-      user.role === Role.SUPER_ADMIN ? HallStatus.APPROVED : HallStatus.PENDING;
+    // Owners create halls directly in APPROVED status without admin gate
+    const initialStatus = HallStatus.APPROVED;
 
     const hall = await prisma.hall.create({
       data: {
@@ -234,10 +234,14 @@ export class HallService {
     return updated;
   }
 
-  async updateHallStatus(id: string, status: HallStatus, adminId: string) {
+  async updateHallStatus(id: string, status: HallStatus, user: AuthPayload) {
     const hall = await prisma.hall.findUnique({ where: { id } });
     if (!hall) {
       throw new Error("Hall not found.");
+    }
+
+    if (user.role === Role.HALL_OWNER && hall.ownerId !== user.userId) {
+      throw new Error("Access denied: You cannot modify another owner's hall.");
     }
 
     const updated = await prisma.hall.update({
@@ -250,8 +254,8 @@ export class HallService {
 
     await prisma.auditLog.create({
       data: {
-        userId: adminId,
-        action: "SUPERADMIN_UPDATED_HALL_STATUS",
+        userId: user.userId,
+        action: "HALL_STATUS_UPDATED",
         details: { hallId: id, oldStatus: hall.status, newStatus: status },
       },
     });

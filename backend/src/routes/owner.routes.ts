@@ -25,4 +25,12 @@ router.patch("/:id/status", validate(updateOwnerStatusSchema), (req, res, next) 
   ownerController.updateStatus(req, res, next)
 );
 
+router.post("/:id/reset-password", (req, res, next) =>
+  ownerController.resetPassword(req, res, next)
+);
+
+router.get("/:id/activities", (req, res, next) =>
+  ownerController.getActivities(req, res, next)
+);
+
 export default router;

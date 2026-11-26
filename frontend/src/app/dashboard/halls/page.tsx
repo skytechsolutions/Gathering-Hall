@@ -16,13 +16,19 @@ import {
   X,
   CheckCircle2,
   Sparkles,
+  Trash2,
+  Power,
+  PowerOff,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function OwnerHallsPage() {
   const queryClient = useQueryClient();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingHall, setEditingHall] = useState<Hall | null>(null);
+  const [deleteConfirmHall, setDeleteConfirmHall] = useState<Hall | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [form, setForm] = useState<{
     name: string;
@@ -79,6 +85,37 @@ export default function OwnerHallsPage() {
     },
   });
 
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "APPROVED" | "SUSPENDED" }) =>
+      hallApi.updateStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["owner-my-halls"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-halls-dropdown"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-halls-calendar"] });
+      queryClient.invalidateQueries({ queryKey: ["hall-availability"] });
+    },
+    onError: (err: any) => {
+      alert(err.message || "Failed to update hall status.");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => hallApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["owner-my-halls"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-halls-dropdown"] });
+      queryClient.invalidateQueries({ queryKey: ["owner-halls-calendar"] });
+      queryClient.invalidateQueries({ queryKey: ["hall-availability"] });
+      setDeleteConfirmHall(null);
+      setDeleteError(null);
+    },
+    onError: (err: any) => {
+      setDeleteError(err.message || "Failed to delete hall. It may have active bookings.");
+    },
+  });
+
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
@@ -129,7 +166,7 @@ export default function OwnerHallsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)]">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-gray-100">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">My Wedding Halls</h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
@@ -152,110 +189,144 @@ export default function OwnerHallsPage() {
             });
             setCreateModalOpen(true);
           }}
-          className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
         >
           <Plus className="h-4 w-4" />
           Add New Hall
         </button>
       </div>
 
-      {/* Halls Grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Halls Grid - Compact responsive 3-column layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {isLoading ? (
           <div className="col-span-full py-16 text-center">
-            <div className="inline-block h-9 w-9 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+            <div className="inline-block h-9 w-9 animate-spin rounded-full border-4 border-[#3b3c44] border-t-transparent" />
           </div>
         ) : data?.halls && data.halls.length > 0 ? (
           data.halls.map((hall) => (
             <div
               key={hall.id}
-              className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:border-blue-200 transition"
+              className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between hover:border-slate-300 transition"
             >
               <div>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-extrabold text-lg text-gray-900">{hall.name}</h3>
-                    <p className="flex items-center gap-1.5 text-xs text-gray-500 font-medium mt-1">
-                      <MapPin className="h-3.5 w-3.5 text-gray-400" />
-                      {hall.address}, {hall.area}, {hall.city}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-extrabold text-base text-gray-900 truncate">{hall.name}</h3>
+                    <p className="flex items-center gap-1 text-[11px] text-gray-500 font-medium mt-0.5 truncate">
+                      <MapPin className="h-3 w-3 text-gray-400 shrink-0" />
+                      <span className="truncate">{hall.address}, {hall.area}, {hall.city}</span>
                     </p>
                   </div>
                   <span
-                    className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${
-                      hall.status === "APPROVED"
+                    className={`shrink-0 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                      hall.status === "APPROVED" || hall.status === "PENDING"
                         ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
-                        : hall.status === "PENDING"
-                        ? "bg-amber-50 text-amber-700 border border-amber-200/60"
-                        : hall.status === "SUSPENDED"
-                        ? "bg-purple-50 text-purple-700 border border-purple-200/60"
-                        : "bg-rose-50 text-rose-700 border border-rose-200/60"
+                        : "bg-slate-100 text-slate-600 border border-slate-300"
                     }`}
                   >
-                    {hall.status}
+                    {hall.status === "APPROVED" || hall.status === "PENDING" ? "ACTIVE" : "DISABLED"}
                   </span>
                 </div>
 
-                {hall.status === "PENDING" && (
-                  <div className="mt-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/50 p-3 text-xs text-amber-800 flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
-                    <span>This venue is awaiting Super Admin verification and approval.</span>
-                  </div>
-                )}
-
-                <div className="mt-4 grid grid-cols-3 gap-2.5 rounded-2xl bg-gray-50/80 border border-gray-100 p-3 text-center text-xs">
+                <div className="mt-3 grid grid-cols-3 gap-1.5 rounded-xl bg-gray-50/80 border border-gray-100 p-2.5 text-center text-xs">
                   <div>
-                    <span className="text-gray-400 font-medium">Capacity</span>
-                    <p className="font-bold text-gray-800 mt-0.5">{hall.capacity} Guests</p>
+                    <span className="text-[10px] text-gray-400 font-medium">Capacity</span>
+                    <p className="font-bold text-gray-800 text-[11px] mt-0.5">{hall.capacity} Guests</p>
                   </div>
                   <div>
-                    <span className="text-gray-400 font-medium">Weekday Price</span>
-                    <p className="font-bold text-gray-800 mt-0.5">PKR {Number(hall.priceWeekday).toLocaleString()}</p>
+                    <span className="text-[10px] text-gray-400 font-medium">Weekday</span>
+                    <p className="font-bold text-gray-800 text-[11px] mt-0.5">PKR {Number(hall.priceWeekday).toLocaleString()}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400 font-medium">Weekend Price</span>
-                    <p className="font-bold text-gray-800 mt-0.5">PKR {Number(hall.priceWeekend).toLocaleString()}</p>
+                    <span className="text-[10px] text-gray-400 font-medium">Weekend</span>
+                    <p className="font-bold text-gray-800 text-[11px] mt-0.5">PKR {Number(hall.priceWeekend).toLocaleString()}</p>
                   </div>
                 </div>
 
-                <div className="mt-4">
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Amenities</span>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
+                <div className="mt-2.5">
+                  <div className="flex flex-wrap gap-1">
                     {Array.isArray(hall.amenities) && hall.amenities.length > 0 ? (
-                      hall.amenities.map((am, idx) => (
+                      hall.amenities.slice(0, 4).map((am, idx) => (
                         <span
                           key={idx}
-                          className="rounded-xl bg-blue-50/60 border border-blue-100/60 px-2.5 py-1 text-xs font-semibold text-blue-700"
+                          className="rounded-lg bg-slate-100/70 border border-slate-200/60 px-2 py-0.5 text-[10px] font-semibold text-slate-700"
                         >
                           {am}
                         </span>
                       ))
                     ) : (
-                      <span className="text-xs text-gray-400 font-medium">No amenities listed</span>
+                      <span className="text-[11px] text-gray-400 font-medium">No amenities listed</span>
+                    )}
+                    {Array.isArray(hall.amenities) && hall.amenities.length > 4 && (
+                      <span className="rounded-lg bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-500">
+                        +{hall.amenities.length - 4}
+                      </span>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
+              {/* Action Buttons: Calendar link, then 3 buttons in exactly ONE row */}
+              <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
                 <Link
                   href={`/dashboard/calendar?hallId=${hall.id}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
+                  className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/70 text-xs font-bold text-[#3b3c44] transition"
                 >
-                  <CalendarDays className="h-4 w-4" /> Open Availability Calendar &rarr;
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  <span>Open Availability Calendar &rarr;</span>
                 </Link>
 
-                <button
-                  onClick={() => openEditModal(hall)}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50 transition"
-                >
-                  <Edit2 className="h-3.5 w-3.5 text-gray-400" /> Edit Hall
-                </button>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {/* Edit Button */}
+                  <button
+                    onClick={() => openEditModal(hall)}
+                    className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition cursor-pointer"
+                  >
+                    <Edit2 className="h-3.5 w-3.5 text-slate-400" />
+                    <span>Edit</span>
+                  </button>
+
+                  {/* Disable / Enable Button */}
+                  {hall.status === "APPROVED" || hall.status === "PENDING" ? (
+                    <button
+                      onClick={() => statusMutation.mutate({ id: hall.id, status: "SUSPENDED" })}
+                      disabled={statusMutation.isPending}
+                      title="Disable this hall"
+                      className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs transition cursor-pointer"
+                    >
+                      <PowerOff className="h-3.5 w-3.5 text-amber-600" />
+                      <span>Disable</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => statusMutation.mutate({ id: hall.id, status: "APPROVED" })}
+                      disabled={statusMutation.isPending}
+                      title="Enable this hall"
+                      className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition cursor-pointer"
+                    >
+                      <Power className="h-3.5 w-3.5 text-emerald-600" />
+                      <span>Enable</span>
+                    </button>
+                  )}
+
+                  {/* Delete Button */}
+                  <button
+                    onClick={() => {
+                      setDeleteConfirmHall(hall);
+                      setDeleteError(null);
+                    }}
+                    title="Delete this hall"
+                    className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition cursor-pointer"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-rose-600" />
+                    <span>Delete</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="col-span-full rounded-3xl border border-gray-100 bg-white p-12 text-center text-sm text-gray-500">
+          <div className="col-span-full rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-sm text-gray-500">
             You have not registered any halls yet. Click <strong>Add New Hall</strong> to submit your first hall!
           </div>
         )}
@@ -286,7 +357,7 @@ export default function OwnerHallsPage() {
         </div>
 
         {formError && (
-          <div className="mb-4 flex items-center gap-2 rounded-2xl bg-rose-50 p-3.5 text-xs text-rose-700 border border-rose-200">
+          <div className="mb-4 flex items-center gap-2 rounded-xl bg-rose-50 p-3.5 text-xs text-rose-700 border border-rose-200">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{formError}</span>
           </div>
@@ -301,7 +372,7 @@ export default function OwnerHallsPage() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="e.g. Royal Marquee Chamkani"
-              className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
             />
           </div>
 
@@ -313,7 +384,7 @@ export default function OwnerHallsPage() {
                 required
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -323,7 +394,7 @@ export default function OwnerHallsPage() {
                 required
                 value={form.area}
                 onChange={(e) => setForm({ ...form, area: e.target.value })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
           </div>
@@ -336,7 +407,7 @@ export default function OwnerHallsPage() {
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
               placeholder="Main GT Road, Near Chamkani Interchange"
-              className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
             />
           </div>
 
@@ -349,7 +420,7 @@ export default function OwnerHallsPage() {
                 placeholder="0"
                 value={form.capacity === 0 || form.capacity === "" ? "" : form.capacity}
                 onChange={(e) => setForm({ ...form, capacity: e.target.value === "" ? "" : Number(e.target.value) })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -360,7 +431,7 @@ export default function OwnerHallsPage() {
                 placeholder="0"
                 value={form.priceWeekday === 0 || form.priceWeekday === "" ? "" : form.priceWeekday}
                 onChange={(e) => setForm({ ...form, priceWeekday: e.target.value === "" ? "" : Number(e.target.value) })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -371,7 +442,7 @@ export default function OwnerHallsPage() {
                 placeholder="0"
                 value={form.priceWeekend === 0 || form.priceWeekend === "" ? "" : form.priceWeekend}
                 onChange={(e) => setForm({ ...form, priceWeekend: e.target.value === "" ? "" : Number(e.target.value) })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
           </div>
@@ -383,7 +454,7 @@ export default function OwnerHallsPage() {
               value={form.amenities}
               onChange={(e) => setForm({ ...form, amenities: e.target.value })}
               placeholder="AC, Backup Generator, Parking, Stage Decor"
-              className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
             />
           </div>
 
@@ -394,7 +465,7 @@ export default function OwnerHallsPage() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder="Grand ballroom with central heating, elegant bridal room..."
-              className="mt-1 w-full rounded-2xl border border-gray-200 p-3 text-xs text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-xs text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
             />
           </div>
 
@@ -405,19 +476,63 @@ export default function OwnerHallsPage() {
                 setCreateModalOpen(false);
                 setEditingHall(null);
               }}
-              className="rounded-2xl border border-gray-200 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 transition"
+              className="rounded-xl border border-gray-200 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createMutation.isPending || updateMutation.isPending}
-              className="rounded-2xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50 shadow-md shadow-blue-500/20 active:scale-95 transition"
+              className="rounded-xl bg-[#3b3c44] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#2b2c33] disabled:opacity-50 active:scale-95 transition"
             >
               {createMutation.isPending || updateMutation.isPending ? "Saving..." : "Save Hall"}
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={!!deleteConfirmHall}
+        onClose={() => setDeleteConfirmHall(null)}
+        maxWidth="max-w-md"
+        title="Delete Wedding Hall"
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
+            <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-rose-900">Are you sure you want to delete this hall?</p>
+              <p className="mt-1 text-rose-700">
+                You are about to delete <strong className="underline">{deleteConfirmHall?.name}</strong>. This action cannot be undone.
+              </p>
+            </div>
+          </div>
+
+          {deleteError && (
+            <div className="p-3 rounded-xl bg-rose-100 border border-rose-300 text-rose-900 text-xs font-semibold">
+              {deleteError}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2.5 pt-2 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setDeleteConfirmHall(null)}
+              className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={deleteMutation.isPending}
+              onClick={() => deleteConfirmHall && deleteMutation.mutate(deleteConfirmHall.id)}
+              className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-700 disabled:opacity-50 transition cursor-pointer"
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Yes, Delete Hall"}
+            </button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

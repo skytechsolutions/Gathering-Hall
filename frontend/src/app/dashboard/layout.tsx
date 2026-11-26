@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import {
   LayoutDashboard,
   Building2,
@@ -85,7 +86,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-9 w-9 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+          <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#3b3c44] border-t-transparent" />
           <p className="text-sm font-semibold text-slate-500">Loading Chamkani Portal...</p>
         </div>
       </div>
@@ -95,8 +96,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (user.status === "PENDING") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-        <div className="max-w-md rounded-3xl border border-amber-200 bg-white p-7 shadow-xl text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
+        <div className="max-w-md rounded-2xl border border-amber-200 bg-white p-7 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
             <AlertCircle className="h-7 w-7" />
           </div>
           <h2 className="mt-4 text-xl font-bold text-slate-900">Account Pending Approval</h2>
@@ -106,7 +107,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="mt-6">
             <button
               onClick={() => logout()}
-              className="w-full rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 transition"
+              className="w-full rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 transition"
             >
               Sign Out
             </button>
@@ -119,8 +120,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (user.status === "BLOCKED" || user.status === "REJECTED") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-        <div className="max-w-md rounded-3xl border border-red-200 bg-white p-7 shadow-xl text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+        <div className="max-w-md rounded-2xl border border-red-200 bg-white p-7 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-red-100 text-red-600">
             <AlertCircle className="h-7 w-7" />
           </div>
           <h2 className="mt-4 text-xl font-bold text-slate-900">Account {user.status}</h2>
@@ -130,7 +131,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="mt-6">
             <button
               onClick={() => logout()}
-              className="w-full rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 transition"
+              className="w-full rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200 transition"
             >
               Sign Out
             </button>
@@ -153,7 +154,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* DESKTOP SIDEBAR NAVIGATION (100% Glassy Liquid Design)         */}
       {/* ============================================================== */}
       <aside
-        className={`hidden lg:flex flex-col my-3 ml-3 rounded-3xl bg-[#0b0c16]/80 backdrop-blur-2xl border border-white/[0.12] text-white shrink-0 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-40 select-none h-[calc(100vh-24px)] transition-all duration-300 ease-in-out relative ${
+        className={`hidden lg:flex flex-col my-3 ml-3 rounded-3xl bg-[#0b0c16]/80 backdrop-blur-2xl border border-white/[0.12] text-white shrink-0  z-40 select-none h-[calc(100vh-24px)] transition-all duration-300 ease-in-out relative ${
           sidebarCollapsed ? "w-[82px] overflow-visible" : "w-64 overflow-hidden"
         }`}
       >
@@ -166,7 +167,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-3 truncate w-full">
             {/* Custom Logo or Golden Amber Squircle Logo */}
             {brandSettings.logoUrl ? (
-              <div className="h-9 w-9 shrink-0 rounded-2xl overflow-hidden shadow-lg border border-white/20 bg-slate-950/60 flex items-center justify-center p-0.5">
+              <div className="h-9 w-9 shrink-0 rounded-2xl overflow-hidden border border-white/20 bg-slate-950/60 flex items-center justify-center p-0.5">
                 <img
                   src={brandSettings.logoUrl}
                   alt={brandSettings.hallName || "Hall Logo"}
@@ -174,7 +175,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 />
               </div>
             ) : (
-              <div className="h-9 w-9 shrink-0 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 shadow-lg shadow-amber-500/20 border border-white/20 flex items-center justify-center">
+              <div className="h-9 w-9 shrink-0 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 border border-white/20 flex items-center justify-center">
                 <Building2 className="h-5 w-5 text-slate-950 stroke-[2.4]" />
               </div>
             )}
@@ -196,7 +197,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="px-3 pt-3.5 pb-1 shrink-0">
             <button
               onClick={() => router.push("/dashboard/calendar")}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.14] text-white font-semibold text-xs backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)] transition active:scale-[0.98] cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.14] text-white font-semibold text-xs backdrop-blur-md transition active:scale-[0.98] cursor-pointer"
             >
               <Plus className="h-4 w-4 stroke-[2.5]" />
               <span>New Booking</span>
@@ -206,12 +207,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="pt-3 pb-1 flex justify-center relative group shrink-0">
             <button
               onClick={() => router.push("/dashboard/calendar")}
-              className="h-11 w-11 flex items-center justify-center rounded-2xl bg-white/[0.08] hover:bg-white/[0.18] hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] border border-white/[0.14] text-white backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)] transition active:scale-95 cursor-pointer"
+              className="h-11 w-11 flex items-center justify-center rounded-2xl bg-white/[0.08] hover:bg-white/[0.18] hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] border border-white/[0.14] text-white backdrop-blur-md transition active:scale-95 cursor-pointer"
             >
               <Plus className="h-5 w-5 stroke-[2.5] group-hover:scale-110 transition-transform duration-200" />
             </button>
             {/* Popover Light Tooltip */}
-            <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-xl bg-white text-slate-900 font-black text-xs shadow-[0_12px_32px_rgba(0,0,0,0.35)] border border-slate-100 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 origin-left z-50 whitespace-nowrap flex items-center">
+            <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-xl bg-white text-slate-900 font-black text-xs border border-slate-100 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 origin-left z-50 whitespace-nowrap flex items-center">
               <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rotate-45 border-l border-b border-slate-200" />
               <span>New Booking</span>
             </div>
@@ -230,7 +231,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   href={item.href}
                   className={`flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 group ${
                     isActive
-                      ? "bg-white/[0.14] text-white border border-white/[0.18] shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)]"
+                      ? "bg-white/[0.14] text-white border border-white/[0.18]"
                       : "text-white/60 hover:text-white hover:bg-white/[0.06]"
                   }`}
                 >
@@ -273,7 +274,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </Link>
 
                   {/* High-Contrast Light Popover Tooltip */}
-                  <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-xl bg-white text-slate-900 font-black text-xs shadow-[0_12px_32px_rgba(0,0,0,0.35)] border border-slate-100 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 origin-left z-50 whitespace-nowrap flex items-center">
+                  <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-xl bg-white text-slate-900 font-black text-xs border border-slate-100 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 origin-left z-50 whitespace-nowrap flex items-center">
                     <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rotate-45 border-l border-b border-slate-200" />
                     <span>{item.name}</span>
                   </div>
@@ -313,7 +314,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {user.name ? user.name.charAt(0).toUpperCase() : "O"}
               </button>
               {/* High-Contrast Light Popover Tooltip */}
-              <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-xl bg-white text-slate-900 font-black text-xs shadow-[0_12px_32px_rgba(0,0,0,0.35)] border border-slate-100 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 origin-left z-50 whitespace-nowrap flex items-center">
+              <div className="absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-xl bg-white text-slate-900 font-black text-xs border border-slate-100 opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 origin-left z-50 whitespace-nowrap flex items-center">
                 <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rotate-45 border-l border-b border-slate-200" />
                 <span>Sign Out ({user.name})</span>
               </div>
@@ -327,7 +328,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* ============================================================== */}
       <div className="flex flex-1 flex-col overflow-hidden h-full min-h-0">
         {/* Professional Top Navigation Bar */}
-        <header className="h-14 lg:h-16 border-b border-slate-200/80 bg-white px-4 sm:px-6 flex items-center justify-between shadow-xs shrink-0 z-30">
+        <header className="h-14 lg:h-16 border-b border-slate-200/80 bg-white px-4 sm:px-6 flex items-center justify-between shrink-0 z-30">
           <div className="flex items-center gap-3 flex-1 max-w-xl">
             {/* Hamburger Toggle Button: Collapses Desktop Sidebar, Opens Mobile Drawer */}
             <button
@@ -353,44 +354,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search bookings, customers..."
-                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-100/80 border border-slate-200/80 rounded-full focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-800 placeholder:text-slate-400"
+                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-100/80 border border-slate-200/80 rounded-full focus:bg-white focus:border-[#3b3c44] focus:outline-none focus:ring-2 focus:ring-[#3b3c44]/25 transition-all text-slate-800 placeholder:text-slate-400"
               />
             </form>
           </div>
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-3">
-            {/* Quick Session Indicator / Navigation */}
-            <Link
-              href="/dashboard/calendar"
-              title="Availability Calendar: ☀️ Day & 🌙 Night Sessions"
-              className="hidden sm:flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/70 p-1.5 px-3 rounded-full border border-slate-200/80 text-xs font-semibold text-slate-700 transition"
-            >
-              <span className="flex items-center gap-1 text-amber-600">
-                <Sun className="h-3.5 w-3.5" />
-                <span>Day</span>
-              </span>
-              <span className="text-slate-300">/</span>
-              <span className="flex items-center gap-1 text-blue-600">
-                <Moon className="h-3.5 w-3.5" />
-                <span>Night</span>
-              </span>
-            </Link>
-
-            {/* Notification Bell */}
-            <button
-              title="Notifications"
-              className="relative p-2 rounded-full bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition cursor-pointer"
-            >
-              <Bell className="h-4 w-4" />
-              <span className="absolute top-0.5 right-0.5 h-3.5 w-3.5 rounded-full bg-red-600 text-white text-[8px] font-bold flex items-center justify-center">
-                2
-              </span>
-            </button>
+            {/* Functional Real-Time Notification Bell Dropdown */}
+            <NotificationBell role="HALL_OWNER" />
 
             {/* User Profile Avatar */}
             <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-xs shadow-sm ring-2 ring-blue-500/20">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-[#3b3c44] to-[#25262c] text-white font-extrabold text-xs ring-2 ring-[#3b3c44]/20">
                 {user.name ? user.name.charAt(0).toUpperCase() : "O"}
               </div>
               <div className="hidden md:block">
@@ -410,7 +386,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           aria-hidden={!mobileMenuOpen}
         >
           <div
-            className={`fixed inset-y-0 left-0 w-[290px] sm:w-[320px] max-w-[85vw] bg-[#0b1329] text-white h-full shadow-2xl flex flex-col p-5 rounded-r-3xl transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            className={`fixed inset-y-0 left-0 w-[290px] sm:w-[320px] max-w-[85vw] bg-[#0b1329] text-white h-full flex flex-col p-5 rounded-r-3xl transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
               mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             }`}
             onClick={(e) => e.stopPropagation()}
@@ -418,7 +394,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-3">
               <div className="flex items-center gap-3 truncate">
                 {brandSettings.logoUrl ? (
-                  <div className="h-10 w-10 shrink-0 rounded-2xl overflow-hidden shadow-sm border border-white/20 bg-black/40 flex items-center justify-center p-0.5">
+                  <div className="h-10 w-10 shrink-0 rounded-2xl overflow-hidden border border-white/20 bg-black/40 flex items-center justify-center p-0.5">
                     <img
                       src={brandSettings.logoUrl}
                       alt={brandSettings.hallName || "Hall Logo"}
@@ -426,7 +402,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     />
                   </div>
                 ) : (
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-sm shadow-blue-500/30">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#3b3c44] text-white">
                     <Building2 className="h-5 w-5" />
                   </div>
                 )}
@@ -434,7 +410,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <h2 className="font-extrabold text-white text-base leading-tight truncate">
                     {brandSettings.hallName || "Chamkani Hall"}
                   </h2>
-                  <span className="text-[10px] font-bold text-blue-400 block tracking-wider uppercase">
+                  <span className="text-[10px] font-bold text-slate-400 block tracking-wider uppercase">
                     Owner Portal
                   </span>
                 </div>
@@ -459,7 +435,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                       isActive
-                        ? "bg-[#2563eb] text-white shadow-lg shadow-blue-600/30 font-bold"
+                        ? "bg-[#3b3c44] text-white font-bold"
                         : "text-slate-400 hover:bg-white/5 hover:text-white"
                     }`}
                   >
@@ -511,14 +487,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 href={item.href}
                 className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all ${
                   isActive
-                    ? "text-blue-600 font-bold"
+                    ? "text-[#3b3c44] font-bold"
                     : "text-slate-500 hover:text-slate-900 font-medium"
                 }`}
               >
-                <div className={`relative p-1 rounded-lg transition-colors ${isActive ? "bg-blue-50" : ""}`}>
-                  <Icon className={`h-5 w-5 ${isActive ? "text-blue-600" : "text-slate-500"}`} />
+                <div className={`relative p-1 rounded-lg transition-colors ${isActive ? "bg-slate-100" : ""}`}>
+                  <Icon className={`h-5 w-5 ${isActive ? "text-[#3b3c44]" : "text-slate-500"}`} />
                   {isActive && (
-                    <span className="absolute -top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-blue-600 shadow-[0_0_6px_#2563eb]" />
+                    <span className="absolute -top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-[#3b3c44] shadow-[0_0_6px_#3b3c44]" />
                   )}
                 </div>
                 <span className="text-[10px] mt-0.5 tracking-tight truncate max-w-[64px]">

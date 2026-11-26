@@ -58,7 +58,7 @@ export default function OwnerReportsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)]">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-gray-100">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">Income & Financial Reports</h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
@@ -68,14 +68,14 @@ export default function OwnerReportsPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
           >
             <Printer className="h-4 w-4" />
             Print Report
           </button>
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
           >
             <Download className="h-4 w-4" />
             Export CSV
@@ -85,7 +85,7 @@ export default function OwnerReportsPage() {
 
       {/* Aggregate Financial Metrics */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Agreed Rent</span>
           <p className="mt-2 text-3xl font-black text-gray-900">
             PKR {Number(overviewData?.totalRevenue || 0).toLocaleString()}
@@ -93,7 +93,7 @@ export default function OwnerReportsPage() {
           <p className="mt-1 text-xs text-gray-500 font-medium">Total volume across all confirmed bookings</p>
         </div>
 
-        <div className="rounded-3xl border border-emerald-100 bg-emerald-50/40 p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+        <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/40 p-6">
           <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Cash Collected (Advance)</span>
           <p className="mt-2 text-3xl font-black text-emerald-900">
             PKR {Number(overviewData?.advanceReceived || 0).toLocaleString()}
@@ -101,7 +101,7 @@ export default function OwnerReportsPage() {
           <p className="mt-1 text-xs text-emerald-700 font-medium">Deposits received in cash / bank</p>
         </div>
 
-        <div className="rounded-3xl border border-amber-100 bg-amber-50/40 p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+        <div className="rounded-2xl border border-amber-200/60 bg-amber-50/40 p-6">
           <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">Pending Balance</span>
           <p className="mt-2 text-3xl font-black text-amber-900">
             PKR {Number(overviewData?.remainingPayments || 0).toLocaleString()}
@@ -111,13 +111,13 @@ export default function OwnerReportsPage() {
       </div>
 
       {/* Monthly Chart */}
-      <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="font-extrabold text-lg text-gray-900">Past 6 Months Income Trend</h3>
             <p className="text-xs text-gray-400 font-medium">Monthly revenue generated from completed events</p>
           </div>
-          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-[#3b3c44] border border-slate-200">
             Revenue Performance
           </span>
         </div>
@@ -136,9 +136,9 @@ export default function OwnerReportsPage() {
                       <span className="text-gray-400 font-normal">({m.bookings} events)</span>
                     </span>
                   </div>
-                  <div className="h-3 w-full rounded-full bg-gray-100 overflow-hidden">
+                  <div className="h-3 w-full rounded-xl bg-gray-100 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500 shadow-sm"
+                      className="h-full rounded-xl bg-gradient-to-r from-[#3b3c44] to-[#25262c] transition-all duration-500"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -152,7 +152,7 @@ export default function OwnerReportsPage() {
       </div>
 
       {/* Hall Revenue Breakdown Table */}
-      <div className="rounded-3xl border border-gray-100 bg-white shadow-[0_4px_25px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden">
         <div className="border-b border-gray-100 p-5">
           <h3 className="font-extrabold text-lg text-gray-900">Hall-by-Hall Financial Breakdown</h3>
           <p className="text-xs text-gray-400 font-medium">Revenue, collections, and pending dues per venue</p>
@@ -175,17 +175,17 @@ export default function OwnerReportsPage() {
                 <tr>
                   <td colSpan={6} className="px-5 py-12 text-center text-gray-400">
                     <div className="flex justify-center">
-                      <div className="h-7 w-7 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
+                      <div className="h-7 w-7 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent" />
                     </div>
                   </td>
                 </tr>
               ) : hallsData && hallsData.length > 0 ? (
                 hallsData.map((r) => (
-                  <tr key={r.hallId} className="hover:bg-blue-50/20 transition">
+                  <tr key={r.hallId} className="hover:bg-slate-100/50 transition">
                     <td className="px-5 py-4 font-bold text-gray-900">{r.hallName}</td>
                     <td className="px-5 py-4 text-xs font-semibold text-gray-500">{r.city}</td>
                     <td className="px-5 py-4 text-center">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/50">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-[#3b3c44] border border-slate-200">
                         {r.totalBookings}
                       </span>
                     </td>

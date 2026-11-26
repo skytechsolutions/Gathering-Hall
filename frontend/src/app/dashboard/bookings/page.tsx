@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { bookingApi, Booking } from "@/services/api/booking.api";
 import { hallApi } from "@/services/api/hall.api";
@@ -85,12 +85,25 @@ export default function OwnerBookingsPage() {
     queryFn: async () => {
       const res = await hallApi.getAll();
       const halls = (res as any)?.halls || [];
-      if (halls.length > 0 && !bookingForm.hallId) {
-        setBookingForm((prev) => ({ ...prev, hallId: halls[0].id }));
-      }
       return halls as any[];
     },
   });
+
+  // Filter to only active (APPROVED) halls for new reservations
+  const activeHalls = useMemo(() => {
+    return (hallsData || []).filter((h: any) => h.status === "APPROVED");
+  }, [hallsData]);
+
+  // Keep selected hall in sync with active halls
+  useEffect(() => {
+    if (activeHalls.length > 0) {
+      if (!bookingForm.hallId || !activeHalls.some((h: any) => h.id === bookingForm.hallId)) {
+        setBookingForm((prev) => ({ ...prev, hallId: activeHalls[0].id }));
+      }
+    } else {
+      setBookingForm((prev) => ({ ...prev, hallId: "" }));
+    }
+  }, [activeHalls, bookingForm.hallId]);
 
   // Mutations
   const createMutation = useMutation({
@@ -138,7 +151,13 @@ export default function OwnerBookingsPage() {
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!bookingForm.hallId) {
-      setFormError("Please select a hall.");
+      setFormError("Please select an active wedding hall.");
+      return;
+    }
+
+    const isHallActive = activeHalls.some((h: any) => h.id === bookingForm.hallId);
+    if (!isHallActive) {
+      setFormError("The selected wedding hall is disabled. Please select an active hall.");
       return;
     }
     setFormError(null);
@@ -157,7 +176,7 @@ export default function OwnerBookingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)]">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-gray-100">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">
             Bookings & Reservations
@@ -171,7 +190,7 @@ export default function OwnerBookingsPage() {
             setFormError(null);
             setCreateModalOpen(true);
           }}
-          className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
         >
           <Plus className="h-4 w-4" />
           Create Booking
@@ -179,7 +198,7 @@ export default function OwnerBookingsPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col gap-3 rounded-3xl border border-gray-100 bg-white p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.02)] lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3.5 top-3 h-4 w-4 text-gray-400" />
@@ -191,7 +210,7 @@ export default function OwnerBookingsPage() {
                 setPage(1);
               }}
               placeholder="Search by customer, phone, or booking #..."
-              className="w-full rounded-2xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
             />
           </div>
 
@@ -201,7 +220,7 @@ export default function OwnerBookingsPage() {
               setSelectedHall(e.target.value);
               setPage(1);
             }}
-            className="rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm font-semibold text-gray-700 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+            className="rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold text-gray-700 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
           >
             <option value="">All My Halls</option>
             {hallsData?.map((h) => (
@@ -222,7 +241,7 @@ export default function OwnerBookingsPage() {
               }}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
                 statusFilter === st
-                  ? "bg-blue-600 text-white shadow-sm shadow-blue-500/20"
+                  ? "bg-[#3b3c44] text-white"
                   : "bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
               }`}
             >
@@ -233,7 +252,7 @@ export default function OwnerBookingsPage() {
       </div>
 
       {/* Bookings Table */}
-      <div className="rounded-3xl border border-gray-100 bg-white shadow-[0_4px_25px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50/70 text-xs font-bold uppercase text-gray-400 border-b border-gray-100">
@@ -255,7 +274,7 @@ export default function OwnerBookingsPage() {
                 <tr>
                   <td colSpan={10} className="px-5 py-12 text-center text-sm text-gray-500">
                     <div className="flex justify-center">
-                      <div className="h-7 w-7 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
+                      <div className="h-7 w-7 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent" />
                     </div>
                   </td>
                 </tr>
@@ -263,8 +282,8 @@ export default function OwnerBookingsPage() {
                 data.bookings.map((b) => {
                   const isNight = b.session === "NIGHT" || b.notes?.includes("[SESSION:NIGHT]");
                   return (
-                    <tr key={b.id} className="hover:bg-blue-50/20 transition">
-                      <td className="px-5 py-4 font-mono font-bold text-blue-600">{b.bookingNumber}</td>
+                    <tr key={b.id} className="hover:bg-slate-100/50 transition">
+                      <td className="px-5 py-4 font-mono font-bold text-[#3b3c44]">{b.bookingNumber}</td>
                       <td className="px-5 py-4 font-bold text-gray-900">{b.hall?.name || "—"}</td>
                       <td className="px-5 py-4">
                         <div className="font-semibold text-gray-900">{b.customerName}</div>
@@ -310,7 +329,7 @@ export default function OwnerBookingsPage() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setSelectedBooking(b)}
-                            className="rounded-xl p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition"
+                            className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition"
                             title="View Details & Invoice"
                           >
                             <Eye className="h-4 w-4" />
@@ -324,7 +343,7 @@ export default function OwnerBookingsPage() {
                                   advanceAmount: b.advanceAmount || 0,
                                 })
                               }
-                              className="rounded-xl p-2 text-emerald-600 hover:bg-emerald-50 transition"
+                              className="rounded-lg p-2 text-emerald-600 hover:bg-emerald-50 transition"
                               title="Confirm Reservation"
                             >
                               <CheckCircle2 className="h-4 w-4" />
@@ -356,14 +375,14 @@ export default function OwnerBookingsPage() {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition"
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition"
               >
                 Previous
               </button>
               <button
                 disabled={page >= data.pagination.totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition"
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition"
               >
                 Next
               </button>
@@ -382,13 +401,13 @@ export default function OwnerBookingsPage() {
           <div>
             <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
               <div>
-                <span className="text-xs font-bold text-blue-600">Booking #{selectedBooking.bookingNumber}</span>
+                <span className="text-xs font-bold text-[#3b3c44]">Booking #{selectedBooking.bookingNumber}</span>
                 <h3 className="font-extrabold text-gray-900 text-lg">Booking Statement & Customer Invoice</h3>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={handlePrint}
-                  className="rounded-xl p-2 text-gray-500 hover:bg-gray-100 transition"
+                  className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 transition"
                   title="Print Invoice"
                 >
                   <Printer className="h-5 w-5" />
@@ -403,7 +422,7 @@ export default function OwnerBookingsPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3.5 rounded-2xl bg-gray-50/80 border border-gray-100 p-4 text-xs">
+              <div className="grid grid-cols-2 gap-3.5 rounded-xl bg-gray-50/80 border border-gray-100 p-4 text-xs">
                 <div>
                   <span className="text-gray-400 font-medium">Hall Venue</span>
                   <p className="font-bold text-sm text-gray-900 mt-0.5">{selectedBooking.hall?.name || "—"}</p>
@@ -435,7 +454,7 @@ export default function OwnerBookingsPage() {
               </div>
 
               {selectedBooking.status === "HOLD" && selectedBooking.holdExpiresAt && (
-                <div className="rounded-2xl bg-amber-50/80 border border-amber-200/60 p-3 text-xs text-amber-900 flex items-center gap-2">
+                <div className="rounded-xl bg-amber-50/80 border border-amber-200/60 p-3 text-xs text-amber-900 flex items-center gap-2">
                   <Clock className="h-4 w-4 shrink-0 text-amber-600" />
                   <span>
                     Temporary hold expires on:{" "}
@@ -445,7 +464,7 @@ export default function OwnerBookingsPage() {
               )}
 
               {/* Payment Summary */}
-              <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-xs">
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
                 <h4 className="font-bold text-sm text-gray-900 mb-3">Financial Statement</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -470,7 +489,7 @@ export default function OwnerBookingsPage() {
               </div>
 
               {selectedBooking.notes && (
-                <div className="rounded-2xl bg-gray-50/80 border border-gray-100 p-3 text-xs text-gray-600">
+                <div className="rounded-xl bg-gray-50/80 border border-gray-100 p-3 text-xs text-gray-600">
                   <span className="font-bold text-gray-700">Special Notes:</span> {selectedBooking.notes}
                 </div>
               )}
@@ -485,7 +504,7 @@ export default function OwnerBookingsPage() {
                         cancelMutation.mutate({ id: selectedBooking.id, reason: "Cancelled by owner" });
                       }
                     }}
-                    className="rounded-xl border border-rose-200 bg-rose-50/50 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-100 transition"
+                    className="rounded-lg border border-rose-200 bg-rose-50/50 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-100 transition"
                   >
                     Release Hold
                   </button>
@@ -497,7 +516,7 @@ export default function OwnerBookingsPage() {
                         cancelMutation.mutate({ id: selectedBooking.id, reason: "Cancelled by customer request" });
                       }
                     }}
-                    className="rounded-xl border border-rose-200 bg-rose-50/50 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-100 transition"
+                    className="rounded-lg border border-rose-200 bg-rose-50/50 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-100 transition"
                   >
                     Cancel Booking
                   </button>
@@ -513,14 +532,14 @@ export default function OwnerBookingsPage() {
                         advanceAmount: selectedBooking.advanceAmount || 0,
                       })
                     }
-                    className="rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-md shadow-emerald-500/20 transition"
+                    className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition"
                   >
                     Confirm Reservation
                   </button>
                 )}
                 <button
                   onClick={() => setSelectedBooking(null)}
-                  className="rounded-2xl bg-gray-100 px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-200 transition"
+                  className="rounded-xl bg-gray-100 px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-200 transition"
                 >
                   Close
                 </button>
@@ -550,7 +569,7 @@ export default function OwnerBookingsPage() {
         </div>
 
         {formError && (
-          <div className="mb-4 flex items-center gap-2 rounded-2xl bg-rose-50 p-3.5 text-xs text-rose-700 border border-rose-200">
+          <div className="mb-4 flex items-center gap-2 rounded-xl bg-rose-50 p-3.5 text-xs text-rose-700 border border-rose-200">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{formError}</span>
           </div>
@@ -563,15 +582,20 @@ export default function OwnerBookingsPage() {
               required
               value={bookingForm.hallId}
               onChange={(e) => setBookingForm({ ...bookingForm, hallId: e.target.value })}
-              className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
             >
               <option value="">-- Select Hall --</option>
-              {hallsData?.map((hall) => (
+              {activeHalls?.map((hall: any) => (
                 <option key={hall.id} value={hall.id}>
                   {hall.name} ({hall.city})
                 </option>
               ))}
             </select>
+            {activeHalls.length === 0 && (
+              <p className="mt-1.5 text-xs text-amber-600 font-medium">
+                No active halls found. Please enable a hall from My Halls before booking.
+              </p>
+            )}
           </div>
 
           {/* Session Selector (Day / Night) */}
@@ -581,9 +605,9 @@ export default function OwnerBookingsPage() {
               <button
                 type="button"
                 onClick={() => setBookingForm((prev) => ({ ...prev, session: "DAY" }))}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl text-xs font-bold transition border ${
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition border ${
                   bookingForm.session === "DAY"
-                    ? "bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/20"
+                    ? "bg-amber-500 text-white border-amber-500"
                     : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                 }`}
               >
@@ -594,9 +618,9 @@ export default function OwnerBookingsPage() {
               <button
                 type="button"
                 onClick={() => setBookingForm((prev) => ({ ...prev, session: "NIGHT" }))}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl text-xs font-bold transition border ${
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition border ${
                   bookingForm.session === "NIGHT"
-                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/20"
+                    ? "bg-indigo-600 text-white border-indigo-600"
                     : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                 }`}
               >
@@ -615,7 +639,7 @@ export default function OwnerBookingsPage() {
                 value={bookingForm.customerName}
                 onChange={(e) => setBookingForm({ ...bookingForm, customerName: e.target.value })}
                 placeholder="Muhammad Bilal"
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -626,7 +650,7 @@ export default function OwnerBookingsPage() {
                 value={bookingForm.customerPhone}
                 onChange={(e) => setBookingForm({ ...bookingForm, customerPhone: e.target.value })}
                 placeholder="0312-3456789"
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
           </div>
@@ -639,7 +663,7 @@ export default function OwnerBookingsPage() {
                 required
                 value={bookingForm.eventDate}
                 onChange={(e) => setBookingForm({ ...bookingForm, eventDate: e.target.value })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -647,7 +671,7 @@ export default function OwnerBookingsPage() {
               <select
                 value={bookingForm.eventType}
                 onChange={(e) => setBookingForm({ ...bookingForm, eventType: e.target.value })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               >
                 <option value="BARAT">Barat</option>
                 <option value="WALIMA">Walima</option>
@@ -660,7 +684,7 @@ export default function OwnerBookingsPage() {
               <select
                 value={bookingForm.status}
                 onChange={(e) => setBookingForm({ ...bookingForm, status: e.target.value as any })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               >
                 <option value="HOLD">Temporary Hold (Token)</option>
                 <option value="CONFIRMED">Confirmed Reservation</option>
@@ -677,7 +701,7 @@ export default function OwnerBookingsPage() {
                 placeholder="0"
                 value={bookingForm.totalAmount === 0 || bookingForm.totalAmount === "" ? "" : bookingForm.totalAmount}
                 onChange={(e) => setBookingForm({ ...bookingForm, totalAmount: e.target.value === "" ? "" : Number(e.target.value) })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -687,7 +711,7 @@ export default function OwnerBookingsPage() {
                 placeholder="0"
                 value={bookingForm.advanceAmount === 0 || bookingForm.advanceAmount === "" ? "" : bookingForm.advanceAmount}
                 onChange={(e) => setBookingForm({ ...bookingForm, advanceAmount: e.target.value === "" ? "" : Number(e.target.value) })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
           </div>
@@ -698,7 +722,7 @@ export default function OwnerBookingsPage() {
               <select
                 value={bookingForm.holdHours}
                 onChange={(e) => setBookingForm({ ...bookingForm, holdHours: Number(e.target.value) })}
-                className="mt-1 w-full rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               >
                 <option value={24}>24 Hours</option>
                 <option value={48}>48 Hours</option>
@@ -714,7 +738,7 @@ export default function OwnerBookingsPage() {
               value={bookingForm.notes}
               onChange={(e) => setBookingForm({ ...bookingForm, notes: e.target.value })}
               placeholder="Stage decor theme, DJ sound timing, catering details..."
-              className="mt-1 w-full rounded-2xl border border-gray-200 p-3 text-xs text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-xs text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
             />
           </div>
 
@@ -722,14 +746,14 @@ export default function OwnerBookingsPage() {
             <button
               type="button"
               onClick={() => setCreateModalOpen(false)}
-              className="rounded-2xl border border-gray-200 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 transition"
+              className="rounded-xl border border-gray-200 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createMutation.isPending}
-              className="rounded-2xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50 shadow-md shadow-blue-500/20 active:scale-95 transition"
+              className="rounded-xl bg-[#3b3c44] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#2b2c33] disabled:opacity-50 active:scale-95 transition"
             >
               {createMutation.isPending ? "Creating..." : "Save Booking"}
             </button>

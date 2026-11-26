@@ -261,6 +261,63 @@ export class OwnerService {
 
     return updated;
   }
+
+  async resetOwnerPassword(id: string, newPassword: string, adminId: string) {
+    const owner = await prisma.user.findFirst({
+      where: { id, role: Role.HALL_OWNER },
+    });
+    if (!owner) {
+      throw new Error("Hall Owner not found.");
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      throw new Error("Password must be at least 6 characters long.");
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    await prisma.user.update({
+      where: { id },
+      data: { password: hashedPassword },
+    });
+
+    // Revoke any existing active refresh tokens to force re-login
+    await prisma.refreshToken.deleteMany({
+      where: { userId: id },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        userId: adminId,
+        action: "SUPERADMIN_RESET_OWNER_PASSWORD",
+        details: { ownerId: id, email: owner.email },
+      },
+    });
+
+    return { success: true, message: "Password reset successfully." };
+  }
+
+  async getOwnerActivities(id: string) {
+    const owner = await prisma.user.findFirst({
+      where: { id, role: Role.HALL_OWNER },
+    });
+    if (!owner) {
+      throw new Error("Hall Owner not found.");
+    }
+
+    const logs = await prisma.auditLog.findMany({
+      where: {
+        OR: [
+          { userId: id },
+          { details: { path: ["ownerId"], equals: id } },
+        ],
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    });
+
+    return logs;
+  }
 }
 
 export const ownerService = new OwnerService();

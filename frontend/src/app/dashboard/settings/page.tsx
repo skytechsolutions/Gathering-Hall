@@ -130,7 +130,7 @@ export default function OwnerSettingsPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3.5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 shadow-xs">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-[#3b3c44] border border-slate-200">
             <Settings className="h-6 w-6" />
           </div>
           <div>
@@ -145,7 +145,7 @@ export default function OwnerSettingsPage() {
       </div>
 
       {savedSuccess && (
-        <div className="flex items-center gap-2 rounded-2xl bg-emerald-50 p-4 text-xs font-bold text-emerald-800 border border-emerald-200 animate-fadeIn">
+        <div className="flex items-center gap-2 rounded-xl bg-emerald-50 p-4 text-xs font-bold text-emerald-800 border border-emerald-200 animate-fadeIn">
           <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
           <span>Settings saved successfully. All changes are active across your owner portal.</span>
         </div>
@@ -155,9 +155,9 @@ export default function OwnerSettingsPage() {
       <div className="flex flex-wrap gap-2 border-b border-slate-200/80 pb-3">
         <button
           onClick={() => setActiveTab("profile")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "profile"
-              ? "bg-[#2563eb] text-white shadow-xs"
+              ? "bg-[#3b3c44] text-white"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -166,9 +166,9 @@ export default function OwnerSettingsPage() {
         </button>
         <button
           onClick={() => setActiveTab("sessions")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "sessions"
-              ? "bg-[#2563eb] text-white shadow-xs"
+              ? "bg-[#3b3c44] text-white"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -177,9 +177,9 @@ export default function OwnerSettingsPage() {
         </button>
         <button
           onClick={() => setActiveTab("notifications")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "notifications"
-              ? "bg-[#2563eb] text-white shadow-xs"
+              ? "bg-[#3b3c44] text-white"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -188,9 +188,9 @@ export default function OwnerSettingsPage() {
         </button>
         <button
           onClick={() => setActiveTab("security")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "security"
-              ? "bg-[#2563eb] text-white shadow-xs"
+              ? "bg-[#3b3c44] text-white"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -203,9 +203,9 @@ export default function OwnerSettingsPage() {
       {activeTab === "profile" && (
         <form onSubmit={handleSaveProfile} className="space-y-6">
           {/* Section 1: Hall Brand & Logo Identity */}
-          <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-xs space-y-6">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-200/60 shadow-xs">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
@@ -233,7 +233,7 @@ export default function OwnerSettingsPage() {
                       value={hallName}
                       onChange={(e) => setHallName(e.target.value)}
                       placeholder="e.g. Chamkani Hall, Royal Banquet, Al-Miraj Hall"
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-xs text-slate-900 font-semibold focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-xs text-slate-900 font-semibold focus:bg-white focus:border-[#3b3c44] focus:outline-none focus:ring-2 focus:ring-[#3b3c44]/25 transition"
                     />
                   </div>
                   <p className="mt-1 text-[11px] text-slate-500">
@@ -246,11 +246,11 @@ export default function OwnerSettingsPage() {
                   <label className="block text-xs font-bold text-slate-800">
                     Hall Brand Logo
                   </label>
-                  <div className="mt-1.5 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 p-4">
+                  <div className="mt-1.5 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-4">
                     {/* Current Logo Avatar */}
                     <div className="relative shrink-0">
                       {logoUrl ? (
-                        <div className="h-16 w-16 rounded-2xl overflow-hidden border-2 border-white shadow-md bg-slate-900 flex items-center justify-center">
+                        <div className="h-16 w-16 rounded-xl overflow-hidden border-2 border-white bg-slate-900 flex items-center justify-center">
                           <img
                             src={logoUrl}
                             alt="Hall Logo"
@@ -258,11 +258,11 @@ export default function OwnerSettingsPage() {
                           />
                         </div>
                       ) : (
-                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 shadow-md shadow-amber-500/20 border border-white/40 flex items-center justify-center">
+                        <div className="h-16 w-16 rounded-xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 border border-white/40 flex items-center justify-center">
                           <Building2 className="h-8 w-8 text-slate-950 stroke-[2.4]" />
                         </div>
                       )}
-                      <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-[10px] shadow">
+                      <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-xl bg-emerald-500 text-white text-[10px] shadow">
                         <Check className="h-3 w-3 stroke-[3]" />
                       </span>
                     </div>
@@ -280,7 +280,7 @@ export default function OwnerSettingsPage() {
                         />
                         <label
                           htmlFor="hall-logo-upload"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#3b3c44] hover:bg-[#2b2c33] text-white text-xs font-bold transition cursor-pointer"
                         >
                           <Upload className="h-3.5 w-3.5 stroke-[2.5]" />
                           <span>{logoUrl ? "Replace Logo" : "Upload Logo"}</span>
@@ -306,7 +306,7 @@ export default function OwnerSettingsPage() {
               </div>
 
               {/* Right Column: Live Sidebar Preview Widget (5 cols) */}
-              <div className="lg:col-span-5 rounded-3xl bg-[#0b0c16] text-white p-5 border border-white/15 shadow-xl space-y-4">
+              <div className="lg:col-span-5 rounded-xl bg-[#0b0c16] text-white p-5 border border-white/15 space-y-4">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2">
                     <Eye className="h-4 w-4 text-amber-400" />
@@ -320,9 +320,9 @@ export default function OwnerSettingsPage() {
                 </div>
 
                 {/* Simulated Glass Sidebar Header */}
-                <div className="rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/[0.12] p-3.5 flex items-center gap-3 shadow-inner">
+                <div className="rounded-xl bg-white/[0.08] backdrop-blur-xl border border-white/[0.12] p-3.5 flex items-center gap-3 shadow-inner">
                   {logoUrl ? (
-                    <div className="h-10 w-10 shrink-0 rounded-2xl overflow-hidden shadow-lg border border-white/20 bg-black/50 flex items-center justify-center p-0.5">
+                    <div className="h-10 w-10 shrink-0 rounded-xl overflow-hidden border border-white/20 bg-black/50 flex items-center justify-center p-0.5">
                       <img
                         src={logoUrl}
                         alt="Preview"
@@ -330,7 +330,7 @@ export default function OwnerSettingsPage() {
                       />
                     </div>
                   ) : (
-                    <div className="h-10 w-10 shrink-0 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 shadow-lg shadow-amber-500/20 border border-white/20 flex items-center justify-center">
+                    <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 border border-white/20 flex items-center justify-center">
                       <Building2 className="h-5 w-5 text-slate-950 stroke-[2.4]" />
                     </div>
                   )}
@@ -353,9 +353,9 @@ export default function OwnerSettingsPage() {
           </div>
 
           {/* Section 2: Owner Personal & Contact Details */}
-          <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-xs space-y-5">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 space-y-5">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-200/60 shadow-xs">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-[#3b3c44] border border-slate-200/60">
                 <User className="h-5 w-5" />
               </div>
               <div>
@@ -378,7 +378,7 @@ export default function OwnerSettingsPage() {
                     value={ownerName}
                     onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="Enter owner full name"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:border-[#3b3c44] focus:outline-none"
                   />
                 </div>
               </div>
@@ -391,7 +391,7 @@ export default function OwnerSettingsPage() {
                     type="email"
                     disabled
                     value={user?.email || ""}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-100 pl-10 pr-3.5 py-2.5 text-xs text-slate-500 cursor-not-allowed"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-100 pl-10 pr-3.5 py-2.5 text-xs text-slate-500 cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -405,7 +405,7 @@ export default function OwnerSettingsPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="e.g. 0300-1234567"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:border-[#3b3c44] focus:outline-none"
                   />
                 </div>
               </div>
@@ -413,12 +413,12 @@ export default function OwnerSettingsPage() {
               <div>
                 <label className="block text-xs font-bold text-slate-700">Account Role</label>
                 <div className="relative mt-1">
-                  <Shield className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-500" />
+                  <Shield className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#3b3c44]" />
                   <input
                     type="text"
                     disabled
                     value="HALL_OWNER (Verified Full Portal Access)"
-                    className="w-full rounded-2xl border border-blue-200 bg-blue-50/50 pl-10 pr-3.5 py-2.5 text-xs font-bold text-blue-700 cursor-not-allowed"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-100/50 pl-10 pr-3.5 py-2.5 text-xs font-bold text-[#3b3c44] cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function OwnerSettingsPage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="rounded-2xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold text-xs px-7 py-3 shadow-md shadow-blue-600/25 transition cursor-pointer flex items-center gap-2 active:scale-95"
+                className="rounded-xl bg-[#3b3c44] hover:bg-[#2b2c33] text-white font-bold text-xs px-7 py-3 transition cursor-pointer flex items-center gap-2 active:scale-95"
               >
                 <Sparkles className="h-4 w-4" />
                 <span>{isSaving ? "Saving..." : "Save Brand & Profile Changes"}</span>
@@ -440,7 +440,7 @@ export default function OwnerSettingsPage() {
 
       {/* Tab: Day & Night Sessions */}
       {activeTab === "sessions" && (
-        <form onSubmit={handleSaveSessions} className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-6">
+        <form onSubmit={handleSaveSessions} className="rounded-2xl border border-slate-200/80 bg-white p-6 space-y-6">
           <div>
             <h3 className="text-sm font-black text-slate-900">Day & Night Session Schedule Configuration</h3>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -450,7 +450,7 @@ export default function OwnerSettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Day Session Card */}
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/40 p-4 space-y-3">
+            <div className="rounded-xl border border-amber-200 bg-amber-50/40 p-4 space-y-3">
               <div className="flex items-center gap-2 text-amber-700 font-bold text-xs">
                 <Sun className="h-4 w-4" />
                 <span>☀️ Day Session Default Hours</span>
@@ -479,8 +479,8 @@ export default function OwnerSettingsPage() {
             </div>
 
             {/* Night Session Card */}
-            <div className="rounded-2xl border border-blue-200 bg-blue-50/40 p-4 space-y-3">
-              <div className="flex items-center gap-2 text-blue-700 font-bold text-xs">
+            <div className="rounded-2xl border border-slate-200 bg-slate-100/40 p-4 space-y-3">
+              <div className="flex items-center gap-2 text-[#3b3c44] font-bold text-xs">
                 <Moon className="h-4 w-4" />
                 <span>🌙 Night Session Default Hours</span>
               </div>
@@ -534,7 +534,7 @@ export default function OwnerSettingsPage() {
           <div className="flex justify-end pt-3">
             <button
               type="submit"
-              className="rounded-2xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold text-xs px-6 py-2.5 shadow-sm transition cursor-pointer"
+              className="rounded-xl bg-[#3b3c44] hover:bg-[#2b2c33] text-white font-bold text-xs px-6 py-2.5 transition cursor-pointer"
             >
               Save Session Preferences
             </button>
@@ -544,33 +544,33 @@ export default function OwnerSettingsPage() {
 
       {/* Tab: Notifications */}
       {activeTab === "notifications" && (
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4 text-xs">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 space-y-4 text-xs">
           <h3 className="text-sm font-black text-slate-900">Notification Alerts</h3>
           <p className="text-slate-500">Configure how you receive updates on new bookings and payments</p>
 
           <div className="space-y-3 pt-2">
-            <label className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+            <label className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
               <div>
                 <p className="font-bold text-slate-900">New Booking Confirmation Alerts</p>
                 <p className="text-slate-500 text-[11px]">Receive in-app notification when customer booking is confirmed</p>
               </div>
-              <input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600 rounded" />
+              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#3b3c44] rounded" />
             </label>
 
-            <label className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+            <label className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
               <div>
                 <p className="font-bold text-slate-900">Token Hold Expiry Warnings</p>
                 <p className="text-slate-500 text-[11px]">Notify 4 hours before a token reservation expires</p>
               </div>
-              <input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600 rounded" />
+              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#3b3c44] rounded" />
             </label>
 
-            <label className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+            <label className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
               <div>
                 <p className="font-bold text-slate-900">Payment Received Invoices</p>
                 <p className="text-slate-500 text-[11px]">Instant receipt generation on customer payment recorded</p>
               </div>
-              <input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600 rounded" />
+              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#3b3c44] rounded" />
             </label>
           </div>
         </div>
@@ -578,13 +578,13 @@ export default function OwnerSettingsPage() {
 
       {/* Tab: Security */}
       {activeTab === "security" && (
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4 text-xs">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 space-y-4 text-xs">
           <h3 className="text-sm font-black text-slate-900">Account Security & Credentials</h3>
           <p className="text-slate-500">Password management and authentication safeguards</p>
 
-          <div className="rounded-2xl bg-blue-50/60 border border-blue-200 p-4 space-y-2">
-            <div className="flex items-center gap-2 font-bold text-blue-900">
-              <Shield className="h-4 w-4 text-blue-600" />
+          <div className="rounded-xl bg-slate-100/60 border border-slate-200 p-4 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-slate-900">
+              <Shield className="h-4 w-4 text-[#3b3c44]" />
               <span>Security Protocols Active</span>
             </div>
             <p className="text-[11px] text-slate-600 leading-relaxed">

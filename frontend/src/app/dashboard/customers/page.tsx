@@ -90,10 +90,10 @@ export default function OwnerCustomersPage() {
       {/* ============================================================== */}
       {/* 1. TOP HEADER & TITLE (Matches Dashboard Style)               */}
       {/* ============================================================== */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80">
         <div>
           <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-2xl bg-blue-50 border border-blue-200/60 flex items-center justify-center text-blue-600">
+            <div className="h-9 w-9 rounded-xl bg-slate-100 border border-slate-200/60 flex items-center justify-center text-[#3b3c44]">
               <Users className="h-5 w-5" />
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
@@ -112,7 +112,7 @@ export default function OwnerCustomersPage() {
                 setPrintModalCustomerId(data.customers[0].id);
               }
             }}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition cursor-pointer"
           >
             <Printer className="h-4 w-4 text-slate-600" />
             <span>Print Report</span>
@@ -125,10 +125,10 @@ export default function OwnerCustomersPage() {
       {/* ============================================================== */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1: Total Customers */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs relative overflow-hidden">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500">Total Clients</span>
-            <div className="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-xl bg-slate-100 text-[#3b3c44] flex items-center justify-center">
               <Users className="h-4 w-4" />
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function OwnerCustomersPage() {
         </div>
 
         {/* Card 2: Total Billed */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs relative overflow-hidden">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500">Total Invoiced</span>
             <div className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
@@ -155,7 +155,7 @@ export default function OwnerCustomersPage() {
         </div>
 
         {/* Card 3: Total Paid / Advance */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs relative overflow-hidden">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500">Collected Advance</span>
             <div className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -171,7 +171,7 @@ export default function OwnerCustomersPage() {
         </div>
 
         {/* Card 4: Remaining Receivable */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs relative overflow-hidden">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500">Receivable Balance</span>
             <div className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
@@ -190,7 +190,7 @@ export default function OwnerCustomersPage() {
       {/* ============================================================== */}
       {/* 3. SEARCH BAR & CLIENT DIRECTORY TABLE                         */}
       {/* ============================================================== */}
-      <div className="rounded-3xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden">
         {/* Search Input Filter */}
         <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
@@ -203,7 +203,7 @@ export default function OwnerCustomersPage() {
                 setPage(1);
               }}
               placeholder="Search by customer name, phone number, or CNIC..."
-              className="w-full rounded-2xl border border-slate-200 py-2.5 pl-10 pr-4 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none transition"
+              className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none transition"
             />
           </div>
 
@@ -230,7 +230,7 @@ export default function OwnerCustomersPage() {
                 <tr>
                   <td colSpan={6} className="px-5 py-14 text-center text-sm text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
+                      <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent" />
                       <span className="text-xs font-semibold text-slate-400">Loading ledger data...</span>
                     </div>
                   </td>
@@ -243,11 +243,11 @@ export default function OwnerCustomersPage() {
                   const bookingsCount = c.totalBookingsCount ?? c._count?.bookings ?? 0;
 
                   return (
-                    <tr key={c.id} className="hover:bg-blue-50/20 transition-colors">
+                    <tr key={c.id} className="hover:bg-slate-100/50 transition-colors">
                       {/* Name & Phone */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 shrink-0 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+                          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-tr from-[#3b3c44] to-[#25262c] text-white font-black text-sm flex items-center justify-center">
                             {c.name ? c.name.charAt(0).toUpperCase() : "C"}
                           </div>
                           <div>
@@ -274,7 +274,7 @@ export default function OwnerCustomersPage() {
 
                       {/* Bookings Count */}
                       <td className="px-5 py-4 text-center">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-blue-50 text-blue-700 border border-blue-200/60">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-slate-100 text-[#3b3c44] border border-slate-200/60">
                           {bookingsCount} {bookingsCount === 1 ? "Event" : "Events"}
                         </span>
                       </td>
@@ -308,18 +308,18 @@ export default function OwnerCustomersPage() {
                         <div className="inline-flex items-center gap-1.5">
                           <button
                             onClick={() => setSelectedCustomerId(c.id)}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 transition shadow-xs cursor-pointer"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 transition cursor-pointer"
                             title="View Customer Ledger Account"
                           >
-                            <FileText className="h-3.5 w-3.5 text-blue-600" />
+                            <FileText className="h-3.5 w-3.5 text-[#3b3c44]" />
                             <span>Ledger</span>
                           </button>
                           <button
                             onClick={() => setPrintModalCustomerId(c.id)}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100/70 px-3 py-1.5 text-xs font-bold text-blue-700 transition cursor-pointer"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-100/70 hover:bg-slate-200/70 px-3 py-1.5 text-xs font-bold text-[#3b3c44] transition cursor-pointer"
                             title="Print Customer Statement Report"
                           >
-                            <Printer className="h-3.5 w-3.5 text-blue-600" />
+                            <Printer className="h-3.5 w-3.5 text-[#3b3c44]" />
                             <span>Print</span>
                           </button>
                         </div>
@@ -374,12 +374,12 @@ export default function OwnerCustomersPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-4xl max-h-[92vh] bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden animate-fadeIn"
+            className="w-full max-w-4xl max-h-[92vh] bg-white rounded-xl border border-slate-100 flex flex-col overflow-hidden animate-fadeIn"
           >
             {/* Modal Header */}
             <div className="px-6 py-4.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-blue-500/20">
+                <div className="h-10 w-10 rounded-xl bg-[#3b3c44] text-white flex items-center justify-center font-black text-sm">
                   <FileText className="h-5 w-5" />
                 </div>
                 <div>
@@ -399,14 +399,14 @@ export default function OwnerCustomersPage() {
                     setSelectedCustomerId(null);
                     setPrintModalCustomerId(id);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#3b3c44] hover:bg-[#2b2c33] text-white text-xs font-bold transition cursor-pointer"
                 >
                   <Printer className="h-3.5 w-3.5" />
                   <span>Print Statement</span>
                 </button>
                 <button
                   onClick={() => setSelectedCustomerId(null)}
-                  className="rounded-xl p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                  className="rounded-lg p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -417,13 +417,13 @@ export default function OwnerCustomersPage() {
             <div className="p-6 overflow-y-auto space-y-6 flex-1">
               {ledgerLoading ? (
                 <div className="py-20 text-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent mx-auto" />
+                  <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent mx-auto" />
                   <p className="text-xs font-bold text-slate-400 mt-3">Loading customer statement...</p>
                 </div>
               ) : activeCustomer ? (
                 <>
                   {/* Customer Info Card */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200/80">
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                         Customer Name
@@ -473,9 +473,9 @@ export default function OwnerCustomersPage() {
                   </div>
 
                   {/* Financial Statement Bar */}
-                  <div className="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white">
+                  <div className="grid grid-cols-3 gap-3 p-4 rounded-xl bg-gradient-to-r from-[#3b3c44] via-[#2f3037] to-[#1e1f24] text-white">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-blue-200">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">
                         Total Invoiced
                       </span>
                       <p className="text-xl font-black mt-0.5">
@@ -506,7 +506,7 @@ export default function OwnerCustomersPage() {
                       Event Reservations ({ledgerData?.bookings?.length || 0})
                     </h5>
 
-                    <div className="rounded-2xl border border-slate-200 overflow-hidden">
+                    <div className="rounded-xl border border-slate-200 overflow-hidden">
                       <table className="w-full text-left text-xs text-slate-600">
                         <thead className="bg-slate-50 font-bold uppercase text-[10px] text-slate-400 border-b border-slate-200">
                           <tr>
@@ -618,12 +618,12 @@ export default function OwnerCustomersPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden my-auto animate-fadeIn"
+            className="w-full max-w-4xl bg-white rounded-xl border border-slate-200 flex flex-col overflow-hidden my-auto animate-fadeIn"
           >
             {/* Modal Controls Bar (Hidden during actual print) */}
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between no-print">
               <div className="flex items-center gap-2">
-                <Printer className="h-5 w-5 text-blue-600" />
+                <Printer className="h-5 w-5 text-[#3b3c44]" />
                 <span className="text-sm font-black text-slate-900">
                   Print Customer Ledger Statement
                 </span>
@@ -633,14 +633,14 @@ export default function OwnerCustomersPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleTriggerPrint}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-md shadow-blue-500/20 cursor-pointer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#3b3c44] hover:bg-[#2b2c33] text-white text-xs font-bold transition cursor-pointer"
                 >
                   <Printer className="h-4 w-4" />
                   <span>Print Document</span>
                 </button>
                 <button
                   onClick={() => setPrintModalCustomerId(null)}
-                  className="rounded-xl p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition cursor-pointer"
+                  className="rounded-lg p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition cursor-pointer"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -651,14 +651,14 @@ export default function OwnerCustomersPage() {
             <div className="p-6 sm:p-10 bg-slate-100 overflow-y-auto max-h-[80vh] flex justify-center">
               {ledgerLoading ? (
                 <div className="py-20 text-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent mx-auto" />
+                  <div className="h-8 w-8 animate-spin rounded-full border-3 border-[#3b3c44] border-t-transparent mx-auto" />
                   <p className="text-xs font-bold text-slate-400 mt-3">Preparing statement...</p>
                 </div>
               ) : (
                 /* The exact A4 sheet rendered on paper or PDF */
                 <div
                   id="printable-customer-ledger"
-                  className="w-full max-w-[210mm] bg-white text-slate-900 p-8 sm:p-10 rounded-2xl shadow-md border border-slate-200"
+                  className="w-full max-w-[210mm] bg-white text-slate-900 p-8 sm:p-10 rounded-xl border border-slate-200"
                 >
                   {/* Document Header with Official Branding */}
                   <div className="border-b-2 border-slate-900 pb-6 mb-6">
@@ -672,7 +672,7 @@ export default function OwnerCustomersPage() {
                             className="h-14 w-14 object-cover rounded-xl border border-slate-200"
                           />
                         ) : (
-                          <div className="h-14 w-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black text-2xl">
+                          <div className="h-14 w-14 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-2xl">
                             <Building2 className="h-8 w-8" />
                           </div>
                         )}

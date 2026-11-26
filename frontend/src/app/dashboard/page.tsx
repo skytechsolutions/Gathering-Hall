@@ -32,14 +32,14 @@ export default function OwnerOverviewPage() {
   if (isLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-9 w-9 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#3b3c44] border-t-transparent" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-6 text-rose-700">
+      <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-6 text-rose-700">
         <h3 className="font-bold flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-rose-600" /> Failed to load dashboard metrics
         </h3>
@@ -51,11 +51,11 @@ export default function OwnerOverviewPage() {
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)]">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl p-6 border border-gray-100">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/50">
-              <Sparkles className="h-3.5 w-3.5 text-blue-600" /> Owner Portal Live
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-[#3b3c44] border border-slate-200">
+              <Sparkles className="h-3.5 w-3.5 text-[#3b3c44]" /> Owner Portal Live
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 mt-2">
@@ -68,16 +68,16 @@ export default function OwnerOverviewPage() {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/dashboard/bookings"
-            className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition"
           >
             <PlusCircle className="h-4 w-4" />
             New Booking
           </Link>
           <Link
             href="/dashboard/calendar"
-            className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
           >
-            <CalendarDays className="h-4 w-4 text-blue-600" />
+            <CalendarDays className="h-4 w-4 text-[#3b3c44]" />
             Availability Calendar
           </Link>
         </div>
@@ -86,12 +86,12 @@ export default function OwnerOverviewPage() {
       {/* KPI Stats Grid - 2 columns in row form on mobile, 4 on desktop */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* My Halls */}
-        <div className="rounded-3xl border border-gray-100 bg-white p-4 sm:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:border-blue-200 transition">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between hover:border-slate-200 transition">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider truncate">
               My Halls
             </span>
-            <div className="rounded-2xl bg-blue-50 p-2 text-blue-600 shrink-0">
+            <div className="rounded-xl bg-slate-100 p-2 text-[#3b3c44] shrink-0">
               <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
@@ -102,12 +102,12 @@ export default function OwnerOverviewPage() {
         </div>
 
         {/* Total Bookings */}
-        <div className="rounded-3xl border border-gray-100 bg-white p-4 sm:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:border-indigo-200 transition">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col justify-between hover:border-indigo-200 transition">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider truncate">
               Total Bookings
             </span>
-            <div className="rounded-2xl bg-indigo-50 p-2 text-indigo-600 shrink-0">
+            <div className="rounded-xl bg-indigo-50 p-2 text-indigo-600 shrink-0">
               <CalendarCheck2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
@@ -121,12 +121,12 @@ export default function OwnerOverviewPage() {
         </div>
 
         {/* Advance Received */}
-        <div className="rounded-3xl border border-emerald-100 bg-emerald-50/40 p-4 sm:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+        <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/40 p-4 sm:p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[11px] sm:text-xs font-bold text-emerald-800 uppercase tracking-wider truncate">
               Advance Collected
             </span>
-            <div className="rounded-2xl bg-emerald-100 p-2 text-emerald-700 shrink-0">
+            <div className="rounded-xl bg-emerald-100 p-2 text-emerald-700 shrink-0">
               <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
@@ -139,12 +139,12 @@ export default function OwnerOverviewPage() {
         </div>
 
         {/* Remaining Due */}
-        <div className="rounded-3xl border border-amber-100 bg-amber-50/40 p-4 sm:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+        <div className="rounded-2xl border border-amber-200/60 bg-amber-50/40 p-4 sm:p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[11px] sm:text-xs font-bold text-amber-800 uppercase tracking-wider truncate">
               Balance Due
             </span>
-            <div className="rounded-2xl bg-amber-100 p-2 text-amber-700 shrink-0">
+            <div className="rounded-xl bg-amber-100 p-2 text-amber-700 shrink-0">
               <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
           </div>
@@ -160,13 +160,13 @@ export default function OwnerOverviewPage() {
       {/* Monthly Chart & Upcoming Events */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Monthly Income Chart */}
-        <div className="lg:col-span-2 rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+        <div className="lg:col-span-2 rounded-2xl border border-slate-200/80 bg-white p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="font-bold text-lg text-gray-900">Monthly Revenue Trend</h3>
               <p className="text-xs text-gray-400 font-medium">Income from confirmed bookings (Last 6 Months)</p>
             </div>
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-[#3b3c44] border border-slate-200">
               Confirmed Bookings
             </span>
           </div>
@@ -187,7 +187,7 @@ export default function OwnerOverviewPage() {
                     </div>
                     <div className="h-3 w-full rounded-full bg-gray-100 overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500 shadow-sm"
+                        className="h-full rounded-full bg-gradient-to-r from-[#3b3c44] to-[#25262c] transition-all duration-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -201,7 +201,7 @@ export default function OwnerOverviewPage() {
         </div>
 
         {/* Upcoming Events Box */}
-        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -210,7 +210,7 @@ export default function OwnerOverviewPage() {
               </div>
               <Link
                 href="/dashboard/calendar"
-                className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
+                className="text-xs font-bold text-[#3b3c44] hover:text-[#3b3c44] hover:underline"
               >
                 Calendar &rarr;
               </Link>
@@ -223,7 +223,7 @@ export default function OwnerOverviewPage() {
                   return (
                     <div key={evt.id} className="py-3.5 hover:bg-gray-50/50 rounded-xl px-2 transition">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-blue-600 font-mono">{evt.eventDate}</span>
+                        <span className="text-xs font-bold text-[#3b3c44] font-mono">{evt.eventDate}</span>
                         <div className="flex items-center gap-1.5">
                           {isNight ? (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/50">
@@ -253,7 +253,7 @@ export default function OwnerOverviewPage() {
           <div className="mt-4 border-t border-gray-100 pt-4">
             <Link
               href="/dashboard/bookings"
-              className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 py-2.5 text-xs font-bold text-gray-700 hover:bg-gray-50 transition"
+              className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 py-2.5 text-xs font-bold text-gray-700 hover:bg-gray-50 transition"
             >
               Manage All Bookings <ArrowRight className="h-3.5 w-3.5 text-gray-400" />
             </Link>
@@ -262,7 +262,7 @@ export default function OwnerOverviewPage() {
       </div>
 
       {/* Recent Bookings Table */}
-      <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 className="font-bold text-lg text-gray-900">Recent Bookings & Holds</h3>
@@ -270,7 +270,7 @@ export default function OwnerOverviewPage() {
           </div>
           <Link
             href="/dashboard/bookings"
-            className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
+            className="text-xs font-bold text-[#3b3c44] hover:text-[#3b3c44] hover:underline"
           >
             View all bookings &rarr;
           </Link>
@@ -294,8 +294,8 @@ export default function OwnerOverviewPage() {
                 data.recentBookings.map((b) => {
                   const isNight = b.notes?.includes("[SESSION:NIGHT]");
                   return (
-                    <tr key={b.id} className="hover:bg-blue-50/20 transition">
-                      <td className="px-4 py-3.5 font-mono font-bold text-blue-600">{b.bookingNumber}</td>
+                    <tr key={b.id} className="hover:bg-slate-100/50 transition">
+                      <td className="px-4 py-3.5 font-mono font-bold text-[#3b3c44]">{b.bookingNumber}</td>
                       <td className="px-4 py-3.5 font-bold text-gray-900">{b.hall?.name || "—"}</td>
                       <td className="px-4 py-3.5">
                         <p className="font-semibold text-gray-900">{b.customerName}</p>

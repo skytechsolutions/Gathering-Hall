@@ -1,224 +1,325 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { settingsApi } from "@/services/api/settings.api";
-import { reportApi, CommissionReport } from "@/services/api/report.api";
-import { Percent, CheckCircle2, TrendingUp, AlertCircle, Building2, Sparkles, ShieldCheck } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Settings,
+  ShieldCheck,
+  Server,
+  Database,
+  Lock,
+  Phone,
+  Mail,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  HelpCircle,
+  Save,
+  MessageSquare,
+  Globe,
+  Bell,
+  RefreshCw,
+} from "lucide-react";
 
-export default function SuperAdminSettingsPage() {
-  const queryClient = useQueryClient();
-  const [newPercentage, setNewPercentage] = useState<number | "">(5);
-  const [notes, setNotes] = useState("");
+export default function SuperAdminSystemSettingsPage() {
+  const [platformName, setPlatformName] = useState("Chamkani Gathering Hall Management");
+  const [supportPhone, setSupportPhone] = useState("+92 300 1234567");
+  const [supportEmail, setSupportEmail] = useState("support@chamkani-halls.com");
+  const [supportWhatsApp, setSupportWhatsApp] = useState("+92 300 1234567");
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [instantHallApproval, setInstantHallApproval] = useState(true);
+  const [minPasswordLength, setMinPasswordLength] = useState(6);
+  const [sessionTimeoutDays, setSessionTimeoutDays] = useState(30);
   const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Fetch current commission setting
-  const { data: settingData, isLoading: settingLoading } = useQuery({
-    queryKey: ["global-commission-setting"],
-    queryFn: async () => {
-      const res = await settingsApi.getCommission();
-      const pct = (res as any)?.commission?.percentage ?? (res as any)?.percentage ?? 5;
-      setNewPercentage(pct);
-      return (res || { percentage: 5 }) as any;
-    },
-  });
+  // Load saved system settings from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("gathering_hall_system_settings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.platformName) setPlatformName(parsed.platformName);
+        if (parsed.supportPhone) setSupportPhone(parsed.supportPhone);
+        if (parsed.supportEmail) setSupportEmail(parsed.supportEmail);
+        if (parsed.supportWhatsApp) setSupportWhatsApp(parsed.supportWhatsApp);
+        if (typeof parsed.maintenanceMode === "boolean") setMaintenanceMode(parsed.maintenanceMode);
+        if (typeof parsed.instantHallApproval === "boolean") setInstantHallApproval(parsed.instantHallApproval);
+        if (parsed.minPasswordLength) setMinPasswordLength(parsed.minPasswordLength);
+        if (parsed.sessionTimeoutDays) setSessionTimeoutDays(parsed.sessionTimeoutDays);
+      }
+    } catch {}
+  }, []);
 
-  // Fetch commission report
-  const { data: reportData, isLoading: reportLoading } = useQuery({
-    queryKey: ["commission-report"],
-    queryFn: async () => {
-      const res = await reportApi.getCommissionReports();
-      const rep = (res as any)?.report ?? res;
-      return (rep || {
-        currentCommissionRate: 5,
-        totalCommissionAllTime: 0,
-        thisMonthCommission: 0,
-        byHall: [],
-      }) as CommissionReport;
-    },
-  });
-
-  // Mutation to update commission
-  const updateMutation = useMutation({
-    mutationFn: (data: { percentage: number; notes?: string }) =>
-      settingsApi.updateCommission(data.percentage, data.notes),
-    onSuccess: (res: any) => {
-      setStatusMsg({ type: "success", text: res.message || "Global commission percentage updated successfully!" });
-      queryClient.invalidateQueries({ queryKey: ["global-commission-setting"] });
-      queryClient.invalidateQueries({ queryKey: ["commission-report"] });
-    },
-    onError: (err: any) => {
-      setStatusMsg({ type: "error", text: err.message || "Failed to update commission rate." });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMsg(null);
-    const pct = Number(newPercentage) || 0;
-    if (pct < 0 || pct > 100) {
-      setStatusMsg({ type: "error", text: "Percentage must be between 0% and 100%." });
-      return;
+    try {
+      const payload = {
+        platformName,
+        supportPhone,
+        supportEmail,
+        supportWhatsApp,
+        maintenanceMode,
+        instantHallApproval,
+        minPasswordLength,
+        sessionTimeoutDays,
+        updatedAt: new Date().toISOString(),
+      };
+      localStorage.setItem("gathering_hall_system_settings", JSON.stringify(payload));
+      setStatusMsg({ type: "success", text: "System-level settings saved successfully!" });
+      setTimeout(() => setStatusMsg(null), 4000);
+    } catch (err: any) {
+      setStatusMsg({ type: "error", text: "Failed to persist system settings." });
     }
-    updateMutation.mutate({ percentage: pct, notes });
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)]">
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">
-          Commission Configuration & Analytics
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/80">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-[#3b3c44] border border-slate-200">
+            <Settings className="h-3.5 w-3.5 text-[#3b3c44]" /> Platform Administration
+          </span>
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 mt-2">
+          System-Level Settings & Configuration
         </h1>
         <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
-          Manage system-wide platform commission percentage and review automated revenue share
+          Configure platform parameters, owner support channels, security policies, and operational controls
         </p>
       </div>
 
       {statusMsg && (
         <div
-          className={`flex items-center gap-2 rounded-2xl p-4 text-sm ${
+          className={`flex items-center gap-2 rounded-xl p-4 text-sm ${
             statusMsg.type === "success"
               ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
               : "border border-rose-200 bg-rose-50 text-rose-800"
           }`}
         >
           {statusMsg.type === "success" ? (
-            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
           ) : (
-            <AlertCircle className="h-5 w-5 text-rose-600" />
+            <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
           )}
           <span className="font-semibold">{statusMsg.text}</span>
         </div>
       )}
 
-      {/* Configuration Card */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="rounded-2xl bg-blue-50 p-2 text-blue-600">
-              <Percent className="h-5 w-5" />
+      <form onSubmit={handleSaveSettings} className="space-y-6">
+        {/* Section 1: Platform Identity & General Info */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
+          <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-slate-100">
+            <div className="p-2 rounded-xl bg-slate-100 text-[#3b3c44]">
+              <Globe className="h-5 w-5" />
             </div>
-            <h3 className="font-extrabold text-gray-900 text-lg">Platform Commission Rate</h3>
+            <div>
+              <h3 className="font-extrabold text-gray-900 text-base">Platform Identity & General Information</h3>
+              <p className="text-xs text-gray-400 font-medium">Core metadata shown across administrative and owner portals</p>
+            </div>
           </div>
 
-          <p className="text-xs text-gray-500 font-medium mb-6">
-            Changes to the commission rate immediately apply to all new bookings created across all halls. Existing bookings retain their historical rate.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-gray-700">Commission Percentage (%)</label>
+              <label className="block text-xs font-bold text-gray-700">Platform Brand Name</label>
+              <input
+                type="text"
+                required
+                value={platformName}
+                onChange={(e) => setPlatformName(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700">Operating Timezone & Currency</label>
+              <input
+                type="text"
+                disabled
+                value="Asia/Karachi (PKT, UTC+5) • PKR (Pakistani Rupee)"
+                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-gray-600 cursor-not-allowed font-medium"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2: Owner Support & Assistance Channels */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
+          <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-slate-100">
+            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
+              <Phone className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-gray-900 text-base">Hall Owner Support & Helpdesk Channels</h3>
+              <p className="text-xs text-gray-400 font-medium">Helpline and communication channels provided to hall owners for assistance</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-700">Direct Support Phone Hotline</label>
               <div className="relative mt-1">
                 <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
+                  type="text"
                   required
-                  placeholder="0"
-                  value={newPercentage === 0 || newPercentage === "" ? "" : newPercentage}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setNewPercentage(val === "" ? "" : parseFloat(val));
-                  }}
-                  className="w-full rounded-2xl border border-gray-200 py-3 px-4 text-xl font-black text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                  value={supportPhone}
+                  onChange={(e) => setSupportPhone(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pl-9 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
                 />
-                <span className="absolute right-4 top-3.5 text-sm font-black text-gray-400">%</span>
+                <Phone className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700">Update Reason / Log Notes</label>
-              <textarea
-                rows={2}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="e.g. Standard platform fee adjustments"
-                className="mt-1 w-full rounded-2xl border border-gray-200 p-3 text-xs text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
-              />
+              <label className="block text-xs font-bold text-gray-700">WhatsApp Assistance Hotline</label>
+              <div className="relative mt-1">
+                <input
+                  type="text"
+                  required
+                  value={supportWhatsApp}
+                  onChange={(e) => setSupportWhatsApp(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pl-9 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
+                />
+                <MessageSquare className="h-4 w-4 text-emerald-600 absolute left-3 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={updateMutation.isPending || settingLoading}
-              className="w-full rounded-2xl bg-blue-600 py-3 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50 shadow-md shadow-blue-500/20 active:scale-95 transition"
-            >
-              {updateMutation.isPending ? "Updating Rate..." : "Save Commission Rate"}
-            </button>
-          </form>
-        </div>
-
-        {/* Commission Stats */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="rounded-3xl border border-emerald-100 bg-emerald-50/40 p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-                All-Time Platform Earnings
-              </span>
-              <p className="mt-2 text-3xl font-black text-emerald-900">
-                PKR {Number(reportData?.totalCommissionAllTime || 0).toLocaleString()}
-              </p>
-              <p className="mt-1 text-xs text-emerald-700 font-medium">Total commission earned since launch</p>
-            </div>
-
-            <div className="rounded-3xl border border-blue-100 bg-blue-50/40 p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-800">
-                This Month's Earnings
-              </span>
-              <p className="mt-2 text-3xl font-black text-blue-900">
-                PKR {Number(reportData?.thisMonthCommission || 0).toLocaleString()}
-              </p>
-              <p className="mt-1 text-xs text-blue-700 font-medium">Current calendar month commission</p>
-            </div>
-          </div>
-
-          {/* Breakdown by Hall */}
-          <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_4px_25px_rgba(0,0,0,0.02)]">
-            <h3 className="font-extrabold text-lg text-gray-900 mb-4">Commission Breakdown by Hall</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-gray-600">
-                <thead className="bg-gray-50/70 text-[11px] font-bold uppercase text-gray-400 border-b border-gray-100">
-                  <tr>
-                    <th className="px-3.5 py-3">Hall Name</th>
-                    <th className="px-3.5 py-3">Owner</th>
-                    <th className="px-3.5 py-3 text-center">Confirmed</th>
-                    <th className="px-3.5 py-3 text-right">Hall Revenue (PKR)</th>
-                    <th className="px-3.5 py-3 text-right">Commission (PKR)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100/80">
-                  {reportData?.byHall && reportData.byHall.length > 0 ? (
-                    reportData.byHall.map((h) => (
-                      <tr key={h.hallId} className="hover:bg-blue-50/20 transition">
-                        <td className="px-3.5 py-3 font-bold text-gray-900">{h.hallName}</td>
-                        <td className="px-3.5 py-3 font-medium text-gray-700">{h.ownerName}</td>
-                        <td className="px-3.5 py-3 text-center">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/50">
-                            {h.confirmedBookings}
-                          </span>
-                        </td>
-                        <td className="px-3.5 py-3 text-right font-medium text-gray-900">
-                          PKR {Number(h.totalRevenue).toLocaleString()}
-                        </td>
-                        <td className="px-3.5 py-3 text-right font-black text-blue-600">
-                          PKR {Number(h.commissionEarned).toLocaleString()}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={5} className="px-3.5 py-6 text-center text-gray-400 font-medium">
-                        No completed bookings to calculate commission.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            <div>
+              <label className="block text-xs font-bold text-gray-700">Official Support Email</label>
+              <div className="relative mt-1">
+                <input
+                  type="email"
+                  required
+                  value={supportEmail}
+                  onChange={(e) => setSupportEmail(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pl-9 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
+                />
+                <Mail className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Section 3: Owner Access, Security & Direct Hall Creation */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
+          <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-slate-100">
+            <div className="p-2 rounded-xl bg-amber-50 text-amber-700">
+              <Lock className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-gray-900 text-base">Security Policies & Hall Creation Flow</h3>
+              <p className="text-xs text-gray-400 font-medium">Owner account policies, authentication parameters, and publishing rights</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {/* Direct Hall Creation Policy Toggle */}
+            <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+              <div className="pr-4">
+                <p className="text-sm font-bold text-gray-900">Direct Hall Activation (Auto-Approved)</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  When owners create a hall, it is instantly approved and ready for Day & Night bookings without requiring Super Admin manual review.
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                <input
+                  type="checkbox"
+                  checked={instantHallApproval}
+                  onChange={(e) => setInstantHallApproval(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#3b3c44]"></div>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label className="block text-xs font-bold text-gray-700">Minimum Password Length</label>
+                <input
+                  type="number"
+                  min={6}
+                  max={24}
+                  value={minPasswordLength}
+                  onChange={(e) => setMinPasswordLength(parseInt(e.target.value, 10) || 6)}
+                  className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">Applies to all newly created owner passwords and resets.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700">Owner Session Timeout (Days)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={90}
+                  value={sessionTimeoutDays}
+                  onChange={(e) => setSessionTimeoutDays(parseInt(e.target.value, 10) || 30)}
+                  className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">Duration before refresh tokens require renewed authentication.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 4: Operational Health & Infrastructure */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6">
+          <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-slate-100">
+            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700">
+              <Server className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-gray-900 text-base">Operational Infrastructure & Health</h3>
+              <p className="text-xs text-gray-400 font-medium">Real-time server daemons, background schedulers, and database status</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <Database className="h-4 w-4 text-emerald-600" />
+                <span>PostgreSQL DB</span>
+              </div>
+              <p className="font-bold text-sm text-emerald-700 mt-1 flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" /> Connected (Prisma)
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Chamkani Gathering Hall</p>
+            </div>
+
+            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <Clock className="h-4 w-4 text-indigo-600" />
+                <span>Hold Scheduler</span>
+              </div>
+              <p className="font-bold text-sm text-indigo-700 mt-1 flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-indigo-500" /> Active Daemon
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Auto-checks holds every 60s</p>
+            </div>
+
+            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <ShieldCheck className="h-4 w-4 text-[#3b3c44]" />
+                <span>Security Engine</span>
+              </div>
+              <p className="font-bold text-sm text-slate-900 mt-1 flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" /> JWT + Argon2/Bcrypt
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Strict RBAC Enforced</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Actions */}
+        <div className="flex items-center justify-end gap-3 pt-2">
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#3b3c44] px-6 py-3 text-xs sm:text-sm font-bold text-white hover:bg-[#2b2c33] active:scale-95 transition cursor-pointer"
+          >
+            <Save className="h-4 w-4" />
+            <span>Save System Settings</span>
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

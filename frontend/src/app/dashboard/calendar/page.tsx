@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -99,18 +99,27 @@ export default function AvailabilityCalendarPage() {
   });
   const [blockError, setBlockError] = useState<string | null>(null);
 
-  // Fetch Owner's Halls
+  // Fetch Owner's Halls (Active Only)
   const { data: hallsData } = useQuery({
     queryKey: ["owner-halls-calendar"],
     queryFn: async () => {
       const res = await hallApi.getAll();
-      const halls = (res as any)?.halls || [];
-      if (halls.length > 0 && !selectedHallId) {
-        setSelectedHallId(halls[0].id);
-      }
-      return halls as Hall[];
+      const allHalls = (res as any)?.halls || [];
+      const activeOnly = allHalls.filter((h: any) => h.status === "APPROVED");
+      return activeOnly as Hall[];
     },
   });
+
+  // Ensure active hall selection always points to an active hall
+  useEffect(() => {
+    if (hallsData && hallsData.length > 0) {
+      if (!selectedHallId || !hallsData.some((h) => h.id === selectedHallId)) {
+        setSelectedHallId(hallsData[0].id);
+      }
+    } else if (hallsData && hallsData.length === 0) {
+      setSelectedHallId("");
+    }
+  }, [hallsData, selectedHallId]);
 
   const activeHallId = selectedHallId || (hallsData && hallsData[0]?.id) || "";
 
@@ -340,7 +349,7 @@ export default function AvailabilityCalendarPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
         {/* Title & Icon */}
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#eef4ff] text-[#2563eb] shadow-xs shrink-0">
+          <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-slate-100 text-[#3b3c44] shrink-0">
             <CalendarIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5 stroke-[2.2]" />
           </div>
           <div>
@@ -357,7 +366,7 @@ export default function AvailabilityCalendarPage() {
         <div className="flex flex-wrap items-center gap-2">
           {/* Hall Selector Pill Dropdown */}
           <div className="relative">
-            <div className="flex items-center gap-2 rounded-full border border-slate-200/90 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-xs hover:border-slate-300">
+            <div className="flex items-center gap-2 rounded-full border border-slate-200/90 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 hover:border-slate-300">
               <Building2 className="h-3.5 w-3.5 text-slate-700 shrink-0" />
               <select
                 value={activeHallId}
@@ -371,7 +380,7 @@ export default function AvailabilityCalendarPage() {
                     </option>
                   ))
                 ) : (
-                  <option value="">Royal gathering hall (Peshawar)</option>
+                  <option value="">No Active Halls Available</option>
                 )}
               </select>
               <ChevronDown className="h-3 w-3 text-slate-500 shrink-0" />
@@ -381,7 +390,7 @@ export default function AvailabilityCalendarPage() {
           {/* Block Date Pill Button */}
           <button
             onClick={() => openBlockFor(selectedDateKey, activeSession)}
-            className="flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-800 shadow-xs hover:bg-slate-50 transition cursor-pointer"
+            className="flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-800 hover:bg-slate-50 transition cursor-pointer"
           >
             <Lock className="h-3.5 w-3.5 text-slate-700" />
             <span>Block Date</span>
@@ -390,7 +399,7 @@ export default function AvailabilityCalendarPage() {
           {/* Book Date Solid Blue Pill Button */}
           <button
             onClick={() => openBookingFor(selectedDateKey, activeSession)}
-            className="flex items-center gap-1.5 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-4 py-1.5 text-xs font-bold shadow-md shadow-blue-500/20 transition cursor-pointer"
+            className="flex items-center gap-1.5 rounded-full bg-[#3b3c44] hover:bg-[#2b2c33] text-white px-4 py-1.5 text-xs font-bold transition cursor-pointer"
           >
             <CalendarIcon className="h-3.5 w-3.5" />
             <span>Book Date</span>
@@ -401,7 +410,7 @@ export default function AvailabilityCalendarPage() {
       {/* ============================================================== */}
       {/* 2. LEGEND BAR                                                  */}
       {/* ============================================================== */}
-      <div className="rounded-full bg-white border border-slate-200/80 px-4 py-1.5 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-[11px] sm:text-xs font-bold text-slate-700 shadow-[0_2px_8px_rgba(0,0,0,0.02)] shrink-0">
+      <div className="rounded-xl bg-white border border-slate-200/80 px-4 py-1.5 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-[11px] sm:text-xs font-bold text-slate-700 shrink-0">
         <div className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-[#10b981]" />
           <span>Available</span>
@@ -425,12 +434,12 @@ export default function AvailabilityCalendarPage() {
       {/* ============================================================== */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
         {/* Left: View Mode Pills (Month, Week, Agenda) */}
-        <div className="flex items-center gap-1 bg-white p-0.5 rounded-full border border-slate-200/80 shadow-xs self-start">
+        <div className="flex items-center gap-1 bg-white p-0.5 rounded-full border border-slate-200/80 self-start">
           <button
             onClick={() => setViewMode("month")}
             className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
               viewMode === "month"
-                ? "bg-[#2563eb] text-white shadow-xs"
+                ? "bg-[#3b3c44] text-white"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -441,7 +450,7 @@ export default function AvailabilityCalendarPage() {
             onClick={() => setViewMode("week")}
             className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
               viewMode === "week"
-                ? "bg-[#2563eb] text-white shadow-xs"
+                ? "bg-[#3b3c44] text-white"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -452,7 +461,7 @@ export default function AvailabilityCalendarPage() {
             onClick={() => setViewMode("agenda")}
             className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
               viewMode === "agenda"
-                ? "bg-[#2563eb] text-white shadow-xs"
+                ? "bg-[#3b3c44] text-white"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -473,7 +482,7 @@ export default function AvailabilityCalendarPage() {
 
           <button
             onClick={() => setShowDatePicker(!showDatePicker)}
-            className="flex items-center gap-1.5 text-sm sm:text-base font-extrabold text-slate-900 hover:text-blue-600 transition cursor-pointer px-2 py-0.5 rounded-lg hover:bg-slate-50"
+            className="flex items-center gap-1.5 text-sm sm:text-base font-extrabold text-slate-900 hover:text-[#3b3c44] transition cursor-pointer px-2 py-0.5 rounded-lg hover:bg-slate-50"
             title="Click to jump to date"
           >
             <CalendarIcon className="h-4 w-4 text-slate-800 stroke-[2.2]" />
@@ -491,7 +500,7 @@ export default function AvailabilityCalendarPage() {
 
           {/* Quick Date Jump Popover */}
           {showDatePicker && (
-            <div className="absolute top-9 z-50 rounded-2xl bg-white p-3 shadow-xl border border-slate-200 text-xs space-y-2 w-64 animate-fadeIn">
+            <div className="absolute top-9 z-50 rounded-xl bg-white p-3 border border-slate-200 text-xs space-y-2 w-64 animate-fadeIn">
               <p className="font-bold text-slate-800">Jump directly to month / date:</p>
               <input
                 type="date"
@@ -500,7 +509,7 @@ export default function AvailabilityCalendarPage() {
                   setQuickDateInput(e.target.value);
                   if (e.target.value) handleDateJump(e.target.value);
                 }}
-                className="w-full rounded-xl border border-slate-200 p-2 text-xs text-slate-800 outline-none focus:border-blue-600"
+                className="w-full rounded-xl border border-slate-200 p-2 text-xs text-slate-800 outline-none focus:border-[#3b3c44]"
               />
               <div className="flex justify-between items-center pt-1 border-t border-slate-100">
                 <button
@@ -509,7 +518,7 @@ export default function AvailabilityCalendarPage() {
                     setSelectedDateKey("2026-11-02");
                     setShowDatePicker(false);
                   }}
-                  className="text-blue-600 font-bold hover:underline"
+                  className="text-[#3b3c44] font-bold hover:underline"
                 >
                   Nov 2026
                 </button>
@@ -519,7 +528,7 @@ export default function AvailabilityCalendarPage() {
                     setSelectedDateKey("2026-12-02");
                     setShowDatePicker(false);
                   }}
-                  className="text-blue-600 font-bold hover:underline"
+                  className="text-[#3b3c44] font-bold hover:underline"
                 >
                   Dec 2026
                 </button>
@@ -535,12 +544,12 @@ export default function AvailabilityCalendarPage() {
         </div>
 
         {/* Right: DAY / NIGHT SEGMENTED SELECTOR */}
-        <div className="flex items-center gap-1 bg-white p-0.5 rounded-full border border-slate-200/80 shadow-xs self-start sm:self-auto">
+        <div className="flex items-center gap-1 bg-white p-0.5 rounded-full border border-slate-200/80 self-start sm:self-auto">
           <button
             onClick={() => setActiveSession("DAY")}
             className={`flex items-center gap-1 px-3.5 sm:px-4 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
               activeSession === "DAY"
-                ? "bg-[#2563eb] text-white shadow-xs"
+                ? "bg-[#3b3c44] text-white"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -551,7 +560,7 @@ export default function AvailabilityCalendarPage() {
             onClick={() => setActiveSession("NIGHT")}
             className={`flex items-center gap-1 px-3.5 sm:px-4 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
               activeSession === "NIGHT"
-                ? "bg-[#2563eb] text-white shadow-xs"
+                ? "bg-[#3b3c44] text-white"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -566,7 +575,7 @@ export default function AvailabilityCalendarPage() {
       {/* ============================================================== */}
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-2.5 lg:gap-3 items-stretch">
         {/* Calendar Grid Container (3 Columns on Desktop) */}
-        <div className="lg:col-span-3 rounded-2xl sm:rounded-3xl border border-slate-200/80 bg-white shadow-xs flex flex-col relative h-full min-h-0">
+        <div className="lg:col-span-3 rounded-2xl border border-slate-200/80 bg-white flex flex-col relative h-full min-h-0">
           {/* Day of Week Headers */}
           <div className="grid grid-cols-7 border-b border-slate-200/80 bg-slate-50/70 text-center text-[11px] sm:text-xs font-bold text-slate-800 py-1.5 shrink-0 select-none">
             <div>Mon</div>
@@ -637,7 +646,7 @@ export default function AvailabilityCalendarPage() {
                         : "bg-white text-slate-800 cursor-pointer"
                     } ${
                       isSelected
-                        ? "border-2 border-[#2563eb] rounded-xl sm:rounded-2xl bg-blue-50/15 z-40 shadow-xs"
+                        ? "border-2 border-[#3b3c44] rounded-xl bg-slate-100/40 z-40"
                         : isCurrentMonth
                         ? "hover:bg-slate-50/80 z-10"
                         : "z-0"
@@ -648,7 +657,7 @@ export default function AvailabilityCalendarPage() {
                       <span
                         className={`text-[11px] sm:text-xs font-extrabold ${
                           isSelected
-                            ? "text-[#2563eb]"
+                            ? "text-[#3b3c44]"
                             : isCurrentMonth
                             ? "text-slate-800"
                             : "text-slate-300"
@@ -676,7 +685,7 @@ export default function AvailabilityCalendarPage() {
                     {isSelected && selectedDayDetails && (
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        className={`absolute z-50 w-56 sm:w-60 rounded-2xl bg-white p-3.5 sm:p-4 shadow-[0_12px_40px_rgba(0,0,0,0.18)] border border-slate-100 animate-fadeIn ${
+                        className={`absolute z-50 w-56 sm:w-60 rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200 animate-fadeIn ${
                           rowIndex >= 3 ? "bottom-2 sm:bottom-4" : "top-9 sm:top-11"
                         } ${colIndex >= 4 ? "right-2 sm:right-4" : "left-3 sm:left-5"}`}
                       >
@@ -762,7 +771,7 @@ export default function AvailabilityCalendarPage() {
                             return (
                               <button
                                 onClick={() => openBookingFor(selectedDayDetails.dateKey, activeSession)}
-                                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white py-1.5 sm:py-2 px-3 text-xs font-bold shadow-md shadow-blue-500/25 transition cursor-pointer"
+                                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#3b3c44] hover:bg-[#2b2c33] text-white py-1.5 sm:py-2 px-3 text-xs font-bold transition cursor-pointer"
                               >
                                 <span>Book {activeSession === "DAY" ? "Day" : "Night"} Session</span>
                                 <ArrowRight className="h-3.5 w-3.5" />
@@ -772,7 +781,7 @@ export default function AvailabilityCalendarPage() {
                             return (
                               <button
                                 onClick={() => openBookingFor(selectedDayDetails.dateKey, otherSession)}
-                                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 sm:py-2 px-3 text-xs font-bold shadow-md shadow-indigo-500/25 transition cursor-pointer"
+                                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 sm:py-2 px-3 text-xs font-bold transition cursor-pointer"
                               >
                                 <span>Book {otherSession === "DAY" ? "Day" : "Night"} Session</span>
                                 <ArrowRight className="h-3.5 w-3.5" />
@@ -807,7 +816,7 @@ export default function AvailabilityCalendarPage() {
                   <div
                     key={idx}
                     onClick={() => setSelectedDateKey(dateKey)}
-                    className="p-2 sm:p-3 flex flex-col justify-between rounded-2xl hover:bg-slate-50 cursor-pointer transition min-h-0"
+                    className="p-2 sm:p-3 flex flex-col justify-between rounded-xl hover:bg-slate-50 cursor-pointer transition min-h-0"
                   >
                     <div>
                       <div className="flex items-center justify-between">
@@ -856,7 +865,7 @@ export default function AvailabilityCalendarPage() {
                   .map((evt) => (
                     <div
                       key={evt.id}
-                      className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition text-xs"
+                      className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition text-xs"
                     >
                       <div className="flex items-center gap-2.5">
                         <span
@@ -875,7 +884,7 @@ export default function AvailabilityCalendarPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="font-bold text-blue-600">Details &rarr;</span>
+                      <span className="font-bold text-[#3b3c44]">Details &rarr;</span>
                     </div>
                   ))
               ) : (
@@ -892,7 +901,7 @@ export default function AvailabilityCalendarPage() {
         {/* ============================================================== */}
         <div className="flex flex-col justify-between gap-2 h-full min-h-0">
           {/* Card 1: Gradient Blue Available Days Card */}
-          <div className="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#2563eb] via-[#1d4ed8] to-[#1e40af] p-3 sm:p-4 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden flex flex-col justify-center">
+          <div className="rounded-2xl bg-gradient-to-br from-[#3b3c44] via-[#2f3037] to-[#25262c] p-3 sm:p-4 text-white relative overflow-hidden flex flex-col justify-center">
             <div className="relative z-10">
               {/* Calendar Icon inside Soft Square */}
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/20 text-white mb-1.5">
@@ -908,11 +917,11 @@ export default function AvailabilityCalendarPage() {
               </p>
             </div>
             {/* Soft decorative wave in bottom right */}
-            <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/10 blur-xl pointer-events-none" />
+            <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-xl bg-white/10 blur-xl pointer-events-none" />
           </div>
 
           {/* Card 2: Breakdown Card */}
-          <div className="rounded-2xl sm:rounded-3xl border border-slate-200/80 bg-white p-3 shadow-xs space-y-1.5 sm:space-y-2">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-3 space-y-1.5 sm:space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-slate-700">
               <span className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-[#10b981]" />
@@ -947,8 +956,8 @@ export default function AvailabilityCalendarPage() {
           </div>
 
           {/* Card 3: Secure & Reliable Card */}
-          <div className="rounded-2xl sm:rounded-3xl border border-[#a7f3d0] bg-[#ecfdf5] p-2.5 sm:p-3 flex items-center gap-2.5 shadow-xs">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#10b981] text-white shadow-xs">
+          <div className="rounded-2xl border border-[#a7f3d0] bg-[#ecfdf5] p-2.5 sm:p-3 flex items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#10b981] text-white">
               <ShieldCheck className="h-4.5 w-4.5 stroke-[2.2]" />
             </div>
             <div>
@@ -982,7 +991,7 @@ export default function AvailabilityCalendarPage() {
         </div>
 
         {bookingError && (
-          <div className="mb-4 flex items-center gap-2 rounded-2xl bg-rose-50 p-3.5 text-xs text-rose-700 border border-rose-200">
+          <div className="mb-4 flex items-center gap-2 rounded-xl bg-rose-50 p-3.5 text-xs text-rose-700 border border-rose-200">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{bookingError}</span>
           </div>
@@ -996,9 +1005,9 @@ export default function AvailabilityCalendarPage() {
               <button
                 type="button"
                 onClick={() => setBookingForm((prev) => ({ ...prev, session: "DAY" }))}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl text-xs font-bold transition border ${
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition border ${
                   bookingForm.session === "DAY"
-                    ? "bg-[#2563eb] text-white border-[#2563eb] shadow-md shadow-blue-500/20"
+                    ? "bg-[#3b3c44] text-white border-[#3b3c44]"
                     : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                 }`}
               >
@@ -1009,9 +1018,9 @@ export default function AvailabilityCalendarPage() {
               <button
                 type="button"
                 onClick={() => setBookingForm((prev) => ({ ...prev, session: "NIGHT" }))}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl text-xs font-bold transition border ${
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition border ${
                   bookingForm.session === "NIGHT"
-                    ? "bg-[#2563eb] text-white border-[#2563eb] shadow-md shadow-blue-500/20"
+                    ? "bg-[#3b3c44] text-white border-[#3b3c44]"
                     : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                 }`}
               >
@@ -1030,7 +1039,7 @@ export default function AvailabilityCalendarPage() {
                 value={bookingForm.customerName}
                 onChange={(e) => setBookingForm({ ...bookingForm, customerName: e.target.value })}
                 placeholder="Haji Farooq"
-                className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -1041,7 +1050,7 @@ export default function AvailabilityCalendarPage() {
                 value={bookingForm.customerPhone}
                 onChange={(e) => setBookingForm({ ...bookingForm, customerPhone: e.target.value })}
                 placeholder="0300-1234567"
-                className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
           </div>
@@ -1054,7 +1063,7 @@ export default function AvailabilityCalendarPage() {
                 required
                 value={bookingForm.eventDate}
                 onChange={(e) => setBookingForm({ ...bookingForm, eventDate: e.target.value })}
-                className="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -1062,7 +1071,7 @@ export default function AvailabilityCalendarPage() {
               <select
                 value={bookingForm.eventType}
                 onChange={(e) => setBookingForm({ ...bookingForm, eventType: e.target.value })}
-                className="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               >
                 <option value="BARAT">Barat</option>
                 <option value="WALIMA">Walima</option>
@@ -1075,7 +1084,7 @@ export default function AvailabilityCalendarPage() {
               <select
                 value={bookingForm.status}
                 onChange={(e) => setBookingForm({ ...bookingForm, status: e.target.value as any })}
-                className="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               >
                 <option value="CONFIRMED">Confirmed</option>
                 <option value="HOLD">Hold / Token</option>
@@ -1092,7 +1101,7 @@ export default function AvailabilityCalendarPage() {
                 placeholder="0"
                 value={bookingForm.totalAmount === 0 || bookingForm.totalAmount === "" ? "" : bookingForm.totalAmount}
                 onChange={(e) => setBookingForm({ ...bookingForm, totalAmount: e.target.value === "" ? "" : Number(e.target.value) })}
-                className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
             <div>
@@ -1102,7 +1111,7 @@ export default function AvailabilityCalendarPage() {
                 placeholder="0"
                 value={bookingForm.advanceAmount === 0 || bookingForm.advanceAmount === "" ? "" : bookingForm.advanceAmount}
                 onChange={(e) => setBookingForm({ ...bookingForm, advanceAmount: e.target.value === "" ? "" : Number(e.target.value) })}
-                className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
               />
             </div>
           </div>
@@ -1114,7 +1123,7 @@ export default function AvailabilityCalendarPage() {
               value={bookingForm.notes}
               onChange={(e) => setBookingForm({ ...bookingForm, notes: e.target.value })}
               placeholder="Stage decoration, catering, sound system requirements..."
-              className="mt-1 w-full rounded-2xl border border-slate-200 p-3 text-xs text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-xs text-slate-900 focus:border-[#3b3c44] focus:ring-2 focus:ring-slate-300 focus:outline-none"
             />
           </div>
 
@@ -1122,14 +1131,14 @@ export default function AvailabilityCalendarPage() {
             <button
               type="button"
               onClick={() => setBookingModalOpen(false)}
-              className="rounded-2xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
+              className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createBookingMutation.isPending}
-              className="rounded-2xl bg-[#2563eb] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#1d4ed8] disabled:opacity-50 shadow-md shadow-blue-500/20 active:scale-95 transition"
+              className="rounded-xl bg-[#3b3c44] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#2b2c33] disabled:opacity-50 active:scale-95 transition"
             >
               {createBookingMutation.isPending ? "Booking..." : "Confirm Booking"}
             </button>
@@ -1154,7 +1163,7 @@ export default function AvailabilityCalendarPage() {
         </div>
 
         {blockError && (
-          <div className="mb-4 flex items-center gap-2 rounded-2xl bg-rose-50 p-3 text-xs text-rose-700 border border-rose-200">
+          <div className="mb-4 flex items-center gap-2 rounded-xl bg-rose-50 p-3 text-xs text-rose-700 border border-rose-200">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{blockError}</span>
           </div>
@@ -1168,7 +1177,7 @@ export default function AvailabilityCalendarPage() {
               required
               value={blockForm.date}
               onChange={(e) => setBlockForm({ ...blockForm, date: e.target.value })}
-              className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#3b3c44] focus:outline-none"
             />
           </div>
 
@@ -1177,7 +1186,7 @@ export default function AvailabilityCalendarPage() {
             <select
               value={blockForm.session}
               onChange={(e) => setBlockForm({ ...blockForm, session: e.target.value as any })}
-              className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#3b3c44] focus:outline-none"
             >
               <option value="BOTH">Full Day (Day & Night)</option>
               <option value="DAY">☀️ Day Session Only</option>
@@ -1192,7 +1201,7 @@ export default function AvailabilityCalendarPage() {
               required
               value={blockForm.reason}
               onChange={(e) => setBlockForm({ ...blockForm, reason: e.target.value })}
-              className="mt-1 w-full rounded-2xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-[#3b3c44] focus:outline-none"
             />
           </div>
 
@@ -1200,14 +1209,14 @@ export default function AvailabilityCalendarPage() {
             <button
               type="button"
               onClick={() => setBlockModalOpen(false)}
-              className="rounded-2xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
+              className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={blockDateMutation.isPending}
-              className="rounded-2xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white hover:bg-black disabled:opacity-50 transition"
+              className="rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white hover:bg-black disabled:opacity-50 transition"
             >
               {blockDateMutation.isPending ? "Blocking..." : "Block Session"}
             </button>

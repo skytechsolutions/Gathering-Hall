@@ -7,6 +7,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  title?: React.ReactNode;
   className?: string;
   maxWidth?: string;
   zIndex?: string;
@@ -16,6 +17,7 @@ export function Modal({
   isOpen,
   onClose,
   children,
+  title,
   className = "",
   maxWidth = "max-w-xl",
   zIndex = "z-50",
@@ -51,9 +53,20 @@ export function Modal({
     >
       <div
         ref={cardRef}
-        className={`w-full ${maxWidth} rounded-2xl bg-white p-6 shadow-2xl my-auto animate-fadeIn ${className}`}
+        className={`w-full ${maxWidth} rounded-2xl bg-white p-6 border border-slate-300 my-auto animate-fadeIn ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
+        {title && (
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+            <h3 className="font-extrabold text-slate-900 text-lg">{title}</h3>
+            <button
+              onClick={onClose}
+              className="text-slate-400 hover:text-slate-600 rounded-lg p-1 transition cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         {children}
       </div>
     </div>

@@ -51,4 +51,12 @@ export const ownerApi = {
   async updateStatus(id: string, status: "PENDING" | "APPROVED" | "REJECTED" | "BLOCKED") {
     return api.patch<{ owner: User }>(`/owners/${id}/status`, { status });
   },
+
+  async resetPassword(id: string, newPassword: string) {
+    return api.post<{ success: boolean; message: string }>(`/owners/${id}/reset-password`, { newPassword });
+  },
+
+  async getActivities(id: string) {
+    return api.get<{ activities: any[] }>(`/owners/${id}/activities`);
+  },
 };

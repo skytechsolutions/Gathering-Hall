@@ -41,10 +41,10 @@ router.delete(
   (req, res, next) => hallController.delete(req, res, next)
 );
 
-// Only Super Admin can approve/reject/suspend halls
+// Super Admin & Hall Owner can update hall status (Enable / Disable)
 router.patch(
   "/:id/status",
-  requireRole([Role.SUPER_ADMIN]),
+  requireRole([Role.SUPER_ADMIN, Role.HALL_OWNER]),
   validate(updateHallStatusSchema),
   (req, res, next) => hallController.updateStatus(req, res, next)
 );

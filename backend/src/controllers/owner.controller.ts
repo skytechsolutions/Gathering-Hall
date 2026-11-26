@@ -69,6 +69,31 @@ export class OwnerController {
       next(err);
     }
   }
+
+  async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        apiError(res, "Authentication required", 401);
+        return;
+      }
+      const id = req.params.id as string;
+      const { newPassword } = req.body;
+      const result = await ownerService.resetOwnerPassword(id, newPassword, req.user.userId);
+      apiSuccess(res, result, "Owner password reset successfully");
+    } catch (err: unknown) {
+      next(err);
+    }
+  }
+
+  async getActivities(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = req.params.id as string;
+      const activities = await ownerService.getOwnerActivities(id);
+      apiSuccess(res, { activities });
+    } catch (err: unknown) {
+      next(err);
+    }
+  }
 }
 
 export const ownerController = new OwnerController();

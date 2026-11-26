@@ -25,15 +25,20 @@ async function initDb() {
   console.log("=== Initializing Gathering Hall Database & Constraints ===");
 
   try {
-    // 1. Create PostgreSQL Partial Unique Index for Double-Booking Protection
-    // Active statuses: HOLD, CONFIRMED, BLOCKED. Cancelled or Expired bookings do not block re-booking.
-    console.log("[1] Applying double-booking active slot partial index...");
+    // 1. Create PostgreSQL Partial Unique Index for Session-Aware Double-Booking Protection
+    // Allows independent Day & Night bookings on the same date while preventing duplicate reservations in the same session.
+    console.log("[1] Applying session-aware double-booking active slot partial index...");
+    await prisma.$executeRawUnsafe(`DROP INDEX IF EXISTS uq_hall_active_booking;`);
     await prisma.$executeRawUnsafe(`
-      CREATE UNIQUE INDEX IF NOT EXISTS uq_hall_active_booking
-      ON bookings ("hallId", "eventDate")
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_hall_active_session_booking
+      ON bookings (
+        "hallId", 
+        "eventDate", 
+        (CASE WHEN notes LIKE '%[SESSION:NIGHT]%' THEN 'NIGHT' ELSE 'DAY' END)
+      )
       WHERE status IN ('HOLD', 'CONFIRMED', 'BLOCKED');
     `);
-    console.log("✓ Partial unique index 'uq_hall_active_booking' applied.");
+    console.log("✓ Session-aware partial unique index 'uq_hall_active_session_booking' applied.");
 
     // 2. Ensure Global Commission Setting Exists
     console.log("[2] Ensuring global commission setting...");

@@ -76,7 +76,7 @@ export class HallController {
       }
       const id = req.params.id as string;
       const { status } = req.body;
-      const hall = await hallService.updateHallStatus(id, status, req.user.userId);
+      const hall = await hallService.updateHallStatus(id, status, req.user);
       apiSuccess(res, { hall }, `Hall status updated to ${status}`);
     } catch (err: unknown) {
       next(err);
