@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chamkani Gathering Hall
 
-## Getting Started
+A hall booking and event management platform built with Next.js 16, Supabase, and Tailwind CSS.
 
-First, run the development server:
+## Project Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The project is cleanly split into two dedicated directories:
+
+```
+Gathering-Hall/
+├── frontend/             # Next.js 16 web application, UI components, and pages
+│   ├── public/           # Static public assets
+│   ├── src/
+│   │   ├── app/          # App Router pages and layouts
+│   │   ├── components/   # UI components
+│   │   ├── lib/          # Server actions, Supabase clients & business logic
+│   │   └── middleware.ts # Route guard middleware
+│   ├── package.json      # Frontend package configuration
+│   └── README.md         # Frontend documentation
+│
+├── backend/              # Backend API server & Supabase database management
+│   ├── src/
+│   │   └── server.ts     # Backend HTTP API server (Port 5000)
+│   ├── scripts/          # Admin initialization and backend scripts
+│   ├── supabase/         # PostgreSQL schema (schema.sql), RLS rules, and triggers
+│   ├── package.json      # Backend package configuration
+│   └── README.md         # Backend server and setup documentation
+│
+├── package.json          # Root workspace configuration
+└── README.md             # Project overview
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Database Setup
+Follow the instructions in [`backend/README.md`](./backend/README.md) to apply `backend/supabase/schema.sql` to your Supabase project.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env.local` at the root (or in `frontend/` and `backend/`):
+```bash
+cp .env.example .env.local
+```
+Fill in your Supabase credentials:
+* `NEXT_PUBLIC_SUPABASE_URL`
+* `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+* `SUPABASE_SERVICE_ROLE_KEY`
 
-## Learn More
+### 3. Bootstrap Admin User
+Create the initial administrator account:
+```bash
+npm run create-admin -- --email admin@hall.com --name "Hall Manager" --password "your-strong-password"
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Running the Applications
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Running from Root:
+```bash
+# Start Frontend (http://localhost:3000)
+npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Start Backend API Server (http://localhost:5000)
+npm run start:backend
+# or in development mode
+npm run dev:backend
 
-## Deploy on Vercel
+# Run unit tests
+npm test
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Build for production
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### Running Directly from Folders:
+* **Frontend**:
+  ```bash
+  cd frontend
+  npm run dev
+  ```
+* **Backend**:
+  ```bash
+  cd backend
+  npm start
+  # or
+  npm run dev
+  ```
