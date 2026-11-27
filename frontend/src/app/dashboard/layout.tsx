@@ -19,7 +19,6 @@ import {
   Menu,
   X,
   AlertCircle,
-  Search,
   Bell,
   Sun,
   Moon,
@@ -55,7 +54,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useScrollLock(mobileMenuOpen);
 
@@ -140,13 +138,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
     );
   }
-
-  const handleGlobalSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/dashboard/bookings?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
 
   return (
     <div className="min-h-screen lg:h-screen lg:max-h-screen bg-[#f5f0e8] flex overflow-hidden">
@@ -302,8 +293,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* ============================================================== */}
       <div className="flex flex-1 flex-col overflow-hidden h-full min-h-0 bg-[#f5f0e8]">
         {/* Professional Top Navigation Bar */}
-        <header className="h-14 lg:h-16 border-b border-[#e5ded4] bg-[#faf7f2] px-3 sm:px-6 flex items-center justify-between shrink-0 z-30 transition-colors">
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl min-w-0 mr-2 sm:mr-4">
+        <header className="h-12 border-b border-[#e5ded4] bg-[#faf7f2] px-3 sm:px-6 flex items-center justify-between shrink-0 z-30 transition-colors">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Hamburger Toggle Button: Collapses Desktop Sidebar, Opens Mobile Drawer */}
             <button
               onClick={() => {
@@ -319,18 +310,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Menu className="h-5 w-5" />
             </button>
-
-            {/* Global Search Bar */}
-            <form onSubmit={handleGlobalSearch} className="relative flex-1 min-w-0 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#7a7368]" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs bg-[#ebe3d7]/60 border border-[#d6cec3] rounded-full focus:bg-white focus:border-[#1e382b] focus:outline-none focus:ring-2 focus:ring-[#1e382b]/20 transition-all text-[#1f2421] placeholder:text-[#7a7368]"
-              />
-            </form>
           </div>
 
           {/* Right Header Controls */}
@@ -443,7 +422,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main
           className={`flex-1 min-h-0 bg-[#f5f0e8] ${
             pathname === "/dashboard/calendar"
-              ? "overflow-y-auto p-0 flex flex-col pb-24 lg:pb-0"
+              ? "overflow-y-auto lg:overflow-hidden p-0 flex flex-col pb-24 lg:pb-0 h-full"
               : "overflow-y-auto p-3 sm:p-6 lg:p-8 pb-24 lg:pb-8"
           }`}
         >

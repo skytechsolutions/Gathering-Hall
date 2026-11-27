@@ -101,6 +101,17 @@ body {
   color: var(--color-body);
 }
 
+/* Warm cream autofill styling to prevent browser from injecting default light blue */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #faf7f2 inset !important;
+  -webkit-text-fill-color: #1f2421 !important;
+  caret-color: #1f2421;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 /* Background scroll lock when modals or mobile navigation drawer are active */
 body[data-scroll-locked="true"] {
   overflow: hidden !important;

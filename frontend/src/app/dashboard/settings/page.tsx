@@ -24,7 +24,14 @@ import {
 } from "lucide-react";
 
 export default function OwnerSettingsPage() {
-  const { user, brandSettings, updateBrandSettings, updateProfile } = useAuth();
+  const {
+    user,
+    brandSettings,
+    updateBrandSettings,
+    sessionSettings: authSessionSettings,
+    updateSessionSettings,
+    updateProfile,
+  } = useAuth();
   const [activeTab, setActiveTab] = useState<"profile" | "sessions" | "notifications" | "security">("profile");
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -36,26 +43,33 @@ export default function OwnerSettingsPage() {
   const [phone, setPhone] = useState(user?.phone || "");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (brandSettings.hallName) setHallName(brandSettings.hallName);
-    setLogoUrl(brandSettings.logoUrl);
-  }, [brandSettings]);
+  // Day & Night Sessions State (Linked to AuthContext & localStorage)
+  const [sessionSettings, setSessionSettings] = useState(authSessionSettings);
+  const [isSavingSessions, setIsSavingSessions] = useState(false);
+  const [sessionSavedSuccess, setSessionSavedSuccess] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      setOwnerName(user.name || "");
-      setPhone(user.phone || "");
+    setSessionSettings(authSessionSettings);
+  }, [authSessionSettings]);
+
+  // Notifications State
+  const [notificationSettings, setNotificationSettings] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("owner_notification_settings");
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch {}
     }
-  }, [user]);
-
-  const [sessionSettings, setSessionSettings] = useState({
-    dayStart: "11:00",
-    dayEnd: "16:00",
-    nightStart: "18:00",
-    nightEnd: "00:00",
-    autoHoldHours: 48,
-    currency: "PKR",
+    return {
+      bookingAlerts: true,
+      holdExpiryWarnings: true,
+      paymentReceipts: true,
+    };
   });
+  const [isSavingNotifs, setIsSavingNotifs] = useState(false);
+  const [notifSavedSuccess, setNotifSavedSuccess] = useState(false);
 
   const handleLogoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -119,10 +133,52 @@ export default function OwnerSettingsPage() {
     }
   };
 
-  const handleSaveSessions = (e: React.FormEvent) => {
+  const handleSaveSessions = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    setIsSavingSessions(true);
+    setSessionSavedSuccess(false);
+
+    try {
+      // 1. Save to AuthContext & localStorage for real-time sync across all pages
+      updateSessionSettings(sessionSettings);
+
+      // 2. Small UI delay for natural feedback
+      await new Promise((res) => setTimeout(res, 400));
+
+      setSessionSavedSuccess(true);
+      setSavedSuccess(true);
+      setTimeout(() => {
+        setSessionSavedSuccess(false);
+        setSavedSuccess(false);
+      }, 3500);
+    } catch (err: any) {
+      console.error("Failed to save session settings:", err);
+    } finally {
+      setIsSavingSessions(false);
+    }
+  };
+
+  const handleSaveNotifications = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingNotifs(true);
+    setNotifSavedSuccess(false);
+
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("owner_notification_settings", JSON.stringify(notificationSettings));
+      }
+      await new Promise((res) => setTimeout(res, 350));
+      setNotifSavedSuccess(true);
+      setSavedSuccess(true);
+      setTimeout(() => {
+        setNotifSavedSuccess(false);
+        setSavedSuccess(false);
+      }, 3500);
+    } catch (err: any) {
+      console.error("Failed to save notifications:", err);
+    } finally {
+      setIsSavingNotifs(false);
+    }
   };
 
   return (
@@ -441,92 +497,108 @@ export default function OwnerSettingsPage() {
       {/* Tab: Day & Night Sessions */}
       {activeTab === "sessions" && (
         <form onSubmit={handleSaveSessions} className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 space-y-6">
-          <div>
-            <h3 className="text-sm font-black text-[#1f2421]">Day & Night Session Schedule Configuration</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Customize standard booking hours and default policies for Day and Night reservations
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#e5ded4]">
+            <div>
+              <h3 className="text-sm sm:text-base font-extrabold text-[#1f2421]">Day & Night Session Schedule Configuration</h3>
+              <p className="text-xs text-[#6c726d] mt-0.5">
+                Customize standard booking hours and default policies for Day and Night reservations
+              </p>
+            </div>
+            {sessionSavedSuccess && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100/80 text-emerald-800 text-xs font-bold border border-emerald-300 shrink-0 animate-fadeIn">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Saved & Active!</span>
+              </div>
+            )}
           </div>
+
+          {sessionSavedSuccess && (
+            <div className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3.5 text-xs font-bold text-emerald-800 border border-emerald-200 animate-fadeIn">
+              <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 shrink-0" />
+              <span>Session preferences saved successfully! New standard booking hours and hold duration are active across your owner portal.</span>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Day Session Card */}
-            <div className="rounded-xl border border-amber-200 bg-amber-50/40 p-4 space-y-3">
-              <div className="flex items-center gap-2 text-amber-700 font-bold text-xs">
-                <Sun className="h-4 w-4" />
+            <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 space-y-3">
+              <div className="flex items-center gap-2 text-amber-800 font-bold text-xs">
+                <Sun className="h-4 w-4 text-amber-600" />
                 <span>☀️ Day Session Default Hours</span>
               </div>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600">Start Time</label>
+                  <label className="block text-[11px] font-bold text-slate-700">Start Time</label>
                   <input
                     type="time"
                     value={sessionSettings.dayStart}
                     onChange={(e) => setSessionSettings({ ...sessionSettings, dayStart: e.target.value })}
-                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900"
+                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition shadow-2xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600">End Time</label>
+                  <label className="block text-[11px] font-bold text-slate-700">End Time</label>
                   <input
                     type="time"
                     value={sessionSettings.dayEnd}
                     onChange={(e) => setSessionSettings({ ...sessionSettings, dayEnd: e.target.value })}
-                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900"
+                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition shadow-2xs"
                   />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500">Typical Barat/Lunch wedding session</p>
+              <p className="text-[11px] text-amber-900/70">Typical Barat/Lunch wedding session</p>
             </div>
 
             {/* Night Session Card */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-100/40 p-4 space-y-3">
-              <div className="flex items-center gap-2 text-[#3b3c44] font-bold text-xs">
-                <Moon className="h-4 w-4" />
+            <div className="rounded-xl border border-[#d6cec3] bg-[#ebe3d7]/40 p-4 space-y-3">
+              <div className="flex items-center gap-2 text-[#1f2421] font-bold text-xs">
+                <Moon className="h-4 w-4 text-[#1e382b]" />
                 <span>🌙 Night Session Default Hours</span>
               </div>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600">Start Time</label>
+                  <label className="block text-[11px] font-bold text-slate-700">Start Time</label>
                   <input
                     type="time"
                     value={sessionSettings.nightStart}
                     onChange={(e) => setSessionSettings({ ...sessionSettings, nightStart: e.target.value })}
-                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900"
+                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e382b]/30 focus:border-[#1e382b] transition shadow-2xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600">End Time</label>
+                  <label className="block text-[11px] font-bold text-slate-700">End Time</label>
                   <input
                     type="time"
                     value={sessionSettings.nightEnd}
                     onChange={(e) => setSessionSettings({ ...sessionSettings, nightEnd: e.target.value })}
-                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900"
+                    className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e382b]/30 focus:border-[#1e382b] transition shadow-2xs"
                   />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500">Typical Walima/Dinner wedding reception</p>
+              <p className="text-[11px] text-[#6c726d]">Typical Walima/Dinner wedding reception</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700">Default Token Hold Duration</label>
+              <label className="block text-xs font-bold text-slate-800">Default Token Hold Duration</label>
               <select
                 value={sessionSettings.autoHoldHours}
                 onChange={(e) => setSessionSettings({ ...sessionSettings, autoHoldHours: Number(e.target.value) })}
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900"
+                className="mt-1 w-full rounded-xl border border-[#d6cec3] bg-white px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#1e382b]/25 focus:border-[#1e382b] transition shadow-2xs cursor-pointer"
               >
                 <option value={24}>24 Hours Auto-Hold</option>
                 <option value={48}>48 Hours Auto-Hold</option>
+                <option value={72}>72 Hours Auto-Hold</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700">Billing Currency</label>
+              <label className="block text-xs font-bold text-slate-800">Billing Currency</label>
               <input
                 type="text"
                 disabled
                 value="Pakistani Rupee (PKR)"
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-2 text-xs text-slate-500"
+                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-xs text-slate-500 font-medium cursor-not-allowed"
               />
             </div>
           </div>
@@ -534,9 +606,30 @@ export default function OwnerSettingsPage() {
           <div className="flex justify-end pt-3">
             <button
               type="submit"
-              className="rounded-xl bg-[#3b3c44] hover:bg-[#2b2c33] text-white font-bold text-xs px-6 py-2.5 transition cursor-pointer"
+              disabled={isSavingSessions}
+              onClick={handleSaveSessions}
+              className={`rounded-xl text-white font-bold text-xs px-7 py-3 transition-all cursor-pointer flex items-center gap-2 shadow-xs active:scale-98 ${
+                sessionSavedSuccess
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : "bg-[#1e382b] hover:bg-[#162a20]"
+              }`}
             >
-              Save Session Preferences
+              {isSavingSessions ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Saving Preferences...</span>
+                </>
+              ) : sessionSavedSuccess ? (
+                <>
+                  <Check className="h-4 w-4 stroke-[3]" />
+                  <span>Saved Successfully!</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span>Save Session Preferences</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -544,36 +637,98 @@ export default function OwnerSettingsPage() {
 
       {/* Tab: Notifications */}
       {activeTab === "notifications" && (
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 space-y-4 text-xs">
-          <h3 className="text-sm font-black text-slate-900">Notification Alerts</h3>
-          <p className="text-slate-500">Configure how you receive updates on new bookings and payments</p>
+        <form onSubmit={handleSaveNotifications} className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 space-y-4 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#e5ded4]">
+            <div>
+              <h3 className="text-sm font-black text-[#1f2421]">Notification Alerts</h3>
+              <p className="text-xs text-[#6c726d] mt-0.5">Configure how you receive updates on new bookings and payments</p>
+            </div>
+            {notifSavedSuccess && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100/80 text-emerald-800 text-xs font-bold border border-emerald-300 shrink-0 animate-fadeIn">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>Saved & Active!</span>
+              </div>
+            )}
+          </div>
+
+          {notifSavedSuccess && (
+            <div className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3.5 text-xs font-bold text-emerald-800 border border-emerald-200 animate-fadeIn">
+              <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 shrink-0" />
+              <span>Notification preferences saved successfully!</span>
+            </div>
+          )}
 
           <div className="space-y-3 pt-2">
-            <label className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+            <label className="flex items-center justify-between p-3.5 rounded-xl border border-[#d6cec3] bg-white hover:bg-[#ebe3d7]/30 transition cursor-pointer">
               <div>
-                <p className="font-bold text-slate-900">New Booking Confirmation Alerts</p>
-                <p className="text-slate-500 text-[11px]">Receive in-app notification when customer booking is confirmed</p>
+                <p className="font-bold text-[#1f2421]">New Booking Confirmation Alerts</p>
+                <p className="text-[#6c726d] text-[11px]">Receive in-app notification when customer booking is confirmed</p>
               </div>
-              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#3b3c44] rounded" />
+              <input
+                type="checkbox"
+                checked={notificationSettings.bookingAlerts}
+                onChange={(e) => setNotificationSettings({ ...notificationSettings, bookingAlerts: e.target.checked })}
+                className="h-4 w-4 text-[#1e382b] accent-[#1e382b] rounded cursor-pointer"
+              />
             </label>
 
-            <label className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+            <label className="flex items-center justify-between p-3.5 rounded-xl border border-[#d6cec3] bg-white hover:bg-[#ebe3d7]/30 transition cursor-pointer">
               <div>
-                <p className="font-bold text-slate-900">Token Hold Expiry Warnings</p>
-                <p className="text-slate-500 text-[11px]">Notify 4 hours before a token reservation expires</p>
+                <p className="font-bold text-[#1f2421]">Token Hold Expiry Warnings</p>
+                <p className="text-[#6c726d] text-[11px]">Notify 4 hours before a token reservation expires</p>
               </div>
-              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#3b3c44] rounded" />
+              <input
+                type="checkbox"
+                checked={notificationSettings.holdExpiryWarnings}
+                onChange={(e) => setNotificationSettings({ ...notificationSettings, holdExpiryWarnings: e.target.checked })}
+                className="h-4 w-4 text-[#1e382b] accent-[#1e382b] rounded cursor-pointer"
+              />
             </label>
 
-            <label className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+            <label className="flex items-center justify-between p-3.5 rounded-xl border border-[#d6cec3] bg-white hover:bg-[#ebe3d7]/30 transition cursor-pointer">
               <div>
-                <p className="font-bold text-slate-900">Payment Received Invoices</p>
-                <p className="text-slate-500 text-[11px]">Instant receipt generation on customer payment recorded</p>
+                <p className="font-bold text-[#1f2421]">Payment Received Invoices</p>
+                <p className="text-[#6c726d] text-[11px]">Instant receipt generation on customer payment recorded</p>
               </div>
-              <input type="checkbox" defaultChecked className="h-4 w-4 text-[#3b3c44] rounded" />
+              <input
+                type="checkbox"
+                checked={notificationSettings.paymentReceipts}
+                onChange={(e) => setNotificationSettings({ ...notificationSettings, paymentReceipts: e.target.checked })}
+                className="h-4 w-4 text-[#1e382b] accent-[#1e382b] rounded cursor-pointer"
+              />
             </label>
           </div>
-        </div>
+
+          <div className="flex justify-end pt-3">
+            <button
+              type="submit"
+              disabled={isSavingNotifs}
+              onClick={handleSaveNotifications}
+              className={`rounded-xl text-white font-bold text-xs px-7 py-3 transition-all cursor-pointer flex items-center gap-2 shadow-xs active:scale-98 ${
+                notifSavedSuccess
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : "bg-[#1e382b] hover:bg-[#162a20]"
+              }`}
+            >
+              {isSavingNotifs ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : notifSavedSuccess ? (
+                <>
+                  <Check className="h-4 w-4 stroke-[3]" />
+                  <span>Saved Successfully!</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span>Save Notification Preferences</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       )}
 
       {/* Tab: Security */}

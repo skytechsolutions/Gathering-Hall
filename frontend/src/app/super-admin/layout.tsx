@@ -14,7 +14,6 @@ import {
   ShieldCheck,
   Menu,
   X,
-  Search,
   Bell,
   ChevronRight,
   Plus,
@@ -38,7 +37,6 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useScrollLock(mobileMenuOpen);
 
@@ -75,13 +73,6 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
       </div>
     );
   }
-
-  const handleGlobalSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/super-admin/owners?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
 
   return (
     <div className="min-h-screen lg:h-screen lg:max-h-screen bg-[#f5f0e8] flex overflow-hidden">
@@ -245,7 +236,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
       <div className="flex flex-1 flex-col overflow-hidden h-full min-h-0 bg-[#f5f0e8]">
         {/* Professional Top Navigation Bar */}
         <header className="h-14 lg:h-16 border-b border-[#e5ded4] bg-[#faf7f2] px-4 sm:px-6 flex items-center justify-between shrink-0 z-30 transition-colors">
-          <div className="flex items-center gap-3 flex-1 max-w-xl">
+          <div className="flex items-center gap-3">
             {/* Hamburger Toggle Button: Collapses Desktop Sidebar, Opens Mobile Drawer */}
             <button
               onClick={() => {
@@ -261,18 +252,6 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
             >
               <Menu className="h-5 w-5" />
             </button>
-
-            {/* Global Search Bar */}
-            <form onSubmit={handleGlobalSearch} className="relative flex-1 max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7a7368]" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search registered hall owners, email, phone..."
-                className="w-full pl-10 pr-4 py-2 text-xs bg-[#ebe3d7]/60 border border-[#d6cec3] rounded-full focus:bg-white focus:border-[#1e382b] focus:outline-none focus:ring-2 focus:ring-[#1e382b]/20 transition-all text-[#1f2421] placeholder:text-[#7a7368]"
-              />
-            </form>
           </div>
 
           {/* Right Header Controls */}

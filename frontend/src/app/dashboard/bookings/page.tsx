@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { bookingApi, Booking } from "@/services/api/booking.api";
 import { hallApi } from "@/services/api/hall.api";
 import { Modal } from "@/components/ui/modal";
+import { useAuth, getSessionHoursLabel } from "@/context/auth-context";
 import {
   CalendarCheck2,
   Search,
@@ -24,6 +25,7 @@ import {
 
 export default function OwnerBookingsPage() {
   const queryClient = useQueryClient();
+  const { sessionSettings } = useAuth();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [selectedHall, setSelectedHall] = useState("");
@@ -60,9 +62,16 @@ export default function OwnerBookingsPage() {
     status: "HOLD" as "HOLD" | "CONFIRMED",
     totalAmount: 150000,
     advanceAmount: 30000,
-    holdHours: 48,
+    holdHours: sessionSettings.autoHoldHours || 48,
     notes: "",
   });
+
+  // Sync default autoHoldHours from Owner Settings
+  useEffect(() => {
+    if (sessionSettings.autoHoldHours) {
+      setBookingForm((prev) => ({ ...prev, holdHours: sessionSettings.autoHoldHours }));
+    }
+  }, [sessionSettings.autoHoldHours]);
 
   // Fetch Owner's Bookings
   const { data, isLoading } = useQuery({
@@ -719,7 +728,7 @@ export default function OwnerBookingsPage() {
                 }`}
               >
                 <SunMedium className="h-4 w-4" />
-                <span>☀️ Day (11am - 4pm)</span>
+                <span>☀️ Day ({getSessionHoursLabel("DAY", sessionSettings)})</span>
               </button>
 
               <button
@@ -732,7 +741,7 @@ export default function OwnerBookingsPage() {
                 }`}
               >
                 <Moon className="h-4 w-4" />
-                <span>🌙 Night (6pm - 12am)</span>
+                <span>🌙 Night ({getSessionHoursLabel("NIGHT", sessionSettings)})</span>
               </button>
             </div>
           </div>

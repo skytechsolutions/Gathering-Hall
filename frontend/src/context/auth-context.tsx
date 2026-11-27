@@ -14,6 +14,55 @@ const DEFAULT_BRAND: BrandSettings = {
   logoUrl: null,
 };
 
+export interface SessionSettings {
+  dayStart: string;
+  dayEnd: string;
+  nightStart: string;
+  nightEnd: string;
+  autoHoldHours: number;
+  currency: string;
+}
+
+export const DEFAULT_SESSION_SETTINGS: SessionSettings = {
+  dayStart: "11:00",
+  dayEnd: "16:00",
+  nightStart: "18:00",
+  nightEnd: "00:00",
+  autoHoldHours: 48,
+  currency: "PKR",
+};
+
+export function formatTimeLabel(timeStr?: string): string {
+  if (!timeStr) return "";
+  const cleaned = timeStr.trim();
+  if (cleaned.toLowerCase().includes("am") || cleaned.toLowerCase().includes("pm")) {
+    return cleaned.replace(/\s+/g, "");
+  }
+  const parts = cleaned.split(":");
+  let hour = parseInt(parts[0], 10);
+  const min = parts[1] || "00";
+  if (isNaN(hour)) return cleaned;
+  const ampm = hour >= 12 && hour < 24 ? "pm" : "am";
+  hour = hour % 12;
+  if (hour === 0) hour = 12;
+  return min === "00" ? `${hour}${ampm}` : `${hour}:${min}${ampm}`;
+}
+
+export function getSessionHoursLabel(
+  session: "DAY" | "NIGHT",
+  settings?: Partial<SessionSettings>
+): string {
+  if (session === "DAY") {
+    const start = formatTimeLabel(settings?.dayStart || "11:00");
+    const end = formatTimeLabel(settings?.dayEnd || "16:00");
+    return `${start} - ${end}`;
+  } else {
+    const start = formatTimeLabel(settings?.nightStart || "18:00");
+    const end = formatTimeLabel(settings?.nightEnd || "00:00");
+    return `${start} - ${end}`;
+  }
+}
+
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
@@ -22,6 +71,8 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
   brandSettings: BrandSettings;
   updateBrandSettings: (settings: Partial<BrandSettings>) => void;
+  sessionSettings: SessionSettings;
+  updateSessionSettings: (settings: Partial<SessionSettings>) => void;
   updateProfile: (data: { name?: string; phone?: string }) => Promise<User>;
 }
 
@@ -43,6 +94,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     return DEFAULT_BRAND;
   });
+
+  const [sessionSettings, setSessionSettings] = useState<SessionSettings>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("owner_session_settings");
+        if (stored) {
+          return { ...DEFAULT_SESSION_SETTINGS, ...JSON.parse(stored) };
+        }
+      } catch {}
+    }
+    return DEFAULT_SESSION_SETTINGS;
+  });
+
+  const updateSessionSettings = useCallback((newSettings: Partial<SessionSettings>) => {
+    setSessionSettings((prev) => {
+      const updated = { ...prev, ...newSettings };
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("owner_session_settings", JSON.stringify(updated));
+          window.dispatchEvent(new CustomEvent("owner_session_settings_updated", { detail: updated }));
+        } catch {}
+      }
+      return updated;
+    });
+  }, []);
+
+  useEffect(() => {
+    const handleSync = (e: any) => {
+      if (e.detail) {
+        setSessionSettings((prev) => ({ ...prev, ...e.detail }));
+      } else if (typeof window !== "undefined") {
+        try {
+          const stored = localStorage.getItem("owner_session_settings");
+          if (stored) {
+            setSessionSettings({ ...DEFAULT_SESSION_SETTINGS, ...JSON.parse(stored) });
+          }
+        } catch {}
+      }
+    };
+    window.addEventListener("owner_session_settings_updated", handleSync);
+    window.addEventListener("storage", handleSync);
+    return () => {
+      window.removeEventListener("owner_session_settings_updated", handleSync);
+      window.removeEventListener("storage", handleSync);
+    };
+  }, []);
 
   const updateBrandSettings = useCallback((newSettings: Partial<BrandSettings>) => {
     setBrandSettings((prev) => {
@@ -123,6 +220,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         refreshUser,
         brandSettings,
         updateBrandSettings,
+        sessionSettings,
+        updateSessionSettings,
         updateProfile,
       }}
     >

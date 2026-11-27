@@ -21,6 +21,7 @@ import {
 import { hallApi, Hall } from "@/services/api/hall.api";
 import { bookingApi, CalendarAvailabilityEvent } from "@/services/api/booking.api";
 import { Modal } from "@/components/ui/modal";
+import { useAuth, getSessionHoursLabel } from "@/context/auth-context";
 import {
   ChevronLeft,
   ChevronRight,
@@ -37,6 +38,7 @@ type SessionType = "DAY" | "NIGHT";
 export default function AvailabilityCalendarPage() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+  const { sessionSettings } = useAuth();
 
   // Hall Selection
   const [selectedHallId, setSelectedHallId] = useState<string>(searchParams.get("hallId") || "");
@@ -75,10 +77,17 @@ export default function AvailabilityCalendarPage() {
     status: "CONFIRMED" as "HOLD" | "CONFIRMED",
     totalAmount: 150000,
     advanceAmount: 30000,
-    holdHours: 48,
+    holdHours: sessionSettings.autoHoldHours || 48,
     notes: "",
   });
   const [bookingError, setBookingError] = useState<string | null>(null);
+
+  // Sync default autoHoldHours from Owner Settings
+  useEffect(() => {
+    if (sessionSettings.autoHoldHours) {
+      setBookingForm((prev) => ({ ...prev, holdHours: sessionSettings.autoHoldHours }));
+    }
+  }, [sessionSettings.autoHoldHours]);
 
   // Block Date Modal State
   const [blockModalOpen, setBlockModalOpen] = useState(false);
@@ -333,28 +342,28 @@ export default function AvailabilityCalendarPage() {
   const selNightEvt = selectedDaySessions?.NIGHT;
 
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-8 bg-[#f5f0e8] text-[#1f2421] space-y-6 select-none font-sans">
+    <div className="w-full min-h-full lg:h-full lg:max-h-full p-3 sm:p-4 lg:px-4 lg:py-2 bg-[#f5f0e8] text-[#1f2421] flex flex-col gap-3.5 lg:gap-2 lg:justify-between select-none font-sans overflow-y-auto lg:overflow-hidden pb-16 lg:pb-0">
       {/* ============================================================== */}
       {/* 1. TOP HEADER SECTION (Title, Subtitle, Hall Dropdown, Actions)*/}
       {/* ============================================================== */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 shrink-0">
         <div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#1f2421] tracking-tight">
+          <h1 className="font-serif text-xl sm:text-2xl font-normal text-[#1f2421] tracking-tight leading-tight">
             Availability
           </h1>
-          <p className="text-xs sm:text-sm text-[#6c726d] font-normal mt-1">
+          <p className="text-[11px] sm:text-xs text-[#6c726d] font-normal mt-0.5">
             Day and night sessions for every date, at a glance.
           </p>
         </div>
 
         {/* Right Controls: Hall Select, Block date, New booking */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           {/* Hall Selector Dropdown */}
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <select
               value={activeHallId}
               onChange={(e) => setSelectedHallId(e.target.value)}
-              className="appearance-none rounded-lg border border-[#d6cec3] bg-white pl-3.5 pr-8 py-2 text-sm text-[#1f2421] font-medium outline-none cursor-pointer hover:border-[#b8ad9e] transition shadow-2xs"
+              className="w-full appearance-none rounded-lg border border-[#d6cec3] bg-white pl-3 pr-8 py-2 text-xs sm:text-sm text-[#1f2421] font-medium outline-none cursor-pointer hover:border-[#b8ad9e] transition shadow-2xs"
             >
               {hallsData && hallsData.length > 0 ? (
                 hallsData.map((hall) => (
@@ -366,38 +375,40 @@ export default function AvailabilityCalendarPage() {
                 <option value="">No Active Halls Available</option>
               )}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7a7368]" />
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#7a7368]" />
           </div>
 
-          {/* Block Date Button */}
-          <button
-            onClick={() => openBlockFor(selectedDateKey || format(currentDate, "yyyy-MM-dd"), "BOTH")}
-            className="rounded-lg border border-[#1f2421]/80 bg-transparent px-4 py-2 text-sm font-medium text-[#1f2421] hover:bg-black/5 transition cursor-pointer"
-          >
-            Block date
-          </button>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+            {/* Block Date Button */}
+            <button
+              onClick={() => openBlockFor(selectedDateKey || format(currentDate, "yyyy-MM-dd"), "BOTH")}
+              className="w-full sm:w-auto text-center justify-center rounded-lg border border-[#1f2421]/80 bg-transparent px-3.5 py-2 text-xs sm:text-sm font-medium text-[#1f2421] hover:bg-black/5 transition cursor-pointer"
+            >
+              Block date
+            </button>
 
-          {/* New Booking Button */}
-          <button
-            onClick={() => openBookingFor(selectedDateKey || format(currentDate, "yyyy-MM-dd"), "DAY")}
-            className="rounded-lg bg-[#1e382b] hover:bg-[#162a20] px-4 py-2 text-sm font-medium text-white transition cursor-pointer shadow-xs active:scale-[0.98]"
-          >
-            New booking
-          </button>
+            {/* New Booking Button */}
+            <button
+              onClick={() => openBookingFor(selectedDateKey || format(currentDate, "yyyy-MM-dd"), "DAY")}
+              className="w-full sm:w-auto text-center justify-center rounded-lg bg-[#1e382b] hover:bg-[#162a20] px-4 py-2 text-xs sm:text-sm font-medium text-white transition cursor-pointer shadow-xs active:scale-[0.98]"
+            >
+              New booking
+            </button>
+          </div>
         </div>
       </div>
 
       {/* ============================================================== */}
-      {/* 2. SUB-HEADER BAR (Month/Week/Agenda Tabs + Month Navigation)   */}
+      {/* 2. SUB-HEADER BAR (Month/Week/Agenda Tabs + Month Navigation in front) */}
       {/* ============================================================== */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between sm:justify-start gap-2.5 sm:gap-4 shrink-0">
         {/* Left: View Mode Segmented Switcher */}
-        <div className="inline-flex items-center gap-1 rounded-lg bg-[#ebe3d7] p-1 self-start">
+        <div className="grid grid-cols-3 sm:inline-flex items-center gap-1 rounded-lg bg-[#ebe3d7] p-1 shrink-0">
           <button
             onClick={() => setViewMode("month")}
-            className={`rounded-md px-3.5 py-1.5 text-xs sm:text-sm font-medium transition cursor-pointer ${
+            className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
               viewMode === "month"
-                ? "bg-white text-[#1f2421] shadow-2xs"
+                ? "bg-white text-[#1f2421] shadow-2xs font-bold"
                 : "text-[#5c564d] hover:text-[#1f2421]"
             }`}
           >
@@ -405,9 +416,9 @@ export default function AvailabilityCalendarPage() {
           </button>
           <button
             onClick={() => setViewMode("week")}
-            className={`rounded-md px-3.5 py-1.5 text-xs sm:text-sm font-medium transition cursor-pointer ${
+            className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
               viewMode === "week"
-                ? "bg-white text-[#1f2421] shadow-2xs"
+                ? "bg-white text-[#1f2421] shadow-2xs font-bold"
                 : "text-[#5c564d] hover:text-[#1f2421]"
             }`}
           >
@@ -415,9 +426,9 @@ export default function AvailabilityCalendarPage() {
           </button>
           <button
             onClick={() => setViewMode("agenda")}
-            className={`rounded-md px-3.5 py-1.5 text-xs sm:text-sm font-medium transition cursor-pointer ${
+            className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
               viewMode === "agenda"
-                ? "bg-white text-[#1f2421] shadow-2xs"
+                ? "bg-white text-[#1f2421] shadow-2xs font-bold"
                 : "text-[#5c564d] hover:text-[#1f2421]"
             }`}
           >
@@ -425,26 +436,26 @@ export default function AvailabilityCalendarPage() {
           </button>
         </div>
 
-        {/* Center/Right: Month Navigation (< January 2027 >) */}
-        <div className="flex items-center justify-center sm:justify-start gap-4">
+        {/* Month Navigation (< January 2027 >) */}
+        <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-2.5 shrink-0 bg-[#faf7f2] sm:bg-transparent p-1 sm:p-0 rounded-lg border border-[#e5ded4] sm:border-0">
           <button
             onClick={handlePrev}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#d6cec3] bg-white text-[#1f2421] hover:bg-[#f7f3ec] transition cursor-pointer shadow-2xs"
+            className="flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-[#d6cec3] bg-white text-[#1f2421] hover:bg-[#f7f3ec] transition cursor-pointer shadow-2xs active:scale-95"
             aria-label="Previous month"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
           </button>
 
-          <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#1f2421] min-w-[160px] text-center select-none">
+          <h2 className="font-serif text-base sm:text-lg font-normal text-[#1f2421] min-w-[120px] sm:min-w-[130px] text-center select-none">
             {format(currentDate, "MMMM yyyy")}
           </h2>
 
           <button
             onClick={handleNext}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#d6cec3] bg-white text-[#1f2421] hover:bg-[#f7f3ec] transition cursor-pointer shadow-2xs"
+            className="flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-[#d6cec3] bg-white text-[#1f2421] hover:bg-[#f7f3ec] transition cursor-pointer shadow-2xs active:scale-95"
             aria-label="Next month"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
           </button>
         </div>
       </div>
@@ -452,11 +463,11 @@ export default function AvailabilityCalendarPage() {
       {/* ============================================================== */}
       {/* 3. MAIN BODY (Calendar Card on Left, Sidebar on Right)         */}
       {/* ============================================================== */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-3.5 lg:gap-2.5 items-stretch lg:flex-1 lg:min-h-0 w-full">
         {/* Left Column (8 cols): Calendar Grid Card */}
-        <div className="lg:col-span-8 rounded-2xl border border-[#e5ded4] bg-[#faf7f2] overflow-hidden shadow-2xs">
+        <div className="lg:col-span-8 rounded-2xl border border-[#e5ded4] bg-[#faf7f2] overflow-hidden shadow-2xs flex flex-col justify-between w-full lg:h-full lg:min-h-0">
           {/* Day Names Header */}
-          <div className="grid grid-cols-7 border-b border-[#e5ded4] bg-[#faf7f2] text-center text-[11px] font-semibold tracking-wider text-[#6b655b] py-3 select-none">
+          <div className="grid grid-cols-7 border-b border-[#e5ded4] bg-[#faf7f2] text-center text-[10px] sm:text-[11px] font-semibold tracking-wider text-[#6b655b] py-1.5 lg:py-1 shrink-0 select-none">
             <div>MON</div>
             <div>TUE</div>
             <div>WED</div>
@@ -468,7 +479,12 @@ export default function AvailabilityCalendarPage() {
 
           {/* Month View Grid */}
           {viewMode === "month" && (
-            <div className="grid grid-cols-7 divide-x divide-y divide-[#e5ded4]">
+            <div
+              className="grid grid-cols-7 divide-x divide-y divide-[#e5ded4] w-full lg:flex-1 lg:min-h-0"
+              style={{
+                gridTemplateRows: `repeat(${monthDays.length / 7}, minmax(0, 1fr))`,
+              }}
+            >
               {monthDays.map((day, idx) => {
                 const dateKey = format(day, "yyyy-MM-dd");
                 const dayNum = format(day, "d");
@@ -502,7 +518,7 @@ export default function AvailabilityCalendarPage() {
                     onClick={() => {
                       if (isCurrentMonth) setSelectedDateKey(dateKey);
                     }}
-                    className={`relative p-2 sm:p-2.5 min-h-[74px] sm:min-h-[92px] flex flex-col justify-between transition select-none ${
+                    className={`relative p-1 sm:p-1.5 flex flex-col justify-between transition select-none overflow-hidden min-h-[50px] sm:min-h-[58px] lg:min-h-0 lg:h-full ${
                       !isCurrentMonth
                         ? "bg-[#f5f0e8]/40 text-[#a8a29e] pointer-events-none"
                         : isSelected
@@ -513,7 +529,7 @@ export default function AvailabilityCalendarPage() {
                     }`}
                   >
                     {/* Top Row: Date Number and Optional Booked Label */}
-                    <div>
+                    <div className="flex items-center justify-between gap-1 leading-none">
                       <span
                         className={`text-xs sm:text-sm font-semibold leading-none ${
                           !isCurrentMonth
@@ -526,7 +542,7 @@ export default function AvailabilityCalendarPage() {
                         {dayNum}
                       </span>
                       {isCurrentMonth && bookedLabel && (
-                        <span className="text-[10px] sm:text-[11px] font-medium text-[#8c2d25] block leading-tight mt-1 truncate">
+                        <span className="text-[8px] sm:text-[9px] font-medium text-[#8c2d25] block leading-none truncate max-w-[42px] sm:max-w-none">
                           {bookedLabel}
                         </span>
                       )}
@@ -534,18 +550,18 @@ export default function AvailabilityCalendarPage() {
 
                     {/* Bottom Row: Left dot (Day) & Right dot (Night) */}
                     {isCurrentMonth ? (
-                      <div className="flex items-center gap-1.5 mt-auto pt-2">
+                      <div className="flex items-center gap-1 sm:gap-1.5 mt-auto pt-1">
                         {/* Left dot: Day Session */}
                         <span
                           title={`Day Session: ${dayEvt ? dayEvt.status : "Available"}`}
                           className={
                             !dayEvt
-                              ? "h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full border border-[#8c857b] bg-transparent"
+                              ? "h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full border border-[#8c857b] bg-transparent"
                               : dayEvt.status === "CONFIRMED"
-                              ? "h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#a83226]"
+                              ? "h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#a83226]"
                               : dayEvt.status === "HOLD"
-                              ? "h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#d97706]"
-                              : "h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-xs bg-[#1f2421]"
+                              ? "h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#d97706]"
+                              : "h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-xs bg-[#1f2421]"
                           }
                         />
 
@@ -554,17 +570,17 @@ export default function AvailabilityCalendarPage() {
                           title={`Night Session: ${nightEvt ? nightEvt.status : "Available"}`}
                           className={
                             !nightEvt
-                              ? "h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full border border-[#8c857b] bg-transparent"
+                              ? "h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full border border-[#8c857b] bg-transparent"
                               : nightEvt.status === "CONFIRMED"
-                              ? "h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#a83226]"
+                              ? "h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#a83226]"
                               : nightEvt.status === "HOLD"
-                              ? "h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#d97706]"
-                              : "h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-xs bg-[#1f2421]"
+                              ? "h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#d97706]"
+                              : "h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-xs bg-[#1f2421]"
                           }
                         />
                       </div>
                     ) : (
-                      <div className="h-2.5" />
+                      <div className="h-1.5" />
                     )}
                   </div>
                 );
@@ -574,7 +590,7 @@ export default function AvailabilityCalendarPage() {
 
           {/* Week View */}
           {viewMode === "week" && (
-            <div className="grid grid-cols-7 divide-x divide-[#e5ded4] p-2">
+            <div className="grid grid-cols-7 divide-x divide-[#e5ded4] p-2 flex-1 min-h-0">
               {weekDays.map((day, idx) => {
                 const dateKey = format(day, "yyyy-MM-dd");
                 const daySessions = availabilityMap.get(dateKey);
@@ -585,15 +601,15 @@ export default function AvailabilityCalendarPage() {
                   <div
                     key={idx}
                     onClick={() => setSelectedDateKey(dateKey)}
-                    className={`p-3 min-h-[140px] flex flex-col justify-between rounded-xl cursor-pointer transition ${
+                    className={`p-2 min-h-0 flex flex-col justify-between rounded-xl cursor-pointer transition ${
                       selectedDateKey === dateKey ? "bg-white ring-2 ring-[#1e382b]" : "hover:bg-[#f3ede3]"
                     }`}
                   >
                     <div>
-                      <span className="text-[11px] font-semibold text-[#7a7368] uppercase">{format(day, "EEE")}</span>
-                      <h4 className="text-base font-bold text-[#1f2421]">{format(day, "d")}</h4>
+                      <span className="text-[10px] font-semibold text-[#7a7368] uppercase">{format(day, "EEE")}</span>
+                      <h4 className="text-sm sm:text-base font-bold text-[#1f2421]">{format(day, "d")}</h4>
                     </div>
-                    <div className="space-y-1.5 mt-3 text-[11px]">
+                    <div className="space-y-1 mt-2 text-[10px] sm:text-[11px]">
                       <div className="flex items-center gap-1.5">
                         <span
                           className={
@@ -627,22 +643,22 @@ export default function AvailabilityCalendarPage() {
 
           {/* Agenda View */}
           {viewMode === "agenda" && (
-            <div className="p-4 space-y-2 max-h-[500px] overflow-y-auto divide-y divide-[#e5ded4]">
+            <div className="p-2.5 space-y-1 flex-1 overflow-y-auto divide-y divide-[#e5ded4] min-h-0">
               {availabilityData?.events && availabilityData.events.length > 0 ? (
                 availabilityData.events.map((evt) => (
                   <div
                     key={evt.id}
                     onClick={() => setSelectedDateKey(evt.start)}
-                    className="pt-2.5 pb-2.5 flex items-center justify-between hover:bg-[#f3ede3] px-2 rounded-lg cursor-pointer transition text-xs"
+                    className="pt-1.5 pb-1.5 flex items-center justify-between hover:bg-[#f3ede3] px-2 rounded-lg cursor-pointer transition text-xs"
                   >
                     <div>
-                      <p className="font-bold text-sm text-[#1f2421]">{evt.title}</p>
-                      <p className="text-[11px] text-[#7a7368]">
+                      <p className="font-bold text-xs sm:text-sm text-[#1f2421]">{evt.title}</p>
+                      <p className="text-[10px] text-[#7a7368]">
                         {evt.start} • {evt.session === "NIGHT" ? "🌙 Night" : "☀️ Day"}
                       </p>
                     </div>
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                      className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold ${
                         evt.status === "CONFIRMED"
                           ? "bg-[#faebe8] text-[#a83226]"
                           : evt.status === "HOLD"
@@ -655,7 +671,7 @@ export default function AvailabilityCalendarPage() {
                   </div>
                 ))
               ) : (
-                <div className="py-12 text-center text-xs text-[#7a7368]">
+                <div className="py-8 text-center text-xs text-[#7a7368]">
                   No reservations or blocked dates recorded for this month.
                 </div>
               )}
@@ -663,108 +679,121 @@ export default function AvailabilityCalendarPage() {
           )}
 
           {/* Bottom Legend Bar */}
-          <div className="border-t border-[#e5ded4] px-4 py-3 bg-[#faf7f2] flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#5c564d] select-none">
-            <span className="font-medium text-[#1f2421]">Left dot: day session</span>
-            <span className="font-medium text-[#1f2421]">Right dot: night session</span>
+          <div className="border-t border-[#e5ded4] p-2.5 sm:px-3 sm:py-1 bg-[#faf7f2] flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] sm:text-[11px] text-[#5c564d] select-none shrink-0">
+            <span className="font-medium text-[#1f2421]">Left dot: day</span>
+            <span className="font-medium text-[#1f2421]">Right dot: night</span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full border border-[#8c857b] bg-transparent" />
+              <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full border border-[#8c857b] bg-transparent" />
               <span>Available</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#a83226]" />
+              <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#a83226]" />
               <span>Confirmed</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#d97706]" />
-              <span>Hold / token</span>
+              <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-[#d97706]" />
+              <span>Hold</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-xs bg-[#1f2421]" />
+              <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-xs bg-[#1f2421]" />
               <span>Blocked</span>
             </span>
           </div>
         </div>
 
-        {/* Right Column (4 cols): Selected Day Card + 2x2 Overview Card */}
-        <div className="lg:col-span-4 space-y-5">
+        {/* Right Column (4 cols on desktop, full-width on mobile): Selected Day Card + 2x2 Overview Card */}
+        <div className="lg:col-span-4 flex flex-col gap-3 lg:gap-2 justify-between w-full lg:h-full lg:min-h-0">
           {/* Card 1: Selected Day Details Card */}
-          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-5 shadow-2xs">
-            <span className="text-[11px] font-semibold text-[#7a7368] uppercase tracking-wider block">
-              {selectedDayOfWeek}
-            </span>
-            <h3 className="font-serif text-2xl font-normal text-[#1f2421] mt-0.5 pb-4 border-b border-[#e5ded4]">
-              {selectedFormattedDate}
-            </h3>
-
-            {/* Sessions List */}
-            <div className="space-y-4 py-4">
-              {/* Day Session */}
-              <div className="flex items-center justify-between gap-3">
+          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-3.5 sm:p-4 lg:p-3 shadow-2xs w-full lg:flex-1 lg:min-h-0 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-1.5 border-b border-[#e5ded4]">
                 <div>
-                  <h4 className="font-bold text-sm text-[#1f2421]">Day session</h4>
-                  <p className="text-xs text-[#7a7368] mt-0.5">
-                    {!selDayEvt
-                      ? "Open for booking"
-                      : selDayEvt.status === "CONFIRMED"
-                      ? `Booked • ${selDayEvt.customerName || "Customer"}`
-                      : selDayEvt.status === "HOLD"
-                      ? `Hold • ${selDayEvt.customerName || "Customer"}`
-                      : "Blocked session"}
-                  </p>
+                  <span className="text-[10px] font-semibold text-[#7a7368] uppercase tracking-wider block">
+                    {selectedDayOfWeek}
+                  </span>
+                  <h3 className="font-serif text-base sm:text-lg font-normal text-[#1f2421] mt-0.5">
+                    {selectedFormattedDate}
+                  </h3>
                 </div>
-                <div>
-                  {!selDayEvt ? (
-                    <span className="inline-block rounded-full border border-[#7a7368]/60 px-3 py-1 text-xs font-medium text-[#1f2421]">
-                      Available
-                    </span>
-                  ) : selDayEvt.status === "CONFIRMED" ? (
-                    <span className="inline-block rounded-full bg-[#faebe8] border border-[#a83226]/40 text-[#a83226] px-3 py-1 text-xs font-semibold">
-                      Booked
-                    </span>
-                  ) : selDayEvt.status === "HOLD" ? (
-                    <span className="inline-block rounded-full bg-amber-50 border border-amber-300 text-amber-700 px-3 py-1 text-xs font-semibold">
-                      Hold
-                    </span>
-                  ) : (
-                    <span className="inline-block rounded-full bg-slate-200 text-slate-800 px-3 py-1 text-xs font-semibold">
-                      Blocked
-                    </span>
-                  )}
-                </div>
+                <span className="text-[10px] font-semibold text-[#1e382b] bg-[#ebe3d7] px-2 py-0.5 rounded-md">
+                  Active Date
+                </span>
               </div>
 
-              {/* Night Session */}
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h4 className="font-bold text-sm text-[#1f2421]">Night session</h4>
-                  <p className="text-xs text-[#7a7368] mt-0.5">
-                    {!selNightEvt
-                      ? "Open for booking"
-                      : selNightEvt.status === "CONFIRMED"
-                      ? `Booked • ${selNightEvt.customerName || "Customer"}`
-                      : selNightEvt.status === "HOLD"
-                      ? `Hold • ${selNightEvt.customerName || "Customer"}`
-                      : "Blocked session"}
-                  </p>
+              {/* Sessions List */}
+              <div className="space-y-2 py-2 sm:py-2.5">
+                {/* Day Session */}
+                <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white/60 border border-[#e5ded4]/60">
+                  <div>
+                    <h4 className="font-bold text-xs text-[#1f2421]">
+                      Day session <span className="font-normal text-[10px] text-[#7a7368]">({getSessionHoursLabel("DAY", sessionSettings)})</span>
+                    </h4>
+                    <p className="text-[10px] text-[#7a7368] mt-0.5">
+                      {!selDayEvt
+                        ? "Open for booking"
+                        : selDayEvt.status === "CONFIRMED"
+                        ? `Booked • ${selDayEvt.customerName || "Customer"}`
+                        : selDayEvt.status === "HOLD"
+                        ? `Hold • ${selDayEvt.customerName || "Customer"}`
+                        : "Blocked session"}
+                    </p>
+                  </div>
+                  <div>
+                    {!selDayEvt ? (
+                      <span className="inline-block rounded-full border border-[#7a7368]/60 px-2.5 py-0.5 text-[10px] font-medium text-[#1f2421] bg-white">
+                        Available
+                      </span>
+                    ) : selDayEvt.status === "CONFIRMED" ? (
+                      <span className="inline-block rounded-full bg-[#faebe8] border border-[#a83226]/40 text-[#a83226] px-2.5 py-0.5 text-[10px] font-semibold">
+                        Booked
+                      </span>
+                    ) : selDayEvt.status === "HOLD" ? (
+                      <span className="inline-block rounded-full bg-amber-50 border border-amber-300 text-amber-700 px-2.5 py-0.5 text-[10px] font-semibold">
+                        Hold
+                      </span>
+                    ) : (
+                      <span className="inline-block rounded-full bg-slate-200 text-slate-800 px-2.5 py-0.5 text-[10px] font-semibold">
+                        Blocked
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  {!selNightEvt ? (
-                    <span className="inline-block rounded-full border border-[#7a7368]/60 px-3 py-1 text-xs font-medium text-[#1f2421]">
-                      Available
-                    </span>
-                  ) : selNightEvt.status === "CONFIRMED" ? (
-                    <span className="inline-block rounded-full bg-[#faebe8] border border-[#a83226]/40 text-[#a83226] px-3 py-1 text-xs font-semibold">
-                      Booked
-                    </span>
-                  ) : selNightEvt.status === "HOLD" ? (
-                    <span className="inline-block rounded-full bg-amber-50 border border-amber-300 text-amber-700 px-3 py-1 text-xs font-semibold">
-                      Hold
-                    </span>
-                  ) : (
-                    <span className="inline-block rounded-full bg-slate-200 text-slate-800 px-3 py-1 text-xs font-semibold">
-                      Blocked
-                    </span>
-                  )}
+
+                {/* Night Session */}
+                <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white/60 border border-[#e5ded4]/60">
+                  <div>
+                    <h4 className="font-bold text-xs text-[#1f2421]">
+                      Night session <span className="font-normal text-[10px] text-[#7a7368]">({getSessionHoursLabel("NIGHT", sessionSettings)})</span>
+                    </h4>
+                    <p className="text-[10px] text-[#7a7368] mt-0.5">
+                      {!selNightEvt
+                        ? "Open for booking"
+                        : selNightEvt.status === "CONFIRMED"
+                        ? `Booked • ${selNightEvt.customerName || "Customer"}`
+                        : selNightEvt.status === "HOLD"
+                        ? `Hold • ${selNightEvt.customerName || "Customer"}`
+                        : "Blocked session"}
+                    </p>
+                  </div>
+                  <div>
+                    {!selNightEvt ? (
+                      <span className="inline-block rounded-full border border-[#7a7368]/60 px-2.5 py-0.5 text-[10px] font-medium text-[#1f2421] bg-white">
+                        Available
+                      </span>
+                    ) : selNightEvt.status === "CONFIRMED" ? (
+                      <span className="inline-block rounded-full bg-[#faebe8] border border-[#a83226]/40 text-[#a83226] px-2.5 py-0.5 text-[10px] font-semibold">
+                        Booked
+                      </span>
+                    ) : selNightEvt.status === "HOLD" ? (
+                      <span className="inline-block rounded-full bg-amber-50 border border-amber-300 text-amber-700 px-2.5 py-0.5 text-[10px] font-semibold">
+                        Hold
+                      </span>
+                    ) : (
+                      <span className="inline-block rounded-full bg-slate-200 text-slate-800 px-2.5 py-0.5 text-[10px] font-semibold">
+                        Blocked
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -778,14 +807,14 @@ export default function AvailabilityCalendarPage() {
                     !selDayEvt ? "DAY" : "NIGHT"
                   )
                 }
-                className="w-full mt-2 rounded-xl bg-[#1e382b] hover:bg-[#162a20] text-white py-3 text-sm font-semibold transition text-center shadow-xs cursor-pointer active:scale-[0.99]"
+                className="w-full mt-2 rounded-xl bg-[#1e382b] hover:bg-[#162a20] text-white py-2.5 lg:py-1.5 text-xs sm:text-sm font-semibold transition text-center shadow-xs cursor-pointer active:scale-[0.99]"
               >
                 Book this date
               </button>
             ) : (
               <button
                 disabled
-                className="w-full mt-2 rounded-xl bg-slate-200 text-slate-500 py-3 text-sm font-semibold text-center cursor-not-allowed"
+                className="w-full mt-2 rounded-xl bg-slate-200 text-slate-500 py-2.5 lg:py-1.5 text-xs sm:text-sm font-semibold text-center cursor-not-allowed"
               >
                 Fully booked
               </button>
@@ -793,33 +822,33 @@ export default function AvailabilityCalendarPage() {
           </div>
 
           {/* Card 2: 2x2 Monthly Statistics Card */}
-          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] overflow-hidden shadow-2xs divide-y divide-[#e5ded4]">
+          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] overflow-hidden shadow-2xs divide-y divide-[#e5ded4] w-full shrink-0">
             <div className="grid grid-cols-2 divide-x divide-[#e5ded4]">
-              <div className="p-4 sm:p-5">
-                <div className="font-serif text-3xl sm:text-4xl font-normal text-[#1f2421]">
+              <div className="p-3 sm:p-3.5 lg:px-2.5 lg:py-1.5">
+                <div className="font-serif text-xl sm:text-2xl lg:text-lg font-normal text-[#1f2421] leading-tight">
                   {monthStats.availableDays}
                 </div>
-                <p className="text-xs text-[#7a7368] mt-1 font-medium">Available days</p>
+                <p className="text-[11px] lg:text-[10px] text-[#7a7368] font-medium leading-tight mt-0.5">Available days</p>
               </div>
-              <div className="p-4 sm:p-5">
-                <div className="font-serif text-3xl sm:text-4xl font-normal text-[#1f2421]">
+              <div className="p-3 sm:p-3.5 lg:px-2.5 lg:py-1.5">
+                <div className="font-serif text-xl sm:text-2xl lg:text-lg font-normal text-[#1f2421] leading-tight">
                   {monthStats.bookedDays}
                 </div>
-                <p className="text-xs text-[#7a7368] mt-1 font-medium">Booked</p>
+                <p className="text-[11px] lg:text-[10px] text-[#7a7368] font-medium leading-tight mt-0.5">Booked</p>
               </div>
             </div>
             <div className="grid grid-cols-2 divide-x divide-[#e5ded4]">
-              <div className="p-4 sm:p-5">
-                <div className="font-serif text-3xl sm:text-4xl font-normal text-[#1f2421]">
+              <div className="p-3 sm:p-3.5 lg:px-2.5 lg:py-1.5">
+                <div className="font-serif text-xl sm:text-2xl lg:text-lg font-normal text-[#1f2421] leading-tight">
                   {monthStats.holdDays}
                 </div>
-                <p className="text-xs text-[#7a7368] mt-1 font-medium">On hold</p>
+                <p className="text-[11px] lg:text-[10px] text-[#7a7368] font-medium leading-tight mt-0.5">On hold</p>
               </div>
-              <div className="p-4 sm:p-5">
-                <div className="font-serif text-3xl sm:text-4xl font-normal text-[#1f2421]">
+              <div className="p-3 sm:p-3.5 lg:px-2.5 lg:py-1.5">
+                <div className="font-serif text-xl sm:text-2xl lg:text-lg font-normal text-[#1f2421] leading-tight">
                   {monthStats.blockedDays}
                 </div>
-                <p className="text-xs text-[#7a7368] mt-1 font-medium">Blocked</p>
+                <p className="text-[11px] lg:text-[10px] text-[#7a7368] font-medium leading-tight mt-0.5">Blocked</p>
               </div>
             </div>
           </div>
@@ -870,7 +899,7 @@ export default function AvailabilityCalendarPage() {
                 }`}
               >
                 <SunMedium className="h-4 w-4" />
-                <span>☀️ Day Session (11am - 4pm)</span>
+                <span>☀️ Day Session ({getSessionHoursLabel("DAY", sessionSettings)})</span>
               </button>
 
               <button
@@ -883,7 +912,7 @@ export default function AvailabilityCalendarPage() {
                 }`}
               >
                 <Moon className="h-4 w-4" />
-                <span>🌙 Night Session (6pm - 12am)</span>
+                <span>🌙 Night Session ({getSessionHoursLabel("NIGHT", sessionSettings)})</span>
               </button>
             </div>
           </div>

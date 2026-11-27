@@ -116,7 +116,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
   };
 
   return (
-    <div className="w-full min-h-screen md:h-screen md:max-h-screen flex flex-col md:flex-row bg-[#fbfaf6] overflow-x-hidden overflow-y-auto md:overflow-hidden select-none relative">
+    <div className="w-full min-h-screen md:h-screen md:max-h-screen flex flex-col md:flex-row bg-[#f5f0e8] overflow-x-hidden overflow-y-auto md:overflow-hidden select-none relative">
       
       {/* ============================================================== */}
       {/* DESKTOP SLIDING BLADE: FULL SCREEN 50% SPLIT (TOP TO BOTTOM)   */}
@@ -280,7 +280,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                 setSignInError(null);
               }}
               className={`flex-1 py-1 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-                !isSignUp ? "bg-[#c4874c] text-white shadow" : "text-amber-200/70 hover:text-white"
+                !isSignUp ? "bg-[#1e382b] text-white shadow" : "text-amber-200/70 hover:text-white"
               }`}
             >
               Sign In
@@ -291,7 +291,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                 setSignUpError(null);
               }}
               className={`flex-1 py-1 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-                isSignUp ? "bg-[#c4874c] text-white shadow" : "text-amber-200/70 hover:text-white"
+                isSignUp ? "bg-[#1e382b] text-white shadow" : "text-amber-200/70 hover:text-white"
               }`}
             >
               Create Account
@@ -304,17 +304,17 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
       {/* LEFT PANE: SIGN IN FORM                                        */}
       {/* ============================================================== */}
       <div
-        className={`w-full md:w-1/2 flex-1 md:flex-none md:h-full flex flex-col justify-start md:justify-center items-center px-6 pt-6 pb-10 md:p-12 lg:p-16 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] rounded-t-[24px] md:rounded-none -mt-4 md:mt-0 bg-[#fbfaf6] relative z-10 shadow-lg md:shadow-none ${
+        className={`w-full md:w-1/2 flex-1 md:flex-none md:h-full flex flex-col justify-start md:justify-center items-center px-6 pt-6 pb-10 md:p-12 lg:p-16 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] rounded-t-[24px] md:rounded-none -mt-4 md:mt-0 bg-[#f5f0e8] relative z-10 shadow-lg md:shadow-none ${
           isSignUp
             ? "md:opacity-0 md:pointer-events-none md:-translate-x-8 hidden md:flex"
             : "opacity-100 pointer-events-auto translate-x-0 flex"
         }`}
       >
         <div className="w-full max-w-[360px] sm:max-w-[380px] mx-auto">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#1a0c05] mb-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#1f2421] mb-1">
             Sign in
           </h1>
-          <p className="text-xs sm:text-sm font-medium text-gray-600 mb-5">
+          <p className="text-xs sm:text-sm font-medium text-[#6c726d] mb-5">
             Enter your credentials to access the management portal.
           </p>
 
@@ -328,7 +328,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
           <form onSubmit={handleSignIn} className="space-y-4">
             {/* Username or Email Input */}
             <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1.5" htmlFor="signin-email">
+              <label className="block text-xs font-bold text-[#1f2421] mb-1.5" htmlFor="signin-email">
                 Username or email
               </label>
               <div className="relative">
@@ -339,15 +339,15 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                   value={signInEmail}
                   onChange={(e) => setSignInEmail(e.target.value)}
                   placeholder="admin@example.com"
-                  className="w-full bg-white rounded-xl border border-gray-300 py-2.5 pl-3.5 pr-10 text-sm font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2b170e] focus:outline-none focus:ring-1 focus:ring-[#2b170e] transition shadow-xs"
+                  className="w-full bg-[#faf7f2] rounded-xl border border-[#d6cec3] py-2.5 pl-3.5 pr-10 text-sm font-medium text-[#1f2421] placeholder:text-[#8c938d] placeholder:font-normal focus:border-[#1e382b] focus:outline-none focus:ring-1 focus:ring-[#1e382b] transition shadow-xs"
                 />
-                <User className="absolute right-3.5 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                <User className="absolute right-3.5 top-3 h-4 w-4 text-[#8c938d] pointer-events-none" />
               </div>
             </div>
 
             {/* Password Input */}
             <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1.5" htmlFor="signin-password">
+              <label className="block text-xs font-bold text-[#1f2421] mb-1.5" htmlFor="signin-password">
                 Password
               </label>
               <div className="relative">
@@ -358,12 +358,12 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                   value={signInPassword}
                   onChange={(e) => setSignInPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white rounded-xl border border-gray-300 py-2.5 pl-3.5 pr-10 text-sm font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2b170e] focus:outline-none focus:ring-1 focus:ring-[#2b170e] transition shadow-xs"
+                  className="w-full bg-[#faf7f2] rounded-xl border border-[#d6cec3] py-2.5 pl-3.5 pr-10 text-sm font-medium text-[#1f2421] placeholder:text-[#8c938d] placeholder:font-normal focus:border-[#1e382b] focus:outline-none focus:ring-1 focus:ring-[#1e382b] transition shadow-xs"
                 />
                 <button
                   type="button"
                   onClick={() => setShowSignInPassword(!showSignInPassword)}
-                  className="absolute right-3.5 top-3 text-gray-400 hover:text-gray-700 transition cursor-pointer"
+                  className="absolute right-3.5 top-3 text-[#8c938d] hover:text-[#1f2421] transition cursor-pointer"
                 >
                   {showSignInPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -377,15 +377,15 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                   type="checkbox"
                   checked={keepSignedIn}
                   onChange={(e) => setKeepSignedIn(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-[#2b170e] focus:ring-[#2b170e]"
+                  className="h-4 w-4 rounded border-[#d6cec3] text-[#1e382b] focus:ring-[#1e382b] accent-[#1e382b]"
                 />
-                <span className="text-xs text-gray-700 font-semibold">Keep me signed in</span>
+                <span className="text-xs text-[#1f2421] font-semibold">Keep me signed in</span>
               </label>
 
               <button
                 type="button"
                 onClick={() => setForgotModalOpen(true)}
-                className="text-xs font-bold text-[#2b170e] hover:underline cursor-pointer"
+                className="text-xs font-bold text-[#1e382b] hover:underline cursor-pointer"
               >
                 Forgot password?
               </button>
@@ -395,15 +395,15 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
             <button
               type="submit"
               disabled={signInLoading}
-              className="w-full mt-2 rounded-full bg-[#2b170e] hover:bg-[#3d2114] py-3 text-sm font-bold text-white shadow-md shadow-amber-950/20 active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full mt-2 rounded-full bg-[#1e382b] hover:bg-[#162a20] py-3 text-sm font-bold text-white shadow-md shadow-[#1e382b]/20 active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             >
               {signInLoading ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
           {/* Toggle Link to Sign Up */}
-          <div className="mt-5 text-center pt-3.5 border-t border-gray-200/80">
-            <p className="text-xs sm:text-sm font-medium text-gray-600">
+          <div className="mt-5 text-center pt-3.5 border-t border-[#e5ded4]">
+            <p className="text-xs sm:text-sm font-medium text-[#6c726d]">
               New to CHAMKANI?{" "}
               <button
                 type="button"
@@ -411,7 +411,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                   setIsSignUp(true);
                   setSignInError(null);
                 }}
-                className="font-bold text-[#2b170e] hover:underline ml-1 cursor-pointer"
+                className="font-bold text-[#1e382b] hover:underline ml-1 cursor-pointer"
               >
                 Create an account
               </button>
@@ -424,7 +424,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
       {/* RIGHT PANE: SIGN UP FORM                                       */}
       {/* ============================================================== */}
       <div
-        className={`w-full md:w-1/2 flex-1 md:flex-none md:h-full flex flex-col justify-start md:justify-center items-center px-6 pt-6 pb-10 md:p-12 lg:p-16 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] rounded-t-[24px] md:rounded-none -mt-4 md:mt-0 bg-[#fbfaf6] relative z-10 shadow-lg md:shadow-none ${
+        className={`w-full md:w-1/2 flex-1 md:flex-none md:h-full flex flex-col justify-start md:justify-center items-center px-6 pt-6 pb-10 md:p-12 lg:p-16 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] rounded-t-[24px] md:rounded-none -mt-4 md:mt-0 bg-[#f5f0e8] relative z-10 shadow-lg md:shadow-none ${
           isSignUp
             ? "opacity-100 pointer-events-auto translate-x-0 flex"
             : "md:opacity-0 md:pointer-events-none md:translate-x-8 hidden md:flex"
@@ -432,14 +432,14 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
       >
         <div className="w-full max-w-[360px] sm:max-w-[380px] mx-auto">
           {signUpSuccess ? (
-            <div className="rounded-2xl border border-green-200 bg-green-50/70 p-6 text-center animate-fadeIn">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
+            <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 text-center animate-fadeIn shadow-sm">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#ebe3d7] text-[#1e382b]">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
-              <h3 className="mt-3 text-lg font-bold text-gray-900">Application Submitted!</h3>
-              <p className="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed">
+              <h3 className="mt-3 text-lg font-bold text-[#1f2421]">Application Submitted!</h3>
+              <p className="mt-2 text-xs sm:text-sm text-[#6c726d] leading-relaxed">
                 Your hall owner account has been registered with status{" "}
-                <strong className="font-semibold text-amber-700">PENDING</strong>. A Super Admin will review and verify your details before granting dashboard access.
+                <strong className="font-semibold text-[#1e382b]">PENDING</strong>. A Super Admin will review and verify your details before granting dashboard access.
               </p>
               <button
                 type="button"
@@ -448,17 +448,17 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                   setIsSignUp(false);
                   setSignUpForm({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
                 }}
-                className="mt-4 w-full rounded-full bg-[#2b170e] hover:bg-[#3d2114] py-2.5 text-xs sm:text-sm font-semibold text-white transition shadow cursor-pointer"
+                className="mt-4 w-full rounded-full bg-[#1e382b] hover:bg-[#162a20] py-2.5 text-xs sm:text-sm font-semibold text-white transition shadow cursor-pointer"
               >
                 Return to Sign In
               </button>
             </div>
           ) : (
             <>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#1a0c05] mb-1">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#1f2421] mb-1">
                 Create account
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-4">
+              <p className="text-xs sm:text-sm font-medium text-[#6c726d] mb-4">
                 Register your hall business to join the Chamkani network.
               </p>
 
@@ -472,7 +472,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
               <form onSubmit={handleSignUp} className="space-y-2.5">
                 {/* Name Input */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-800 mb-1" htmlFor="signup-name">
+                  <label className="block text-xs font-bold text-[#1f2421] mb-1" htmlFor="signup-name">
                     Full Name / Business Name
                   </label>
                   <div className="relative">
@@ -483,15 +483,15 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                       value={signUpForm.name}
                       onChange={(e) => setSignUpForm({ ...signUpForm, name: e.target.value })}
                       placeholder="Haji Malik Khan"
-                      className="w-full bg-white rounded-xl border border-gray-300 py-2 pl-3.5 pr-9 text-xs sm:text-sm font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2b170e] focus:outline-none focus:ring-1 focus:ring-[#2b170e] transition shadow-xs"
+                      className="w-full bg-[#faf7f2] rounded-xl border border-[#d6cec3] py-2 pl-3.5 pr-9 text-xs sm:text-sm font-medium text-[#1f2421] placeholder:text-[#8c938d] placeholder:font-normal focus:border-[#1e382b] focus:outline-none focus:ring-1 focus:ring-[#1e382b] transition shadow-xs"
                     />
-                    <User className="absolute right-3.5 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <User className="absolute right-3.5 top-2.5 h-4 w-4 text-[#8c938d] pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Email Input */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-800 mb-1" htmlFor="signup-email">
+                  <label className="block text-xs font-bold text-[#1f2421] mb-1" htmlFor="signup-email">
                     Email Address
                   </label>
                   <div className="relative">
@@ -502,15 +502,15 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                       value={signUpForm.email}
                       onChange={(e) => setSignUpForm({ ...signUpForm, email: e.target.value })}
                       placeholder="owner@example.com"
-                      className="w-full bg-white rounded-xl border border-gray-300 py-2 pl-3.5 pr-9 text-xs sm:text-sm font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2b170e] focus:outline-none focus:ring-1 focus:ring-[#2b170e] transition shadow-xs"
+                      className="w-full bg-[#faf7f2] rounded-xl border border-[#d6cec3] py-2 pl-3.5 pr-9 text-xs sm:text-sm font-medium text-[#1f2421] placeholder:text-[#8c938d] placeholder:font-normal focus:border-[#1e382b] focus:outline-none focus:ring-1 focus:ring-[#1e382b] transition shadow-xs"
                     />
-                    <Mail className="absolute right-3.5 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <Mail className="absolute right-3.5 top-2.5 h-4 w-4 text-[#8c938d] pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Phone Input */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-800 mb-1" htmlFor="signup-phone">
+                  <label className="block text-xs font-bold text-[#1f2421] mb-1" htmlFor="signup-phone">
                     Phone Number
                   </label>
                   <div className="relative">
@@ -521,16 +521,16 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                       value={signUpForm.phone}
                       onChange={(e) => setSignUpForm({ ...signUpForm, phone: e.target.value })}
                       placeholder="0300-1234567"
-                      className="w-full bg-white rounded-xl border border-gray-300 py-2 pl-3.5 pr-9 text-xs sm:text-sm font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2b170e] focus:outline-none focus:ring-1 focus:ring-[#2b170e] transition shadow-xs"
+                      className="w-full bg-[#faf7f2] rounded-xl border border-[#d6cec3] py-2 pl-3.5 pr-9 text-xs sm:text-sm font-medium text-[#1f2421] placeholder:text-[#8c938d] placeholder:font-normal focus:border-[#1e382b] focus:outline-none focus:ring-1 focus:ring-[#1e382b] transition shadow-xs"
                     />
-                    <Phone className="absolute right-3.5 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <Phone className="absolute right-3.5 top-2.5 h-4 w-4 text-[#8c938d] pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Passwords in 2 columns */}
                 <div className="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label className="block text-xs font-bold text-gray-800 mb-1" htmlFor="signup-pwd">
+                    <label className="block text-xs font-bold text-[#1f2421] mb-1" htmlFor="signup-pwd">
                       Password
                     </label>
                     <div className="relative">
@@ -541,12 +541,12 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                         value={signUpForm.password}
                         onChange={(e) => setSignUpForm({ ...signUpForm, password: e.target.value })}
                         placeholder="••••••••"
-                        className="w-full bg-white rounded-xl border border-gray-300 py-2 pl-3 pr-8 text-xs font-medium text-gray-900 placeholder:text-gray-400 focus:border-[#2b170e] focus:outline-none shadow-xs"
+                        className="w-full bg-[#faf7f2] rounded-xl border border-[#d6cec3] py-2 pl-3 pr-8 text-xs font-medium text-[#1f2421] placeholder:text-[#8c938d] focus:border-[#1e382b] focus:outline-none focus:ring-1 focus:ring-[#1e382b] shadow-xs"
                       />
                       <button
                         type="button"
                         onClick={() => setShowSignUpPassword(!showSignUpPassword)}
-                        className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-700 cursor-pointer"
+                        className="absolute right-2.5 top-2.5 text-[#8c938d] hover:text-[#1f2421] cursor-pointer"
                       >
                         {showSignUpPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       </button>
@@ -554,7 +554,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-800 mb-1" htmlFor="signup-confirm">
+                    <label className="block text-xs font-bold text-[#1f2421] mb-1" htmlFor="signup-confirm">
                       Confirm
                     </label>
                     <div className="relative">
@@ -565,12 +565,12 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                         value={signUpForm.confirmPassword}
                         onChange={(e) => setSignUpForm({ ...signUpForm, confirmPassword: e.target.value })}
                         placeholder="••••••••"
-                        className="w-full bg-white rounded-xl border border-gray-300 py-2 pl-3 pr-8 text-xs font-medium text-gray-900 placeholder:text-gray-400 focus:border-[#2b170e] focus:outline-none shadow-xs"
+                        className="w-full bg-[#faf7f2] rounded-xl border border-[#d6cec3] py-2 pl-3 pr-8 text-xs font-medium text-[#1f2421] placeholder:text-[#8c938d] focus:border-[#1e382b] focus:outline-none focus:ring-1 focus:ring-[#1e382b] shadow-xs"
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-700 cursor-pointer"
+                        className="absolute right-2.5 top-2.5 text-[#8c938d] hover:text-[#1f2421] cursor-pointer"
                       >
                         {showConfirmPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       </button>
@@ -582,15 +582,15 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                 <button
                   type="submit"
                   disabled={signUpLoading}
-                  className="w-full mt-2 rounded-full bg-[#2b170e] hover:bg-[#3d2114] py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-amber-950/20 active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                  className="w-full mt-2 rounded-full bg-[#1e382b] hover:bg-[#162a20] py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-[#1e382b]/20 active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {signUpLoading ? "Creating account..." : "Create an account"}
                 </button>
               </form>
 
               {/* Toggle Link to Sign In */}
-              <div className="mt-4 text-center pt-3 border-t border-gray-200/80">
-                <p className="text-xs sm:text-sm font-medium text-gray-600">
+              <div className="mt-4 text-center pt-3 border-t border-[#e5ded4]">
+                <p className="text-xs sm:text-sm font-medium text-[#6c726d]">
                   Already have an account?{" "}
                   <button
                     type="button"
@@ -598,7 +598,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
                       setIsSignUp(false);
                       setSignUpError(null);
                     }}
-                    className="font-bold text-[#2b170e] hover:underline ml-1 cursor-pointer"
+                    className="font-bold text-[#1e382b] hover:underline ml-1 cursor-pointer"
                   >
                     Sign in
                   </button>
@@ -615,29 +615,29 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
         onClose={() => setForgotModalOpen(false)}
         maxWidth="max-w-md"
       >
-        <div className="flex items-center justify-between border-b pb-3 mb-4">
+        <div className="flex items-center justify-between border-b border-[#e5ded4] pb-3 mb-4">
           <div className="flex items-center gap-2">
-            <HelpCircle className="h-5 w-5 text-amber-800" />
-            <h3 className="font-bold text-gray-900 text-base">Account Recovery</h3>
+            <HelpCircle className="h-5 w-5 text-[#1e382b]" />
+            <h3 className="font-bold text-[#1f2421] text-base">Account Recovery</h3>
           </div>
           <button
             onClick={() => setForgotModalOpen(false)}
-            className="text-gray-400 hover:text-gray-600 cursor-pointer"
+            className="text-[#8c938d] hover:text-[#1f2421] cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-4">
+        <p className="text-xs sm:text-sm text-[#6c726d] leading-relaxed mb-4">
           For security reasons in the Chamkani Gathering Hall system, password resets are handled directly through system administrators.
         </p>
 
-        <div className="rounded-xl bg-gray-50 p-4 border border-gray-200 text-xs sm:text-sm space-y-2">
-          <p className="text-gray-700">
-            <strong>Super Admin Contact:</strong> <span className="font-mono text-amber-900 font-semibold">admin@example.com</span>
+        <div className="rounded-xl bg-[#faf7f2] p-4 border border-[#e5ded4] text-xs sm:text-sm space-y-2">
+          <p className="text-[#1f2421]">
+            <strong>Super Admin Contact:</strong> <span className="font-mono text-[#1e382b] font-semibold">admin@example.com</span>
           </p>
-          <p className="text-gray-700">
-            <strong>Emergency Helpline:</strong> <span className="font-mono text-amber-900 font-semibold">0300-0000000</span>
+          <p className="text-[#1f2421]">
+            <strong>Emergency Helpline:</strong> <span className="font-mono text-[#1e382b] font-semibold">0300-0000000</span>
           </p>
         </div>
 
@@ -645,7 +645,7 @@ export default function SlidingAuthCard({ initialMode = "signin" }: SlidingAuthC
           <button
             type="button"
             onClick={() => setForgotModalOpen(false)}
-            className="rounded-xl bg-[#2b170e] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-[#3d2114] transition cursor-pointer"
+            className="rounded-xl bg-[#1e382b] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-[#162a20] transition cursor-pointer"
           >
             Understood
           </button>
