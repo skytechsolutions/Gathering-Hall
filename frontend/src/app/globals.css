@@ -87,6 +87,7 @@
   --color-event-corporate: var(--color-event-corporate);
   --color-event-other: var(--color-event-other);
   --font-sans: var(--font-inter);
+  --font-serif: 'Cormorant Garamond', Georgia, Cambria, 'Times New Roman', Times, serif;
 }
 
 html,

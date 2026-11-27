@@ -2,25 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { format, parseISO, isValid } from "date-fns";
 import { reportApi, OwnerOverview } from "@/services/api/report.api";
-import {
-  Building2,
-  CalendarCheck2,
-  Clock,
-  DollarSign,
-  TrendingUp,
-  AlertCircle,
-  PlusCircle,
-  CalendarDays,
-  ArrowRight,
-  SunMedium,
-  Moon,
-  Sparkles,
-  ShieldCheck,
-  CheckCircle2,
-} from "lucide-react";
+import { useAuth } from "@/context/auth-context";
+import { AlertCircle } from "lucide-react";
 
 export default function OwnerOverviewPage() {
+  const { user } = useAuth();
+
   const { data, isLoading, error } = useQuery<OwnerOverview>({
     queryKey: ["owner-overview"],
     queryFn: async () => {
@@ -32,7 +21,7 @@ export default function OwnerOverviewPage() {
   if (isLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#3b3c44] border-t-transparent" />
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#1e382b] border-t-transparent" />
       </div>
     );
   }
@@ -48,359 +37,314 @@ export default function OwnerOverviewPage() {
     );
   }
 
+  // Calculate financial and event metrics
+  const advanceCollected = Number(data.advanceReceived || 0);
+  const balanceDue = Number(data.remainingPayments || 0);
+  const totalBooked = advanceCollected + balanceDue;
+
+  const advancePct = totalBooked > 0 ? Math.min(100, Math.max(0, Math.round((advanceCollected / totalBooked) * 100))) : 0;
+  const balancePct = 100 - advancePct;
+
+  // Today's event logic
+  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const todayEvents = (data.upcomingEvents || []).filter((e) => e.eventDate === todayStr);
+  const todayCount = todayEvents.length;
+  const todayEvent = todayEvents[0] || data.upcomingEvents?.[0] || null;
+  const todayIsNight = todayEvent?.notes?.includes("[SESSION:NIGHT]");
+
+  // Next scheduled events (excluding today if shown)
+  const upcomingEvents = (data.upcomingEvents || []).slice(0, 4);
+
+  // Monthly Chart values
+  const monthlyData = data.monthlyChart && data.monthlyChart.length > 0 ? data.monthlyChart : [
+    { month: "Jun", revenue: 0, bookings: 0 },
+    { month: "Jul", revenue: 0, bookings: 0 },
+    { month: "Aug", revenue: 0, bookings: 0 },
+    { month: "Sep", revenue: 0, bookings: 0 },
+    { month: "Oct", revenue: 0, bookings: 0 },
+    { month: "Nov", revenue: totalBooked || 150000, bookings: 1 },
+  ];
+
+  const maxMonthRev = Math.max(...monthlyData.map((m) => m.revenue || 0), 1);
+
   return (
-    <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-[#faf7f2] rounded-2xl p-6 border border-[#e5ded4]">
+    <div className="space-y-6 select-none font-sans">
+      {/* ============================================================== */}
+      {/* 1. TOP HEADER ROW (Exact matches media_1795762701294_7f6fb371) */}
+      {/* ============================================================== */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#ebe3d7]/60 text-[#1e382b] border border-[#d6cec3]">
-              <Sparkles className="h-3.5 w-3.5 text-[#1e382b]" /> Owner Portal Live
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#1f2421] mt-2">
-            Welcome to Chamkani Hall Management
+          <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#7a6f60]">
+            {format(new Date(), "EEEE, d MMMM yyyy")}
+          </p>
+          <h1 className="font-serif text-3xl sm:text-4xl text-[#1f2421] tracking-tight mt-1 font-normal">
+            Welcome back, {user?.name || "Faraz"}
           </h1>
-          <p className="text-xs sm:text-sm text-[#6c726d] font-medium mt-1">
-            Real-time reservations, Day/Night booking sessions, and revenue ledger
+          <p className="text-xs sm:text-sm text-[#7a6f60] font-normal mt-1">
+            {todayCount === 1
+              ? `One event today. ${balanceDue > 0 ? `PKR ${balanceDue.toLocaleString()} is still to collect.` : "All payments cleared."}`
+              : todayCount > 1
+              ? `${todayCount} events today. ${balanceDue > 0 ? `PKR ${balanceDue.toLocaleString()} is still to collect.` : "All payments cleared."}`
+              : `No events today. ${balanceDue > 0 ? `PKR ${balanceDue.toLocaleString()} is still to collect.` : "All payments up to date."}`}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3 w-full sm:w-auto">
-          <Link
-            href="/dashboard/bookings"
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#1e382b] hover:bg-[#162a20] px-4 py-2.5 text-xs sm:text-sm font-bold text-white active:scale-95 transition"
-          >
-            <PlusCircle className="h-4 w-4" />
-            New Booking
-          </Link>
+
+        <div className="flex items-center gap-2.5 shrink-0">
           <Link
             href="/dashboard/calendar"
-            className="flex items-center justify-center gap-2 rounded-xl border border-[#d6cec3] bg-[#faf7f2] px-4 py-2.5 text-xs sm:text-sm font-bold text-[#1f2421] hover:bg-[#ebe3d7] transition text-center"
+            className="rounded-lg border border-[#d6cec3] bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-[#1f2421] hover:bg-[#faf7f2] transition shadow-xs"
           >
-            <CalendarDays className="h-4 w-4 text-[#1e382b]" />
             Calendar
+          </Link>
+          <Link
+            href="/dashboard/bookings"
+            className="rounded-lg bg-[#1e382b] hover:bg-[#162a20] px-4 py-2 text-xs sm:text-sm font-semibold text-white transition shadow-xs active:scale-[0.98]"
+          >
+            New booking
           </Link>
         </div>
       </div>
 
-      {/* KPI Stats Grid - 2 columns in row form on mobile, 4 on desktop */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {/* My Halls */}
-        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between hover:border-[#d6cec3] transition">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[11px] sm:text-xs font-bold text-[#6c726d] uppercase tracking-wider truncate">
-              My Halls
-            </span>
-            <div className="rounded-xl bg-[#ebe3d7] p-2 text-[#1e382b] shrink-0">
-              <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-black text-[#1f2421]">{data.myHallsCount}</p>
-            <p className="mt-1 text-[11px] sm:text-xs text-[#6c726d] truncate font-medium">Registered venue halls</p>
-          </div>
-        </div>
-
-        {/* Total Bookings */}
-        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between hover:border-[#d6cec3] transition">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[11px] sm:text-xs font-bold text-[#6c726d] uppercase tracking-wider truncate">
-              Total Bookings
-            </span>
-            <div className="rounded-xl bg-[#ebe3d7] p-2 text-[#1e382b] shrink-0">
-              <CalendarCheck2 className="h-4 w-4 sm:h-5 sm:w-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-black text-[#1f2421]">{data.totalBookings}</p>
-            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] sm:text-xs font-semibold">
-              <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md">{data.confirmedBookings} Conf.</span>
-              <span className="text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md">{data.holdBookings} Hold</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Advance Received */}
-        <div className="rounded-2xl border border-emerald-200/60 bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[11px] sm:text-xs font-bold text-emerald-800 uppercase tracking-wider truncate">
-              Advance Collected
-            </span>
-            <div className="rounded-xl bg-emerald-100 p-2 text-emerald-700 shrink-0">
-              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-lg sm:text-2xl font-black text-emerald-900 truncate">
-              PKR {Number(data.advanceReceived || 0).toLocaleString()}
-            </p>
-            <p className="mt-1 text-[11px] sm:text-xs text-emerald-700 truncate font-semibold">Deposits secured</p>
-          </div>
-        </div>
-
-        {/* Remaining Due */}
-        <div className="rounded-2xl border border-amber-200/60 bg-[#faf7f2] p-4 sm:p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[11px] sm:text-xs font-bold text-amber-800 uppercase tracking-wider truncate">
-              Balance Due
-            </span>
-            <div className="rounded-xl bg-amber-100 p-2 text-amber-700 shrink-0">
-              <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-lg sm:text-2xl font-black text-amber-900 truncate">
-              PKR {Number(data.remainingPayments || 0).toLocaleString()}
-            </p>
-            <p className="mt-1 text-[11px] sm:text-xs text-amber-700 truncate font-semibold">Receivable on event day</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Monthly Chart & Upcoming Events */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Monthly Income Chart */}
-        <div className="lg:col-span-2 rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6">
-          <div className="flex items-center justify-between mb-6">
+      {/* ============================================================== */}
+      {/* 2. MAIN 2-COLUMN GRID (8-col Left, 4-col Right on Desktop)    */}
+      {/* ============================================================== */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* LEFT COLUMN (8 COLS) */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Card 1: Money */}
+          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 shadow-2xs">
             <div>
-              <h3 className="font-bold text-lg text-[#1f2421]">Monthly Revenue Trend</h3>
-              <p className="text-xs text-[#6c726d] font-medium">Income from confirmed bookings (Last 6 Months)</p>
+              <h2 className="font-serif text-lg sm:text-xl text-[#1f2421] font-normal">Money</h2>
+              <p className="text-xs text-[#7a6f60] font-normal mt-0.5">Confirmed bookings</p>
             </div>
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#ebe3d7] text-[#1e382b] border border-[#d6cec3]">
-              Confirmed Bookings
-            </span>
+
+            <div className="mt-4 flex items-baseline gap-3">
+              <span className="font-serif text-3xl sm:text-4xl text-[#1f2421] font-normal">
+                PKR {totalBooked.toLocaleString()}
+              </span>
+              <span className="text-xs text-[#7a6f60] font-normal">total booked</span>
+            </div>
+
+            {/* Segmented Progress Bar */}
+            <div className="my-5 h-3.5 sm:h-4 w-full rounded-full overflow-hidden flex bg-[#e5ded4]/40">
+              {advancePct > 0 && (
+                <div
+                  className="h-full bg-[#1e382b] transition-all duration-500"
+                  style={{ width: `${advancePct}%` }}
+                />
+              )}
+              {balancePct > 0 && (
+                <div
+                  className="h-full transition-all duration-500"
+                  style={{
+                    width: `${advancePct > 0 ? balancePct : 100}%`,
+                    backgroundColor: "#c28e36",
+                    backgroundImage:
+                      "repeating-linear-gradient(45deg, rgba(255,255,255,0.2) 0, rgba(255,255,255,0.2) 6px, transparent 6px, transparent 12px)",
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Breakdown metrics below progress bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2 text-xs text-[#7a6f60] font-normal">
+                  <span className="w-2.5 h-2.5 bg-[#1e382b] rounded-xs inline-block shrink-0" />
+                  <span>Advance collected</span>
+                </div>
+                <p className="font-bold text-base sm:text-lg text-[#1f2421] pl-4">
+                  PKR {advanceCollected.toLocaleString()}
+                </p>
+              </div>
+
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2 text-xs text-[#7a6f60] font-normal">
+                  <span className="w-2.5 h-2.5 bg-[#c28e36] rounded-xs inline-block shrink-0" />
+                  <span>Balance due on event day</span>
+                </div>
+                <p className="font-bold text-base sm:text-lg text-[#1f2421] pl-4">
+                  PKR {balanceDue.toLocaleString()}
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            {data.monthlyChart && data.monthlyChart.length > 0 ? (
-              data.monthlyChart.map((m, idx) => {
-                const maxRev = Math.max(...data.monthlyChart.map((x) => x.revenue || 1));
-                const pct = Math.max(8, Math.round(((m.revenue || 0) / maxRev) * 100));
-                return (
-                  <div key={idx} className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-semibold">
-                      <span className="text-[#1f2421]">{m.month}</span>
-                      <span className="text-[#1f2421] font-bold">
-                        PKR {Number(m.revenue || 0).toLocaleString()}{" "}
-                        <span className="text-[#6c726d] font-normal">({m.bookings} events)</span>
-                      </span>
+          {/* Card 2: Income by month */}
+          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 shadow-2xs">
+            <div>
+              <h2 className="font-serif text-lg sm:text-xl text-[#1f2421] font-normal">Income by month</h2>
+              <p className="text-xs text-[#7a6f60] font-normal mt-0.5">Confirmed bookings, last 6 months</p>
+            </div>
+
+            {/* Vertical Bar Chart matching screenshot */}
+            <div className="mt-8 pt-4">
+              <div className="h-44 sm:h-48 flex items-end justify-between gap-2 sm:gap-4 px-2 sm:px-4 border-b border-[#d6cec3]">
+                {monthlyData.map((m, idx) => {
+                  const rev = Number(m.revenue || 0);
+                  const isTop = rev > 0 && rev === maxMonthRev;
+                  const heightPct = rev > 0 ? Math.max(12, Math.round((rev / maxMonthRev) * 100)) : 0;
+
+                  return (
+                    <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full">
+                      {isTop && (
+                        <span className="text-[11px] sm:text-xs font-semibold text-[#1f2421] mb-1.5 whitespace-nowrap">
+                          {rev.toLocaleString()}
+                        </span>
+                      )}
+                      {rev > 0 ? (
+                        <div
+                          className="w-full max-w-[54px] bg-[#1e382b] rounded-t-lg transition-all duration-500"
+                          style={{ height: `${heightPct}%` }}
+                        />
+                      ) : (
+                        <div className="w-full max-w-[54px] h-1.5 bg-[#d6cec3] rounded-full mb-0" />
+                      )}
                     </div>
-                    <div className="h-3 w-full rounded-full bg-[#ebe3d7] overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-[#1e382b] to-[#2d4a3b] transition-all duration-500"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Month Labels below axis */}
+              <div className="flex items-center justify-between gap-2 sm:gap-4 px-2 sm:px-4 pt-2.5">
+                {monthlyData.map((m, idx) => (
+                  <div key={idx} className="flex-1 text-center text-xs text-[#7a6f60] font-medium">
+                    {m.month}
                   </div>
-                );
-              })
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Split 2-Column Overview (Halls & Total Bookings) */}
+          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 grid grid-cols-2 divide-x divide-[#e5ded4] shadow-2xs">
+            <div>
+              <p className="font-serif text-3xl sm:text-4xl text-[#1f2421] font-normal">
+                {data.myHallsCount || 0}
+              </p>
+              <p className="text-xs text-[#7a6f60] font-normal mt-1">Registered halls</p>
+            </div>
+            <div className="pl-6 sm:pl-8">
+              <p className="font-serif text-3xl sm:text-4xl text-[#1f2421] font-normal">
+                {data.totalBookings || 0}
+              </p>
+              <p className="text-xs text-[#7a6f60] font-normal mt-1">
+                Bookings in total · {data.confirmedBookings || 0} confirmed · {data.holdBookings || 0} on hold
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN (4 COLS) */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Card 1: TODAY (Deep Racing Green with Amber button) */}
+          <div className="rounded-2xl bg-[#1e382b] text-white p-6 space-y-4 shadow-sm">
+            <p className="text-[10px] tracking-widest font-bold uppercase text-[#c28e36]">
+              TODAY
+            </p>
+
+            {todayEvent ? (
+              <div className="space-y-3">
+                <h3 className="font-serif text-2xl text-white leading-tight font-normal capitalize">
+                  {todayEvent.eventType?.toLowerCase() || "Barat"}, {todayEvent.customerName}
+                </h3>
+                <p className="text-xs text-white/70 font-normal">
+                  {todayEvent.hall?.name || "Jan wedding hall"}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-white capitalize">
+                    {todayIsNight ? "Night session" : "Day session"}
+                  </span>
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-white capitalize">
+                    {todayEvent.eventType?.toLowerCase() || "Barat"}
+                  </span>
+                </div>
+
+                <Link
+                  href="/dashboard/bookings"
+                  className="block w-full text-center rounded-xl bg-[#c28e36] hover:bg-[#b07d2c] text-[#1f2421] font-bold py-2.5 text-sm transition mt-3 shadow-xs"
+                >
+                  Open booking
+                </Link>
+              </div>
             ) : (
-              <p className="text-sm text-[#6c726d] py-10 text-center font-medium">No revenue history recorded yet.</p>
+              <div className="space-y-3">
+                <h3 className="font-serif text-2xl text-white leading-tight font-normal">
+                  No events today
+                </h3>
+                <p className="text-xs text-white/70 font-normal">
+                  All your registered halls are currently available today.
+                </p>
+                <Link
+                  href="/dashboard/calendar"
+                  className="block w-full text-center rounded-xl bg-[#c28e36] hover:bg-[#b07d2c] text-[#1f2421] font-bold py-2.5 text-sm transition mt-3 shadow-xs"
+                >
+                  Check availability
+                </Link>
+              </div>
             )}
           </div>
-        </div>
 
-        {/* Upcoming Events Box */}
-        <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
+          {/* Card 2: Upcoming Events */}
+          <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6 space-y-4 shadow-2xs">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-lg text-[#1f2421]">Upcoming Events</h3>
-                <p className="text-xs text-[#6c726d] font-medium">Scheduled bookings</p>
+                <h3 className="font-serif text-lg text-[#1f2421] font-normal">Upcoming</h3>
+                <p className="text-xs text-[#7a6f60] font-normal mt-0.5">Next scheduled events</p>
               </div>
               <Link
-                href="/dashboard/calendar"
-                className="text-xs font-bold text-[#1e382b] hover:underline"
+                href="/dashboard/bookings"
+                className="text-xs font-bold text-[#1f2421] underline hover:text-[#1e382b]"
               >
-                Calendar &rarr;
+                All bookings
               </Link>
             </div>
 
-            <div className="divide-y divide-[#e5ded4]">
-              {data.upcomingEvents && data.upcomingEvents.length > 0 ? (
-                data.upcomingEvents.map((evt) => {
+            <div className="border-t border-[#e5ded4]" />
+
+            <div className="space-y-3">
+              {upcomingEvents.length > 0 ? (
+                upcomingEvents.map((evt) => {
+                  let parsedDate = new Date();
+                  try {
+                    const p = parseISO(evt.eventDate);
+                    if (isValid(p)) parsedDate = p;
+                  } catch {
+                    // fallback
+                  }
                   const isNight = evt.notes?.includes("[SESSION:NIGHT]");
+
                   return (
-                    <div key={evt.id} className="py-3.5 hover:bg-[#ebe3d7]/30 rounded-xl px-2 transition">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#1e382b] font-mono">{evt.eventDate}</span>
-                        <div className="flex items-center gap-1.5">
-                          {isNight ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/50">
-                              <Moon className="h-2.5 w-2.5" /> Night
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/50">
-                              <SunMedium className="h-2.5 w-2.5" /> Day
-                            </span>
-                          )}
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/50">
-                            {evt.eventType || "Event"}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-sm font-bold text-[#1f2421] mt-1">{evt.customerName}</p>
-                      <p className="text-xs text-[#6c726d] font-medium">{evt.hall?.name || "Venue"}</p>
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-sm text-[#6c726d] py-10 text-center font-medium">No upcoming events scheduled.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-4 border-t border-[#e5ded4] pt-4">
-            <Link
-              href="/dashboard/bookings"
-              className="flex items-center justify-center gap-2 rounded-xl border border-[#d6cec3] py-2.5 text-xs font-bold text-[#1f2421] hover:bg-[#ebe3d7] transition"
-            >
-              Manage All Bookings <ArrowRight className="h-3.5 w-3.5 text-[#6c726d]" />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Bookings Table */}
-      <div className="rounded-2xl border border-[#e5ded4] bg-[#faf7f2] p-6">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h3 className="font-bold text-lg text-[#1f2421]">Recent Bookings & Holds</h3>
-            <p className="text-xs text-[#6c726d] font-medium">Latest reservations across your registered halls</p>
-          </div>
-          <Link
-            href="/dashboard/bookings"
-            className="text-xs font-bold text-[#1e382b] hover:underline"
-          >
-            View all bookings &rarr;
-          </Link>
-        </div>
-
-        {/* Mobile View for Recent Bookings (< md) */}
-        <div className="md:hidden divide-y divide-[#e5ded4]">
-          {data.recentBookings && data.recentBookings.length > 0 ? (
-            data.recentBookings.map((b) => {
-              const isNight = b.notes?.includes("[SESSION:NIGHT]");
-              return (
-                <div key={b.id} className="py-3.5 space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono font-bold text-xs text-[#1e382b]">{b.bookingNumber}</span>
-                    <span
-                      className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        b.status === "CONFIRMED"
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
-                          : b.status === "HOLD"
-                          ? "bg-amber-50 text-amber-700 border border-amber-200/60"
-                          : b.status === "BLOCKED"
-                          ? "bg-gray-900 text-white"
-                          : "bg-rose-50 text-rose-700 border border-rose-200/60"
-                      }`}
-                    >
-                      {b.status}
-                    </span>
-                  </div>
-
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-bold text-sm text-[#1f2421]">{b.customerName}</p>
-                      <p className="text-xs text-[#6c726d]">{b.hall?.name || "—"}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-black text-sm text-[#1f2421]">
-                        PKR {Number(b.totalAmount || 0).toLocaleString()}
-                      </p>
-                      <div className="mt-1 flex items-center justify-end gap-1.5">
-                        <span className="text-[11px] text-[#6c726d] font-medium">{b.eventDate}</span>
-                        {isNight ? (
-                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700">
-                            <Moon className="h-2.5 w-2.5" /> Night
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700">
-                            <SunMedium className="h-2.5 w-2.5" /> Day
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="py-8 text-center text-xs text-[#6c726d] font-medium">
-              No bookings recorded yet.
-            </div>
-          )}
-        </div>
-
-        {/* Desktop Table View (Hidden on mobile) */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left text-sm text-[#1f2421]">
-            <thead className="bg-[#ebe3d7]/50 text-xs font-bold uppercase text-[#6c726d] border-b border-[#e5ded4]">
-              <tr>
-                <th className="px-4 py-3">Booking #</th>
-                <th className="px-4 py-3">Hall</th>
-                <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Session</th>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Total (PKR)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#e5ded4]">
-              {data.recentBookings && data.recentBookings.length > 0 ? (
-                data.recentBookings.map((b) => {
-                  const isNight = b.notes?.includes("[SESSION:NIGHT]");
-                  return (
-                    <tr key={b.id} className="hover:bg-[#ebe3d7]/30 transition">
-                      <td className="px-4 py-3.5 font-mono font-bold text-[#1e382b]">{b.bookingNumber}</td>
-                      <td className="px-4 py-3.5 font-bold text-[#1f2421]">{b.hall?.name || "—"}</td>
-                      <td className="px-4 py-3.5">
-                        <p className="font-semibold text-[#1f2421]">{b.customerName}</p>
-                        <p className="text-xs text-[#6c726d] font-mono">{b.customerPhone}</p>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        {isNight ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/50">
-                            <Moon className="h-3 w-3" /> Night
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/50">
-                            <SunMedium className="h-3 w-3" /> Day
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3.5 font-medium text-[#1f2421]">{b.eventDate}</td>
-                      <td className="px-4 py-3.5">
-                        <span
-                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                            b.status === "CONFIRMED"
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
-                              : b.status === "HOLD"
-                              ? "bg-amber-50 text-amber-700 border border-amber-200/60"
-                              : b.status === "BLOCKED"
-                              ? "bg-gray-900 text-white"
-                              : "bg-rose-50 text-rose-700 border border-rose-200/60"
-                          }`}
-                        >
-                          {b.status}
+                    <div key={evt.id} className="flex items-center gap-3.5 py-1">
+                      <div className="w-13 h-13 rounded-xl border border-[#e5ded4] bg-white flex flex-col items-center justify-center shrink-0 shadow-2xs">
+                        <span className="font-bold text-base text-[#1f2421] leading-none">
+                          {format(parsedDate, "d")}
                         </span>
-                      </td>
-                      <td className="px-4 py-3.5 text-right font-black text-[#1f2421]">
-                        PKR {Number(b.totalAmount || 0).toLocaleString()}
-                      </td>
-                    </tr>
+                        <span className="text-[10px] font-bold uppercase text-[#7a6f60] mt-0.5 leading-none">
+                          {format(parsedDate, "MMM")}
+                        </span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-[#1f2421] truncate">{evt.customerName}</p>
+                        <p className="text-xs text-[#7a6f60] truncate mt-0.5">
+                          {evt.hall?.name || "Jan wedding hall"} · {isNight ? "Night" : "Day"} · {evt.eventType || "Barat"}
+                        </p>
+                      </div>
+                    </div>
                   );
                 })
               ) : (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-[#6c726d] font-medium">
-                    No bookings recorded yet.
-                  </td>
-                </tr>
+                <p className="text-xs text-[#7a6f60] py-4 text-center">No upcoming events scheduled yet.</p>
               )}
-            </tbody>
-          </table>
+            </div>
+
+            <div className="border-t border-[#e5ded4]" />
+
+            <p className="text-xs text-[#7a6f60] text-center pt-1 font-normal">
+              Nothing else is scheduled yet.
+            </p>
+          </div>
         </div>
       </div>
     </div>
