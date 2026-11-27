@@ -44,7 +44,7 @@ const MOBILE_BOTTOM_NAV = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { name: "Calendar", href: "/dashboard/calendar", icon: CalendarDays },
   { name: "Bookings", href: "/dashboard/bookings", icon: CalendarCheck2 },
-  { name: "Halls", href: "/dashboard/halls", icon: Building2 },
+  { name: "Payments", href: "/dashboard/payments", icon: CreditCard },
   { name: "Customers", href: "/dashboard/customers", icon: Users },
 ];
 
@@ -208,11 +208,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     />
                     <span className="truncate">{item.name}</span>
                   </div>
-                  {item.name === "Availability Calendar" && (
-                    <span className="px-2 py-0.5 rounded-full border border-lime-400/60 text-lime-400 text-[9px] font-bold">
-                      Live
-                    </span>
-                  )}
                 </Link>
               );
             })}
@@ -233,9 +228,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     }`}
                   >
                     <Icon className={`h-4.5 w-4.5 shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-white" : "text-white/60 group-hover:text-white"}`} />
-                    {item.name === "Availability Calendar" && (
-                      <span className="absolute bottom-1 right-1 h-1.5 w-1.5 rounded-full bg-lime-400 shadow-[0_0_6px_#a3e635]" />
-                    )}
                   </Link>
 
                   {/* High-Contrast Light Popover Tooltip */}

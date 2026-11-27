@@ -10,6 +10,7 @@ export class PaymentService {
       method?: PaymentMethod;
       transactionReference?: string | null;
       notes?: string | null;
+      paymentDate?: Date | string | null;
     },
     user: AuthPayload
   ) {
@@ -51,6 +52,14 @@ export class PaymentService {
 
     const newRemaining = total - newTotalPaid;
 
+    let parsedPaymentDate = new Date();
+    if (data.paymentDate) {
+      const d = new Date(data.paymentDate);
+      if (!isNaN(d.getTime())) {
+        parsedPaymentDate = d;
+      }
+    }
+
     const payment = await prisma.$transaction(async (tx) => {
       const p = await tx.payment.create({
         data: {
@@ -60,6 +69,7 @@ export class PaymentService {
           status: PaymentStatus.COMPLETED,
           transactionReference: data.transactionReference?.trim() || null,
           notes: data.notes?.trim() || null,
+          paymentDate: parsedPaymentDate,
         },
       });
 
@@ -124,8 +134,14 @@ export class PaymentService {
               id: true,
               bookingNumber: true,
               customerName: true,
+              customerPhone: true,
               eventDate: true,
-              hall: { select: { id: true, name: true } },
+              totalAmount: true,
+              advanceAmount: true,
+              remainingAmount: true,
+              status: true,
+              notes: true,
+              hall: { select: { id: true, name: true, city: true } },
             },
           },
         },

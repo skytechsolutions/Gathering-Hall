@@ -7,4 +7,5 @@ export const createPaymentSchema = z.object({
   method: z.nativeEnum(PaymentMethod).default(PaymentMethod.CASH),
   transactionReference: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
+  paymentDate: z.string().optional().nullable(),
 });

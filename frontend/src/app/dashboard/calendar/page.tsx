@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -30,10 +30,112 @@ import {
   AlertCircle,
   SunMedium,
   Moon,
+  Search,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 
 type CalendarViewMode = "month" | "week" | "agenda";
 type SessionType = "DAY" | "NIGHT";
+
+/**
+ * Robust date parser for natural language and date strings:
+ * - Day numbers (e.g. "13" -> 13th of current month)
+ * - "today", "tomorrow"
+ * - "2027-01-13" (ISO)
+ * - "13/01/2027" or "13-01-2027"
+ * - "13/1" or "13-1"
+ * - "13 Jan", "13 January 2027", "Jan 13 2027", "13 Jan 2027"
+ */
+function parseSearchDate(query: string, referenceDate: Date): Date | null {
+  const q = query.trim().toLowerCase();
+  if (!q) return null;
+
+  // 1. Relative keywords
+  if (q === "today") return new Date();
+  if (q === "tomorrow") {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d;
+  }
+
+  // 2. Single day number (1 - 31): assume current visible month & year
+  if (/^\d{1,2}$/.test(q)) {
+    const day = parseInt(q, 10);
+    if (day >= 1 && day <= 31) {
+      const year = referenceDate.getFullYear();
+      const month = referenceDate.getMonth();
+      const d = new Date(year, month, day);
+      if (isValid(d) && d.getDate() === day) return d;
+    }
+  }
+
+  // 3. ISO format: YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(q)) {
+    const d = parseISO(q);
+    if (isValid(d)) return d;
+  }
+
+  // 4. DD/MM/YYYY or DD-MM-YYYY
+  const dmyMatch = q.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmyMatch) {
+    const day = parseInt(dmyMatch[1], 10);
+    const month = parseInt(dmyMatch[2], 10) - 1;
+    const year = parseInt(dmyMatch[3], 10);
+    const d = new Date(year, month, day);
+    if (isValid(d) && d.getDate() === day && d.getMonth() === month) return d;
+  }
+
+  // 5. DD/MM or DD-MM
+  const dmMatch = q.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
+  if (dmMatch) {
+    const day = parseInt(dmMatch[1], 10);
+    const month = parseInt(dmMatch[2], 10) - 1;
+    const year = referenceDate.getFullYear();
+    const d = new Date(year, month, day);
+    if (isValid(d) && d.getDate() === day && d.getMonth() === month) return d;
+  }
+
+  // 6. Text-based: e.g. "13 Jan", "13 January 2027", "Jan 13 2027", "13 Jan 2027"
+  const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const tokens = q.replace(/,/g, " ").split(/\s+/).filter(Boolean);
+  let foundMonth: number = -1;
+  let foundDay: number = -1;
+  let foundYear: number = referenceDate.getFullYear();
+
+  for (const token of tokens) {
+    const mIdx = months.findIndex((m) => token.startsWith(m));
+    if (mIdx !== -1) {
+      foundMonth = mIdx;
+      continue;
+    }
+    const num = parseInt(token, 10);
+    if (!isNaN(num)) {
+      if (num >= 1900 && num <= 2100) {
+        foundYear = num;
+      } else if (num >= 1 && num <= 31 && foundDay === -1) {
+        foundDay = num;
+      }
+    }
+  }
+
+  if (foundMonth !== -1 && foundDay !== -1) {
+    const d = new Date(foundYear, foundMonth, foundDay);
+    if (isValid(d) && d.getDate() === foundDay && d.getMonth() === foundMonth) return d;
+  }
+
+  // 7. Fallback to native Date.parse
+  const parsedTimestamp = Date.parse(q);
+  if (!isNaN(parsedTimestamp)) {
+    const d = new Date(parsedTimestamp);
+    if (isValid(d)) return d;
+  }
+
+  return null;
+}
 
 export default function AvailabilityCalendarPage() {
   const searchParams = useSearchParams();
@@ -50,6 +152,12 @@ export default function AvailabilityCalendarPage() {
 
   // Selected date key (e.g. 13 January 2027 in reference)
   const [selectedDateKey, setSelectedDateKey] = useState<string>("2027-01-13");
+
+  // Search & Date Availability Checker State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchDropdownOpen, setSearchDropdownOpen] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   // Booking Modal State
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
@@ -150,6 +258,75 @@ export default function AvailabilityCalendarPage() {
     }
     return map;
   }, [availabilityData]);
+
+  // Search Date parsing and availability computation
+  const parsedSearchDate = useMemo(() => {
+    return parseSearchDate(searchQuery, currentDate);
+  }, [searchQuery, currentDate]);
+
+  const searchDateAvailability = useMemo(() => {
+    if (!parsedSearchDate) return null;
+    const dateKey = format(parsedSearchDate, "yyyy-MM-dd");
+    const sessions = availabilityMap.get(dateKey);
+    const dayEvt = sessions?.DAY;
+    const nightEvt = sessions?.NIGHT;
+
+    const isDayAvailable = !dayEvt;
+    const isNightAvailable = !nightEvt;
+    const isBothAvailable = isDayAvailable && isNightAvailable;
+    const isFullyBooked = dayEvt?.status === "CONFIRMED" && nightEvt?.status === "CONFIRMED";
+    const isBlocked = dayEvt?.status === "BLOCKED" && nightEvt?.status === "BLOCKED";
+
+    return {
+      date: parsedSearchDate,
+      dateKey,
+      formattedDate: format(parsedSearchDate, "EEEE, d MMMM yyyy"),
+      dayEvt,
+      nightEvt,
+      isDayAvailable,
+      isNightAvailable,
+      isBothAvailable,
+      isFullyBooked,
+      isBlocked,
+    };
+  }, [parsedSearchDate, availabilityMap]);
+
+  // Non-date search (customer name, booking number, notes)
+  const matchingEvents = useMemo(() => {
+    if (!searchQuery.trim() || parsedSearchDate) return [];
+    const q = searchQuery.trim().toLowerCase();
+    if (!availabilityData?.events) return [];
+    return availabilityData.events
+      .filter((evt) => {
+        return (
+          evt.customerName?.toLowerCase().includes(q) ||
+          evt.bookingNumber?.toLowerCase().includes(q) ||
+          evt.title?.toLowerCase().includes(q) ||
+          evt.notes?.toLowerCase().includes(q)
+        );
+      })
+      .slice(0, 5);
+  }, [searchQuery, parsedSearchDate, availabilityData]);
+
+  // Jump to specific date & select it
+  const selectDateAndJump = (targetDate: Date) => {
+    setCurrentDate(targetDate);
+    const key = format(targetDate, "yyyy-MM-dd");
+    setSelectedDateKey(key);
+    setSearchQuery(format(targetDate, "d MMMM yyyy"));
+    setSearchDropdownOpen(false);
+  };
+
+  // Close search dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setSearchDropdownOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Calendar dates calculation for Month View (Monday start)
   const monthDays = useMemo(() => {
@@ -399,64 +576,309 @@ export default function AvailabilityCalendarPage() {
       </div>
 
       {/* ============================================================== */}
-      {/* 2. SUB-HEADER BAR (Month/Week/Agenda Tabs + Month Navigation in front) */}
+      {/* 2. SUB-HEADER BAR (Month/Week/Agenda Tabs + Month Navigation + Date Availability Search) */}
       {/* ============================================================== */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between sm:justify-start gap-2.5 sm:gap-4 shrink-0">
-        {/* Left: View Mode Segmented Switcher */}
-        <div className="grid grid-cols-3 sm:inline-flex items-center gap-1 rounded-lg bg-[#ebe3d7] p-1 shrink-0">
-          <button
-            onClick={() => setViewMode("month")}
-            className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
-              viewMode === "month"
-                ? "bg-white text-[#1f2421] shadow-2xs font-bold"
-                : "text-[#5c564d] hover:text-[#1f2421]"
-            }`}
-          >
-            Month
-          </button>
-          <button
-            onClick={() => setViewMode("week")}
-            className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
-              viewMode === "week"
-                ? "bg-white text-[#1f2421] shadow-2xs font-bold"
-                : "text-[#5c564d] hover:text-[#1f2421]"
-            }`}
-          >
-            Week
-          </button>
-          <button
-            onClick={() => setViewMode("agenda")}
-            className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
-              viewMode === "agenda"
-                ? "bg-white text-[#1f2421] shadow-2xs font-bold"
-                : "text-[#5c564d] hover:text-[#1f2421]"
-            }`}
-          >
-            Agenda
-          </button>
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 sm:gap-4 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+          {/* Left: View Mode Segmented Switcher */}
+          <div className="grid grid-cols-3 sm:inline-flex items-center gap-1 rounded-lg bg-[#ebe3d7] p-1 shrink-0">
+            <button
+              onClick={() => setViewMode("month")}
+              className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
+                viewMode === "month"
+                  ? "bg-white text-[#1f2421] shadow-2xs font-bold"
+                  : "text-[#5c564d] hover:text-[#1f2421]"
+              }`}
+            >
+              Month
+            </button>
+            <button
+              onClick={() => setViewMode("week")}
+              className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
+                viewMode === "week"
+                  ? "bg-white text-[#1f2421] shadow-2xs font-bold"
+                  : "text-[#5c564d] hover:text-[#1f2421]"
+              }`}
+            >
+              Week
+            </button>
+            <button
+              onClick={() => setViewMode("agenda")}
+              className={`rounded-md py-1.5 px-3 sm:px-2.5 sm:py-0.5 text-xs font-medium transition cursor-pointer text-center ${
+                viewMode === "agenda"
+                  ? "bg-white text-[#1f2421] shadow-2xs font-bold"
+                  : "text-[#5c564d] hover:text-[#1f2421]"
+              }`}
+            >
+              Agenda
+            </button>
+          </div>
+
+          {/* Month Navigation (< January 2027 >) */}
+          <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-2.5 shrink-0 bg-[#faf7f2] sm:bg-transparent p-1 sm:p-0 rounded-lg border border-[#e5ded4] sm:border-0">
+            <button
+              onClick={handlePrev}
+              className="flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-[#d6cec3] bg-white text-[#1f2421] hover:bg-[#f7f3ec] transition cursor-pointer shadow-2xs active:scale-95"
+              aria-label="Previous month"
+            >
+              <ChevronLeft className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+            </button>
+
+            <h2 className="font-serif text-base sm:text-lg font-normal text-[#1f2421] min-w-[120px] sm:min-w-[130px] text-center select-none">
+              {format(currentDate, "MMMM yyyy")}
+            </h2>
+
+            <button
+              onClick={handleNext}
+              className="flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-[#d6cec3] bg-white text-[#1f2421] hover:bg-[#f7f3ec] transition cursor-pointer shadow-2xs active:scale-95"
+              aria-label="Next month"
+            >
+              <ChevronRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+            </button>
+          </div>
         </div>
 
-        {/* Month Navigation (< January 2027 >) */}
-        <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-2.5 shrink-0 bg-[#faf7f2] sm:bg-transparent p-1 sm:p-0 rounded-lg border border-[#e5ded4] sm:border-0">
-          <button
-            onClick={handlePrev}
-            className="flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-[#d6cec3] bg-white text-[#1f2421] hover:bg-[#f7f3ec] transition cursor-pointer shadow-2xs active:scale-95"
-            aria-label="Previous month"
-          >
-            <ChevronLeft className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
-          </button>
+        {/* Right: Date Availability Search Bar & Live Checker */}
+        <div ref={searchContainerRef} className="relative w-full lg:w-80 xl:w-96">
+          <div className="relative flex items-center">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#7a6f60]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onFocus={() => {
+                if (searchQuery.trim()) setSearchDropdownOpen(true);
+              }}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setSearchDropdownOpen(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (searchDateAvailability) {
+                    selectDateAndJump(searchDateAvailability.date);
+                  } else if (matchingEvents.length > 0) {
+                    const d = parseISO(matchingEvents[0].start);
+                    if (isValid(d)) selectDateAndJump(d);
+                  }
+                } else if (e.key === "Escape") {
+                  setSearchDropdownOpen(false);
+                }
+              }}
+              placeholder="Search date (e.g. 15 Jan, 2027-01-13) or customer..."
+              className="w-full rounded-xl border border-[#d6cec3] bg-white/90 py-1.5 pl-9 pr-16 text-xs text-[#1f2421] placeholder-[#7a6f60] focus:border-[#1e382b] focus:ring-1 focus:ring-[#1e382b]/30 focus:outline-none transition shadow-2xs font-medium"
+            />
 
-          <h2 className="font-serif text-base sm:text-lg font-normal text-[#1f2421] min-w-[120px] sm:min-w-[130px] text-center select-none">
-            {format(currentDate, "MMMM yyyy")}
-          </h2>
+            {/* Quick Picker & Clear Buttons */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchDropdownOpen(false);
+                  }}
+                  className="rounded-full p-1 text-[#7a6f60] hover:text-[#1f2421] hover:bg-[#ebe3d7] transition cursor-pointer"
+                  title="Clear search"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+              {/* Native Date Picker Trigger */}
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    dateInputRef.current?.showPicker();
+                  } catch {
+                    dateInputRef.current?.focus();
+                  }
+                }}
+                className="rounded-lg p-1 text-[#7a6f60] hover:text-[#1e382b] hover:bg-[#ebe3d7] transition cursor-pointer"
+                title="Pick specific date"
+              >
+                <Calendar className="h-3.5 w-3.5" />
+              </button>
+              <input
+                ref={dateInputRef}
+                type="date"
+                className="sr-only"
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const picked = parseISO(e.target.value);
+                    if (isValid(picked)) {
+                      selectDateAndJump(picked);
+                      setSearchDropdownOpen(true);
+                    }
+                  }
+                }}
+              />
+            </div>
+          </div>
 
-          <button
-            onClick={handleNext}
-            className="flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-lg border border-[#d6cec3] bg-white text-[#1f2421] hover:bg-[#f7f3ec] transition cursor-pointer shadow-2xs active:scale-95"
-            aria-label="Next month"
-          >
-            <ChevronRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
-          </button>
+          {/* Floating Dropdown Results: Checks Date Availability Live */}
+          {searchDropdownOpen && searchQuery.trim() && (
+            <div className="absolute right-0 top-full mt-1.5 w-full sm:w-[380px] rounded-2xl border border-[#e5ded4] bg-white shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+              {searchDateAvailability ? (
+                <div className="p-3.5 space-y-3">
+                  {/* Header with Date & Overall Status Badge */}
+                  <div className="flex items-start justify-between gap-2 border-b border-[#e5ded4] pb-2.5">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-[#7a6f60] block">
+                        Availability Check
+                      </span>
+                      <h4 className="font-serif text-sm sm:text-base font-bold text-[#1f2421]">
+                        {searchDateAvailability.formattedDate}
+                      </h4>
+                    </div>
+                    <div>
+                      {searchDateAvailability.isBothAvailable ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#cce5d6] bg-[#eaf5ef] px-2.5 py-0.5 text-[11px] font-semibold text-[#1e382b]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#1b5e20]" />
+                          Available
+                        </span>
+                      ) : searchDateAvailability.isFullyBooked ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#fad0d0] bg-[#fdf2f2] px-2.5 py-0.5 text-[11px] font-semibold text-[#991b1b]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#dc2626]" />
+                          Fully Booked
+                        </span>
+                      ) : searchDateAvailability.isBlocked ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-800">
+                          <span className="h-1.5 w-1.5 rounded-full bg-slate-700" />
+                          Date Blocked
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[#f4dfb6] bg-[#fef8ed] px-2.5 py-0.5 text-[11px] font-semibold text-[#8a5d12]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#c28e36]" />
+                          Partially Available
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Day & Night Breakdown Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    {/* Day Session Card */}
+                    <div className="p-2.5 rounded-xl border border-[#e5ded4] bg-[#faf7f2] flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-[#1f2421] flex items-center gap-1">
+                            <SunMedium className="h-3.5 w-3.5 text-amber-600" /> Day
+                          </span>
+                          {searchDateAvailability.isDayAvailable ? (
+                            <span className="text-[10px] font-bold text-[#1b5e20] bg-[#eaf5ef] px-2 py-0.5 rounded-full">
+                              Available
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold text-[#991b1b] bg-[#fdf2f2] px-2 py-0.5 rounded-full">
+                              {searchDateAvailability.dayEvt?.status || "Unavailable"}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-[#7a6f60] mt-1">
+                          {searchDateAvailability.isDayAvailable
+                            ? `Open (${getSessionHoursLabel("DAY", sessionSettings)})`
+                            : `${searchDateAvailability.dayEvt?.customerName || "Reserved"}`}
+                        </p>
+                      </div>
+                      {searchDateAvailability.isDayAvailable && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            selectDateAndJump(searchDateAvailability.date);
+                            openBookingFor(searchDateAvailability.dateKey, "DAY");
+                          }}
+                          className="mt-2 text-center py-1 px-2 rounded-lg bg-[#1e382b] text-white text-[11px] font-semibold hover:bg-[#162a20] transition cursor-pointer"
+                        >
+                          Book Day
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Night Session Card */}
+                    <div className="p-2.5 rounded-xl border border-[#e5ded4] bg-[#faf7f2] flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-[#1f2421] flex items-center gap-1">
+                            <Moon className="h-3.5 w-3.5 text-indigo-600" /> Night
+                          </span>
+                          {searchDateAvailability.isNightAvailable ? (
+                            <span className="text-[10px] font-bold text-[#1b5e20] bg-[#eaf5ef] px-2 py-0.5 rounded-full">
+                              Available
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold text-[#991b1b] bg-[#fdf2f2] px-2 py-0.5 rounded-full">
+                              {searchDateAvailability.nightEvt?.status || "Unavailable"}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-[#7a6f60] mt-1">
+                          {searchDateAvailability.isNightAvailable
+                            ? `Open (${getSessionHoursLabel("NIGHT", sessionSettings)})`
+                            : `${searchDateAvailability.nightEvt?.customerName || "Reserved"}`}
+                        </p>
+                      </div>
+                      {searchDateAvailability.isNightAvailable && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            selectDateAndJump(searchDateAvailability.date);
+                            openBookingFor(searchDateAvailability.dateKey, "NIGHT");
+                          }}
+                          className="mt-2 text-center py-1 px-2 rounded-lg bg-[#1e382b] text-white text-[11px] font-semibold hover:bg-[#162a20] transition cursor-pointer"
+                        >
+                          Book Night
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Jump to Date Button */}
+                  <button
+                    type="button"
+                    onClick={() => selectDateAndJump(searchDateAvailability.date)}
+                    className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#faf7f2] hover:bg-[#ebe3d7] border border-[#d6cec3] text-xs font-semibold text-[#1f2421] transition cursor-pointer"
+                  >
+                    <span>View on Calendar</span>
+                    <ArrowRight className="h-3.5 w-3.5 text-[#1e382b]" />
+                  </button>
+                </div>
+              ) : matchingEvents.length > 0 ? (
+                <div className="p-3 space-y-1.5 divide-y divide-[#e5ded4]">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#7a6f60] block px-1 pb-1">
+                    Matching Reservations
+                  </span>
+                  {matchingEvents.map((evt) => (
+                    <div
+                      key={evt.id}
+                      onClick={() => {
+                        const d = parseISO(evt.start);
+                        if (isValid(d)) selectDateAndJump(d);
+                      }}
+                      className="pt-2 pb-1.5 px-2 hover:bg-[#faf7f2] rounded-xl cursor-pointer transition flex items-center justify-between text-xs"
+                    >
+                      <div>
+                        <p className="font-bold text-[#1f2421]">{evt.customerName || evt.title}</p>
+                        <p className="text-[11px] text-[#7a6f60]">
+                          {evt.start} • {evt.session === "NIGHT" ? "🌙 Night" : "☀️ Day"}
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-semibold bg-[#eaf5ef] text-[#1b5e20] px-2 py-0.5 rounded-full border border-[#cce5d6]">
+                        {evt.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 text-center text-xs text-[#7a6f60]">
+                  <p className="font-semibold text-[#1f2421]">No date or booking found</p>
+                  <p className="text-[11px] mt-1 text-[#7a6f60]">
+                    Try typing e.g. <span className="font-mono font-bold text-[#1e382b]">"15 Jan"</span>,{" "}
+                    <span className="font-mono font-bold text-[#1e382b]">"2027-01-13"</span>, or click the calendar icon to pick a date.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

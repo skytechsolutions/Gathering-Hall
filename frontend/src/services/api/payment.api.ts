@@ -2,24 +2,29 @@ import api from "./axios";
 
 export interface Payment {
   id: string;
-  receiptNumber: string;
+  receiptNumber?: string;
   bookingId: string;
-  amount: number;
-  paymentMethod: "CASH" | "BANK_TRANSFER" | "ONLINE" | "CHEQUE";
-  reference: string | null;
-  notes: string | null;
+  amount: number | string;
+  paymentMethod?: "CASH" | "BANK_TRANSFER" | "ONLINE" | "CHEQUE" | "CARD" | "OTHER" | "JAZZCASH" | "EASYPAISA";
+  method?: string;
+  status?: string;
+  transactionReference?: string | null;
+  reference?: string | null;
+  paymentDate?: string;
+  notes?: string | null;
   createdAt: string;
   booking?: {
     id: string;
     bookingNumber: string;
     customerName: string;
-    customerPhone: string;
+    customerPhone?: string;
     eventDate: string;
-    totalAmount: number;
-    advanceAmount: number;
-    remainingAmount: number;
-    status: string;
-    hall?: { id: string; name: string };
+    totalAmount?: number | string;
+    advanceAmount?: number | string;
+    remainingAmount?: number | string;
+    status?: string;
+    notes?: string | null;
+    hall?: { id: string; name: string; city?: string };
   };
 }
 
@@ -34,11 +39,37 @@ export const paymentApi = {
   async addPayment(data: {
     bookingId: string;
     amount: number;
-    paymentMethod: "CASH" | "BANK_TRANSFER" | "ONLINE" | "CHEQUE";
+    paymentMethod?: "CASH" | "BANK_TRANSFER" | "ONLINE" | "CHEQUE" | "CARD" | "OTHER" | "JAZZCASH" | "EASYPAISA";
+    method?: string;
+    transactionReference?: string | null;
     reference?: string | null;
+    paymentDate?: string | null;
     notes?: string | null;
   }) {
-    return api.post<{ payment: Payment; booking: any }>("/payments", data);
+    // Map payment methods to backend enum if necessary
+    let backendMethod = data.method || data.paymentMethod || "CASH";
+    let extraRef = data.transactionReference || data.reference || null;
+
+    if (backendMethod === "JAZZCASH") {
+      backendMethod = "CARD";
+      if (!extraRef) extraRef = "JazzCash";
+      else extraRef = `JazzCash: ${extraRef}`;
+    } else if (backendMethod === "EASYPAISA") {
+      backendMethod = "CARD";
+      if (!extraRef) extraRef = "EasyPaisa";
+      else extraRef = `EasyPaisa: ${extraRef}`;
+    } else if (backendMethod === "ONLINE") {
+      backendMethod = "CARD";
+    }
+
+    return api.post<{ payment: Payment; booking: any }>("/payments", {
+      bookingId: data.bookingId,
+      amount: data.amount,
+      method: backendMethod,
+      transactionReference: extraRef,
+      notes: data.notes,
+      paymentDate: data.paymentDate,
+    });
   },
 
   async refund(id: string, reason?: string) {
